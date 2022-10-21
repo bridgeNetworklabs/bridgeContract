@@ -42,7 +42,7 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
 
 
 
-    /// was throwing an error that use indexed expression has to be a type mapping
+    /// was throwing an error that we use indexed expression has to be a type mapping or array
     function getNativeAssetCount() public view returns (uint256) {
         (uint256 nativeAssetCount,,) = bridge.getAssetCount();
         return nativeAssetCount;
