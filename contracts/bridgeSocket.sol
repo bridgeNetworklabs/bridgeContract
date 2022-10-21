@@ -7,20 +7,21 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interface/Isettings.sol";
 import "./interface/IfeeController.sol";
+import "./interface/Ibridge.sol";
 
 
 
 
 
 contract BridgeSocket is Context , ReentrancyGuard , Ownable{
-   using SafeERC20 for IERC20;
-   Isettings public settings;
-   IfeeController public feeController;
-   Ibridge public bridge;
-   address feeRemitance;
-   uint256 feePercentage;
-   bool public paused;
-   uint256 constant maxFeePercentage = 10;
+    using SafeERC20 for IERC20;
+    Isettings public settings;
+    IfeeController public feeController;
+    Ibridge public bridge;
+    address feeRemitance;
+    uint256 feePercentage;
+    bool public paused;
+    uint256 constant maxFeePercentage = 10;
 
     event feeUpdated(uint256 prevFee , uint256 currentFee);
     event feeRemitanceUpdated(address prevFeeRemitance , address currentFeeRemitance);
@@ -31,21 +32,28 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
     );
     
     event SendTransaction(
-       bytes32 transactionID, 
-       uint256 chainID,
-       address indexed assetAddress,
-       uint256 sendAmount,
-       address indexed receiver,
-       address indexed  sender
+        bytes32 transactionID, 
+        uint256 chainID,
+        address indexed assetAddress,
+        uint256 sendAmount,
+        address indexed receiver,
+        address indexed  sender
     );
+
+
+
+    /// was throwing an error that use indexed expression has to be a type mapping
     function getNativeAssetCount() public view returns (uint256) {
-        return bridge.getAssetCount()[0];
+        (uint256 nativeAssetCount,,) = bridge.getAssetCount();
+        return nativeAssetCount;
     }
     function getForiegnAssetCount() public view returns (uint256)  {
-        return bridge.getAssetCount()[1];
+         (,uint256 foriegnAssetCount,) = bridge.getAssetCount();
+        return foriegnAssetCount;
     }
     function getDirectswapAssetCount() public view returns (uint256)  {
-        return bridge.getAssetCount()[2];
+         (,,uint256 directAssetCount) = bridge.getAssetCount();
+        return directAssetCount;
     }
     function validAsset(address assetAddress) public view returns ( bool ){
         Ibridge.asset memory currentAsset;
@@ -70,7 +78,6 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
             return true;
         }
         return false;
-       
         
     }
     function isForiegnAsset(address assetAddress) public view returns ( bool ){
@@ -81,10 +88,9 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
             return true;
         }
         else return false;
-       
         
     }
-     
+
     function getAssetLimits(address assetAddress) public view returns (uint256 , uint256 ){
         Ibridge.asset memory currentAsset;
         currentAsset = bridge.nativeAssets(assetAddress);
@@ -102,9 +108,9 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
     }
 
     function getSupportedChainIDs()  public view returns (uint256[] memory){
-       return settings.getNetworkSupportedChains(); 
+        return settings.getNetworkSupportedChains(); 
     }
-    function isSupportedChain(uint256 chainID) public  returns (bool){
+    function isSupportedChain(uint256 chainID) public view returns (bool){
         return settings.isNetworkSupportedChain(chainID);
     }
     function getAsset(address assetAddress) public view returns (Ibridge.asset memory){
@@ -120,50 +126,51 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
             return currentAsset;
         }
         else {
-          return   bridge.nativeAssets(assetAddress);
+            return   bridge.nativeAssets(assetAddress);
         }
     }
 
-   function getTransactionGas(address sender, address asset , uint256 chainTo) public view returns(uint256){
-       return feeController.getBridgeFee( sender,  asset, chainTo );
-   }
+    function getTransactionGas(address sender, address asset , uint256 chainTo) public view returns(uint256){
+        return feeController.getBridgeFee( sender,  asset, chainTo );
+    }
 
-   function getTransactionFee(uint256 amount) public view returns (uint256){
-       if(feePercentage == 0 || amount == 0) {
-           return 0;
-       } else {
-           return feePercentage * amount / 10000;
-       }
-   }
-   
-   function bridgeAsset(address assetAddress, uint256 chainID , uint256 amount , address reciever)  public payable {
-       require(validAsset(assetAddress) , "Invalid Asset");
-       (bool success , uint256 _amount , uint gas) = preccessTransaction(assetAddress , chainID, msg.sender, amount);
-       require(success && _amount > 0 , "Insuficient funds");
-       _amount  =  processFees(_amount ,assetAddress);
-       bytes32 transactionID;
-       if(isNativeAsset(assetAddress)){
-           if(assetAddress == address(0)){
-               transactionID = bridge.send{ value : gas + _amount}(chainID , assetAddress, _amount, reciever);
-           }else{
-              transactionID =  bridge.send{ value : gas}(chainID , assetAddress, _amount, reciever);  
-           }
-       }
-       else {
-         transactionID =   bridge.burn{ value : gas}(chainID , assetAddress, _amount, reciever);  
-       }
 
-    emit SendTransaction(
-            transactionID,
-            chainID,
-            assetAddress,
-            _amount,
-            reciever,
-            msg.sender
-        );
-       
-        
-   }
+     // the amount that will be returned here will be different from the amount that will be charged during
+    // the transaction, because in the `processFees`  we have subtracted the baseFee from the amount before getting
+    // the fee percentage. 
+    function getTransactionFee(uint256 amount) public view returns (uint256){
+        if(feePercentage == 0 || amount == 0) {
+            return 0;
+        } else {
+            return feePercentage * amount / 10000;
+        }
+    }
+    function bridgeAsset(address assetAddress, uint256 chainID , uint256 amount , address reciever)  public payable {
+        require(validAsset(assetAddress) , "Invalid Asset");
+        (bool success , uint256 _amount , uint gas) = preccessTransaction(assetAddress , chainID, msg.sender, amount);
+        require(success && _amount > 0 , "Insuficient funds");
+        _amount  =  processFees(_amount ,assetAddress);
+        bytes32 transactionID;
+        if(isNativeAsset(assetAddress)){
+            if(assetAddress == address(0)){
+                transactionID = bridge.send{ value : gas + _amount}(chainID , assetAddress, _amount, reciever);
+            }else{
+                transactionID =  bridge.send{ value : gas}(chainID , assetAddress, _amount, reciever);  
+            }
+        }
+        else {
+            transactionID =   bridge.burn{ value : gas}( assetAddress, _amount, reciever);  
+        }
+
+        emit SendTransaction(
+                transactionID,
+                chainID,
+                assetAddress,
+                _amount,
+                reciever,
+                msg.sender
+            );
+        }
 
     function processFees(uint256 amount , address assetAddress) private returns (uint256){
         uint256 baseFeePercentage = settings.baseFeePercentage();

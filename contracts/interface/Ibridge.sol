@@ -51,4 +51,12 @@ interface Ibridge{
     function udpadateBridgePool(address _bridgePool) external;
 
     function isDirectSwap(address assetAddress ,uint256 chainID) external view returns (bool);
+
+    function getAssetCount() external view returns (uint256  , uint256  , uint256 );
+
+    function nativeAssets(address assetAddress) external view returns (asset memory );
+
+    function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable returns (bytes32);
+
+    function burn(address assetAddress , uint256 amount ,  address receiver) external payable returns (bytes32);
 }
