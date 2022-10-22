@@ -7,8 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interface/Isettings.sol";
 import "./interface/IfeeController.sol";
-
-
+import "./interface/Ibridge.sol";
 
 
 
@@ -104,7 +103,7 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
     function getSupportedChainIDs()  public view returns (uint256[] memory){
        return settings.getNetworkSupportedChains(); 
     }
-    function isSupportedChain(uint256 chainID) public  returns (bool){
+    function isSupportedChain(uint256 chainID) public view returns (bool){
         return settings.isNetworkSupportedChain(chainID);
     }
     function getAsset(address assetAddress) public view returns (Ibridge.asset memory){

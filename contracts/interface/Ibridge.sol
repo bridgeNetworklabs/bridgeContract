@@ -2,8 +2,7 @@
 pragma solidity 0.8.2;
 
 
-interface Ibridge{
-    struct asset {
+interface Ibridge{    struct asset {
         address tokenAddress; 
         uint256 minAmount;
         uint256 maxAmount;
@@ -44,11 +43,20 @@ interface Ibridge{
 
 
     function foriegnAssets(address assetAddress) external view returns (asset memory);
-
-
+    
+    function nativeAssets(address assetAddress) external view returns (asset memory);
+  
     function wrappedForiegnPair(address assetAddress , uint256 chainID) external view returns (address);
 
     function udpadateBridgePool(address _bridgePool) external;
 
     function isDirectSwap(address assetAddress ,uint256 chainID) external view returns (bool);
+
+    function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable  returns (bytes32 transactionID);
+    
+    function burn(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable  returns (bytes32 transactionID);
+
+    function getAssetCount() external view returns (uint256[3] memory);
+
+    
 }
