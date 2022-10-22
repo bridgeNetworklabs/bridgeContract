@@ -146,10 +146,12 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
            if(assetAddress == address(0)){
                transactionID = bridge.send{ value : gas + _amount}(chainID , assetAddress, _amount, reciever);
            }else{
+               IERC20(assetAddress).safeApprove(address(bridge) , _amount);
               transactionID =  bridge.send{ value : gas}(chainID , assetAddress, _amount, reciever);  
            }
        }
        else {
+           IERC20(assetAddress).safeApprove(address(bridge) , _amount);
          transactionID =   bridge.burn{ value : gas}(chainID , assetAddress, _amount, reciever);  
        }
 
