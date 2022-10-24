@@ -1,0 +1,336 @@
+## BridgeSocket Documentation
+
+The Bridge socket contract is a stateless contract that does not hold token balances. They interact with one or more bridge network core contract but is not part of the core contract. 
+It helps with easy interaction with the bridge network core contract.
+With the bridge Socket projects can intergrate bridgenetwork directly into their Dapps simlessly and bridge assets accross all supported chains.
+Projects can earn fees upto 1% of the transaction amount for every transaction that comes through the deployeed socket.
+
+Deployment and Setup.
+
+1. The socket code can be found on the bridge network github page using this link (https://github.com/bridgeNetwork1/bridgeContract/blob/master/contracts/bridgeSocket.sol)
+
+2. Once the contract is deployed the following functions are available for users interraction.
+
+#### Functions
+
+
+`function getNativeAssetCount() public view returns (uint256)`
+returns the number of native assets deployed on the bridge network
+
+`function getForiegnAssetCount() public view returns (uint256)`
+returns the number of foreign assets on the bridge network
+
+`function getDirectswapAssetCount() public view returns (uint256)`
+returns the number of assets that can be directly swapped on the bridge network
+
+` function validAsset(address assetAddress) public view returns ( bool )`
+returns `true` if the assets can be bridged on the bridge network
+
+`function isNativeAsset(address assetAddress) public view returns ( bool )`
+returns `true` if the asset is a native asset
+
+`function isForiegnAsset(address assetAddress) public view returns ( bool )`
+returns `true ` if the asset is a foreign asset
+
+`function getAssetLimits(address assetAddress) public view returns (uint256 , uint256 )`
+returns the `minimum` and `Maximum` amount of the asset that can be bridged.
+
+`function getSupportedChainIDs()  public view returns (uint256[] memory)`
+returns the chainId of the chain supported on the bridge network
+
+`function isSupportedChain(uint256 chainID) public  returns (bool)`
+returns `true` if the chainId is supported on the bridge network
+
+`function getAsset(address assetAddress) public view returns (Ibridge.asset memory)`
+returns the asset details
+
+` function getTransactionGas(address sender, address asset , uint256 chainTo) public view returns(uint256)`
+returns the `amount` that will be charged for bridging an asset. This will be in the native coin of the chain where the transaction is been executed. For example, if the transaction is been executed on the Ethereum blockchain it will be in `ether`
+
+`function getTransactionFee(uint256 amount) public view returns (uint256)`
+returns the  `amount` that will be deducted for using the bridge socket
+
+ function pauseSocket()  public 
+
+this function is used to toggle the state of the socket ON/OFF
+
+
+function updateFee(uint256 fee) public 
+
+this function is used to update the socket fee percentage 
+the updatable socket fee percentage ranges from 0-10 where 10 is 0.1%
+
+
+uint256 fee ( 0 - 10)
+
+function updateSocket(IfeeController _feecontroller , Isettings _settings , Ibridge _bridge) public 
+this function is used to update the socket with the bridge Network interface Contracts
+`_feecontroller` : bridge network contract used to manage bridging fee
+`_settings`: bridge network setting contract used in managing the bridge state
+`_bridge`: bridge network main contract used for bridging asset.
+
+updateFeeRemitance(address _feeRemitance) public 
+
+this function is used to update the fee remittance address of the socket.
+ 
+`function bridgeAsset(address assetAddress, uint256 chainID , uint256 amount , address receiver)  public payable ` 
+This is the function used for bridging the asset
+`assetAddress` : address of the asset being a bridge
+`chainID`: the chainID to be bridged to
+`receiver`: the address to receive the asset bridged.
+
+to bridge an asset  
+ 1. validate asset address using validAsset(address assetAddress)
+ 2. determine network gas using getTransactionGas(address sender, address asset , uint256 chainTo)
+ 3. append gas to the bridgeAsset transaction.
+ 
+
+ 
+
+3. Chain  data can be found on the bridge server (https://mainnet.bridgeserver.online/)
+
+        it returns the bridge data for all chain for example:
+        
+        "networks": [
+                {
+                "id": 1,
+                "name": "KCC Mainnet",
+                "symbol": "KCS",
+                "logo": "https://res.cloudinary.com/bridge-network/image/upload/v1652564438/logo/kcc.svg",
+                "chain_id": "321",
+                "block_time": "3",
+                "rpc": "https://rpc-mainnet.kcc.network",
+                "private_rpc": "https://kcc.getblock.io/mainnet/?api_key=88c1041e-ecd6-4b3a-8eb9-1032ad15da16",
+                "explorer": "https://explorer.kcc.io/en",
+                "bridge_address": "0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa",
+                "settings_address": "0xA4f578bb7218a6eC553c50b442A1eFcDFCE4eb63",
+                "deployer_address": "0x4F77c1a7E26834DD427EE909A24890a933A0F843",
+                "feeController_address": "0xF098016671cdA0AC45C639e96614C964A70D2C46",
+                "registry_address": "0x9E06D2971bb0Af5536f90747EEF4Ae64F42005Ba",
+                "controller_address": "0x0063ACf0DA200f1AcE050e22A21BC613AF64c92C",
+                "farm_address": "0x695695941772655497b43E3C30efa52A45DC82E6",
+                "pool_address": "0xab13787D775717FefcECC1995FFe5eF743324B4F",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z",
+                "supported_chains": [
+                {
+                "id": 1,
+                "chain_id": "321",
+                "supported_chain_id": "56",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 2,
+                "chain_id": "321",
+                "supported_chain_id": "43114",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 3,
+                "chain_id": "321",
+                "supported_chain_id": "250",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 4,
+                "chain_id": "321",
+                "supported_chain_id": "137",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 5,
+                "chain_id": "321",
+                "supported_chain_id": "10",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 6,
+                "chain_id": "321",
+                "supported_chain_id": "1",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 7,
+                "chain_id": "321",
+                "supported_chain_id": "42161",
+                "status": "active",
+                "created_at": "2022-05-20T12:18:21.000000Z",
+                "updated_at": "2022-05-20T12:18:21.000000Z"
+                },
+                {
+                "id": 112,
+                "chain_id": "321",
+                "supported_chain_id": "1666600000",
+                "status": "active",
+                "created_at": null,
+                "updated_at": null
+                }
+                ]
+                },
+                {.........},
+                {.........}
+                
+                ]
+
+
+        from the returned data the feecontroller , settings and bridge address required to update the bridge network for each chain can be optained.
+        these data is used to update the socket as follows:
+        
+        function updateSocket(IfeeController _feecontroller , Isettings _settings , Ibridge _bridge) public 
+        
+4. Assets supported on each chain can be found using this route (https://mainnet.bridgeserver.online/api/asset/active_asset/{chain_id})
+    by specifying the chain ID the assets related to that chain is returned as follows:
+    {
+    "code": 200,
+    "assets": {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 19,
+                "type": "native",
+                "chain_id": "1",
+                "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                "min_amount": "1",
+                "max_amount": "1000000",
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "logo": null,
+                "chain_from_id": "0",
+                "chain_from_token_address": "0",
+                "status": "active",
+                "manager": "0x4a4fB42b8C29B412D469881796CD5431C76E4761",
+                "feeRemitance": "0x4a4fB42b8C29B412D469881796CD5431C76E4761",
+                "deployer": "0x1dB3e09DF25812b3121E74Ca10cF7C79aF1Bd7F7",
+                "deploywith": "3",
+                "created_at": "2022-06-11T00:52:55.000000Z",
+                "updated_at": "2022-10-05T19:06:41.000000Z",
+                "supported_chains": [
+                    {
+                        "id": 33,
+                        "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                        "chain_id": "1",
+                        "supported_chain_id": "56",
+                        "direct_swap": 1,
+                        "destination_address": "0x55d398326f99059fF775485246999027B3197955",
+                        "status": "active",
+                        "created_at": "2022-06-11T00:52:55.000000Z",
+                        "updated_at": "2022-06-11T00:52:55.000000Z"
+                    },
+                    {
+                        "id": 34,
+                        "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                        "chain_id": "1",
+                        "supported_chain_id": "43114",
+                        "direct_swap": 1,
+                        "destination_address": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+                        "status": "active",
+                        "created_at": "2022-06-11T00:52:55.000000Z",
+                        "updated_at": "2022-06-11T00:52:55.000000Z"
+                    },
+                    {
+                        "id": 35,
+                        "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                        "chain_id": "1",
+                        "supported_chain_id": "137",
+                        "direct_swap": 1,
+                        "destination_address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+                        "status": "active",
+                        "created_at": "2022-06-11T00:52:55.000000Z",
+                        "updated_at": "2022-06-11T00:52:55.000000Z"
+                    },
+                    {
+                        "id": 36,
+                        "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                        "chain_id": "1",
+                        "supported_chain_id": "321",
+                        "direct_swap": 1,
+                        "destination_address": "0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48",
+                        "status": "active",
+                        "created_at": "2022-06-11T00:52:55.000000Z",
+                        "updated_at": "2022-06-11T00:52:55.000000Z"
+                    },
+                    {
+                        "id": 37,
+                        "token_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                        "chain_id": "1",
+                        "supported_chain_id": "42161",
+                        "direct_swap": 1,
+                        "destination_address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+                        "status": "active",
+                        "created_at": "2022-06-11T00:52:55.000000Z",
+                        "updated_at": "2022-06-11T00:52:55.000000Z"
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "type": "foriegn",
+                "chain_id": "1",
+                "token_address": "0x7d5201519dfE287D042e3Dc0a36DF341178371B8",
+                "min_amount": "1",
+                "max_amount": "10000000",
+                "name": "brBridge Token",
+                "symbol": "brBRDG",
+                "logo": "https://res.cloudinary.com/bridge-network/image/upload/v1648821800/logo/brg.svg",
+                "chain_from_id": "56",
+                "chain_from_token_address": "0x1562c99ad7179b7D1d862fF4E8BfF6CC016a97ee",
+                "status": "active",
+                "manager": "0x4a4fB42b8C29B412D469881796CD5431C76E4761",
+                "feeRemitance": "0x4a4fB42b8C29B412D469881796CD5431C76E4761",
+                "deployer": "0x1dB3e09DF25812b3121E74Ca10cF7C79aF1Bd7F7",
+                "deploywith": "3",
+                "created_at": "2022-06-10T12:10:09.000000Z",
+                "updated_at": "2022-06-15T02:22:42.000000Z",
+                "supported_chains": []
+            }
+        ],
+        "first_page_url": "https://mainnet.bridgeserver.online/api/asset/active_asset/1?page=1",
+        "from": 1,
+        "last_page": 1,
+        "last_page_url": "https://mainnet.bridgeserver.online/api/asset/active_asset/1?page=1",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "https://mainnet.bridgeserver.online/api/asset/active_asset/1?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "next_page_url": null,
+        "path": "https://mainnet.bridgeserver.online/api/asset/active_asset/1",
+        "per_page": 10,
+        "prev_page_url": null,
+        "to": 2,
+        "total": 2
+    }
+}
+
+
+    each asset returned also comes with its supported chains ,  minimum and maximum bridgable amount.
+    
+
+
+5.  Attached is a postman collection to interract with the servers
+
