@@ -16,11 +16,17 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
    Isettings public settings;
    IfeeController public feeController;
    Ibridge public bridge;
-   address feeRemitance;
-   uint256 feePercentage;
+   address public feeRemitance;
+   uint256 public feePercentage;
    bool public paused;
-   uint256 constant maxFeePercentage = 10;
-
+   bool public innitialized;
+   uint256 constant public maxFeePercentage = 10;
+    
+    modifier notPaused() {
+        require(!paused, "Socket paused");
+        _;
+    }
+    
     event feeUpdated(uint256 prevFee , uint256 currentFee);
     event feeRemitanceUpdated(address prevFeeRemitance , address currentFeeRemitance);
     event socketUpdated(
@@ -37,6 +43,14 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
        address indexed receiver,
        address indexed  sender
     );
+
+    constructor ( Isettings _settings, IfeeController _feeController , Ibridge _bridge , address _feeRemittance) {
+       require( _feeRemittance != address(0) && address(_feeController) != address(0) && address(_settings) != address(0) && address(_bridge) != address(0) , "invalid address");
+     settings = _settings;
+     feeController = _feeController;
+     bridge = _bridge;
+     feeRemitance = _feeRemittance;
+    }
     function getNativeAssetCount() public view returns (uint256) {
         return bridge.getAssetCount()[0];
     }
@@ -135,7 +149,7 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
        }
    }
    
-   function bridgeAsset(address assetAddress, uint256 chainID , uint256 amount , address reciever)  public payable {
+   function bridgeAsset(address assetAddress, uint256 chainID , uint256 amount , address reciever)  public payable  notPaused{
        require(validAsset(assetAddress) , "Invalid Asset");
        (bool success , uint256 _amount , uint gas) = preccessTransaction(assetAddress , chainID, msg.sender, amount);
        require(success && _amount > 0 , "Insuficient funds");
@@ -206,13 +220,13 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
             currentPaymentMethod.safeTransfer(recipient , amount);
         }
     }
- function updateFee(uint256 fee) public onlyOwner {
+ function updateFee(uint256 fee) public onlyOwner notPaused{
      require(fee <= maxFeePercentage , "Value above max value");
      feeUpdated(feePercentage , fee);
      feePercentage = fee;
      
  }
-function updateFeeRemitance(address _feeRemitance) public onlyOwner {
+function updateFeeRemitance(address _feeRemitance) public onlyOwner notPaused{
      require(feeRemitance != _feeRemitance , "already set");
      require(_feeRemitance != address(0) , "invalid Address");
      feeRemitanceUpdated(_feeRemitance , feeRemitance);
@@ -224,7 +238,7 @@ function updateFeeRemitance(address _feeRemitance) public onlyOwner {
      paused = !paused;
  }
  function updateSocket(IfeeController _feecontroller , Isettings _settings , Ibridge _bridge) public onlyOwner {
-     require(address(_feecontroller) != address(0) || address(_settings) != address(0) || address(_bridge) != address(0) , "invalid address");
+     require(address(_feecontroller) != address(0) && address(_settings) != address(0) && address(_bridge) != address(0) , "invalid address");
      settings = _settings;
      feeController = _feecontroller;
      bridge = _bridge;
