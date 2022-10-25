@@ -1,0 +1,17 @@
+Bridge Paused : B_P
+Unauthorized Access : U_A
+NoUpdates  : N_U
+Invalid Asset : I_A
+Amount Limit Error : AL_E
+not a supported chain : N_S_C
+already registered : A_R
+not Active  : N_A
+Chain Error : C_E
+Isuficient Funds /Amount Error : I_F
+cant send to Zero address : A_z
+has no foriegnAsset pair : N_F_P
+mint ID error : MI_E
+minted  : M
+not validated : N_V
+claim ID error : CI_E
+Claimed  :  C
