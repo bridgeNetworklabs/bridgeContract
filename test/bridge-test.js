@@ -374,7 +374,7 @@ describe("bridge", function () {
          expect (await registry.isSendTransaction(transactionID)).to.be.true
        
        });
-       it("should  be able Bridge tokenn With any decimals", async function () {
+       it("should  be able Bridge token With any decimals", async function () {
        
         await settings.connect(owner).setNetworkSupportedChains([2] , ["10000000000000000000"] , true)
         await brgToken.connect(owner).transfer(assetManager.address, settings.railRegistrationFee())

@@ -52,7 +52,7 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
         return foriegnAssetCount;
     }
     function getDirectswapAssetCount() public view returns (uint256)  {
-         (,,uint256 directAssetCount) = bridge.getAssetCount();
+        (,,uint256 directAssetCount) = bridge.getAssetCount();
         return directAssetCount;
     }
     function validAsset(address assetAddress) public view returns ( bool ){
