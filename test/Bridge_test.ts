@@ -40,7 +40,7 @@ describe("Bridge", function () {
   let oracle: SignerWithAddress;
   let registrar: SignerWithAddress;
   let user1: SignerWithAddress;
-  let user2:SignerWithAddress
+  let user2: SignerWithAddress;
   const zeroAddress = ethers.constants.AddressZero;
 
   beforeEach(async () => {
@@ -60,7 +60,7 @@ describe("Bridge", function () {
       oracle,
       registrar,
       user1,
-      user2
+      user2,
     ] = await ethers.getSigners();
 
     const controllerContract = await ethers.getContractFactory("Controller");
@@ -411,7 +411,9 @@ describe("Bridge", function () {
         .connect(Admin)
         .transfer(assetAdmin.address, settings.railRegistrationFee());
 
-        await brgToken.connect(assetAdmin).approve(bridge.address, ethers.constants.MaxUint256)
+      await brgToken
+        .connect(assetAdmin)
+        .approve(bridge.address, ethers.constants.MaxUint256);
 
       await bridge
         .connect(assetAdmin)
@@ -467,10 +469,10 @@ describe("Bridge", function () {
         registry.getUserNonce(Admin.address)
       );
       await bridge
-          .connect(Admin)
-          .send(2, zeroAddress, "100000000000000000000", Admin.address, {
-            value: "100000000000000000000",
-          })
+        .connect(Admin)
+        .send(2, zeroAddress, "100000000000000000000", Admin.address, {
+          value: "100000000000000000000",
+        });
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
 
@@ -505,8 +507,12 @@ describe("Bridge", function () {
 
       // let fees = await ethers.utils.parseEther(val)
       await bridge.connect(Admin).activeNativeAsset(assetToken.address, true);
-      await assetToken.connect(assetAdmin).transfer(user1.address, ethers.utils.parseEther("10"))
-      await assetToken.connect(user1).approve(bridge.address, ethers.utils.parseEther("1"));
+      await assetToken
+        .connect(assetAdmin)
+        .transfer(user1.address, ethers.utils.parseEther("10"));
+      await assetToken
+        .connect(user1)
+        .approve(bridge.address, ethers.utils.parseEther("1"));
       let val = await feeController.getBridgeFee(
         user1.address,
         assetToken.address,
@@ -520,13 +526,18 @@ describe("Bridge", function () {
         user2.address,
         registry.getUserNonce(user1.address)
       );
-      
-        await bridge
-          .connect(user1)
-          .send(2, assetToken.address, ethers.utils.parseEther("0.01"), user2.address, {
+
+      await bridge
+        .connect(user1)
+        .send(
+          2,
+          assetToken.address,
+          ethers.utils.parseEther("0.01"),
+          user2.address,
+          {
             value: val,
-          })
-      
+          }
+        );
 
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
@@ -542,7 +553,9 @@ describe("Bridge", function () {
         .connect(assetManager)
         .approve(bridge.address, settings.railRegistrationFee());
       const assetTokenContract = await ethers.getContractFactory("TestToken");
-      const token = await assetTokenContract.connect(assetAdmin).deploy("Token", "tkn", 6);
+      const token = await assetTokenContract
+        .connect(assetAdmin)
+        .deploy("Token", "tkn", 6);
       await settings
         .connect(Admin)
         .setApprovedToAdd(assetManager.address, token.address, true);
@@ -552,7 +565,7 @@ describe("Bridge", function () {
         .connect(assetManager)
         .registerRail(
           token.address,
-          parseUnits("0.01", 6),
+          parseUnits("0.001", 6),
           parseUnits("100", 6),
           [2],
           [zeroAddress],
@@ -564,8 +577,10 @@ describe("Bridge", function () {
 
       // let fees = await ethers.utils.parseEther(val)
       await bridge.connect(Admin).activeNativeAsset(token.address, true);
-      await token.connect(assetAdmin).transfer(user1.address, parseUnits("1",6))
-      await token.connect(user1.address).approve(bridge.address, parseUnits("10",6));
+      await token
+        .connect(assetAdmin)
+        .transfer(user1.address, parseUnits("1", 6));
+      await token.connect(user1).approve(bridge.address, parseUnits("10", 6));
       let val = await feeController.getBridgeFee(
         user1.address,
         token.address,
@@ -575,18 +590,18 @@ describe("Bridge", function () {
         bridge.chainId(),
         2,
         token.address,
-        parseUnits("0.01",6),
+        parseUnits("0.01", 6),
         user2.address,
         registry.getUserNonce(user1.address)
       );
-      
-        await bridge
-          .connect(user1)
-          .send(2, token.address, parseUnits("0.01",6), user2.address, {
-            value: val,
-        })
 
-        expect(await registry.isSendTransaction(transactionID)).to.be.true;
+      await bridge
+        .connect(user1)
+        .send(2, token.address, parseUnits("0.01", 6), user2.address, {
+          value: val,
+        });
+
+      expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
     it("should  be able validate DirectSwap assetToken With any decimals", async function () {
       await settings
