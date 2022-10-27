@@ -13,6 +13,7 @@ describe("Settings", () => {
   let randomAddress: SignerWithAddress;
   let token: Token;
   let assetUser: SignerWithAddress;
+  let brdgToken: Token;
 
   before(async () => {
     [feeRemittance, owner, admin, assetUser, randomAddress] =
@@ -29,6 +30,8 @@ describe("Settings", () => {
 
     const TokenContract = await ethers.getContractFactory("Token");
     token = await TokenContract.deploy("AssetOne", "A1");
+    const BrdgContract = await ethers.getContractFactory("Token");
+    brdgToken = await BrdgContract.deploy("Bridge Token", "brdg");
   });
 
   describe("State Variables", () => {
@@ -118,13 +121,148 @@ describe("Settings", () => {
       ).to.be.revertedWith("valueERR");
     });
     it("Should set the base Percentage", async () => {
-        await settings.connect(owner).setbaseFeePercentage(20)
-        expect(await settings.baseFeePercentage()).to.be.equal(20)
+      await settings.connect(owner).setbaseFeePercentage(20);
+      expect(await settings.baseFeePercentage()).to.be.equal(20);
     });
     it("Should revert if random address tries to set base percentage", async () => {
       await expect(
         settings.connect(randomAddress).setbaseFeePercentage(20)
       ).to.be.revertedWith("U_A");
     });
+    it("Should revert if base fee is more than 10% ", async () => {
+      await expect(
+        settings.connect(owner).setbaseFeePercentage(2000)
+      ).to.be.revertedWith("exceed 10%");
+    });
+    it("Only Owner should enable base fee", async () => {
+      await settings.connect(owner).enableBaseFee();
+      expect(await settings.baseFeeEnable()).to.be.true;
+    });
+    it("Should revert if random address enable base fee", async () => {
+      await expect(
+        settings.connect(randomAddress).enableBaseFee()
+      ).to.be.revertedWith("U_A");
+    });
+    it("Should set bridge token", async () => {
+      await settings.connect(admin).setbrgToken(brdgToken.address);
+      expect(await settings.brgToken()).to.be.equal(brdgToken.address);
+    });
+    it("Should revert if random address tries to set the bridge token", async () => {
+      await expect(
+        settings.connect(randomAddress).setbrgToken(brdgToken.address)
+      ).to.be.revertedWith("U_A");
+    });
+    it("Should revert if setting zero address as bridge token", async () => {
+      await expect(
+        settings.connect(owner).setbrgToken(ethers.constants.AddressZero)
+      ).to.be.revertedWith("zero_A");
+    });
+    it("Should set minimum withdrawable fee", async () => {
+      await settings.connect(admin).setminWithdrawableFee(parseEther("0.01"));
+      expect(await settings.minWithdrawableFee()).to.be.equal(
+        parseEther("0.01")
+      );
+    });
+    it("Should revert if random address set minimum withdrawable fee", async () => {
+      await expect(
+        settings
+          .connect(randomAddress)
+          .setminWithdrawableFee(parseEther("0.002"))
+      ).to.be.revertedWith("U_A");
+    });
+    it("Should set bridge Supported Chain and fee", async () => {
+      await settings
+        .connect(owner)
+        .setNetworkSupportedChains(
+          [1, 2, 9],
+          [parseEther("0.01"), parseEther("0.02"), parseEther("0.09")],
+          true
+        );
+      const supoortedChain = await (
+        await settings.getNetworkSupportedChains()
+      ).toString();
+      expect(supoortedChain.includes("1")).to.be.true;
+      expect(supoortedChain.includes("2")).to.be.true;
+      expect(supoortedChain.includes("9")).to.be.true;
+      expect(await settings.networkFee(1)).to.be.equal(parseEther("0.01"));
+      expect(await settings.networkFee(2)).to.be.equal(parseEther("0.02"));
+      expect(await settings.networkFee(9)).to.be.equal(parseEther("0.09"));
+    });
+
+    it("Should revert if of length of chainId and fees does not match ", async () => {
+      await expect(
+        settings
+          .connect(owner)
+          .setNetworkSupportedChains(
+            [1, 2],
+            [parseEther("0.01"), parseEther("0.02"), parseEther("0.09")],
+            true
+          )
+      ).to.be.revertedWith("invalid");
+
+      await expect(
+        settings
+          .connect(owner)
+          .setNetworkSupportedChains(
+            [1, 2, 9],
+            [parseEther("0.01"), parseEther("0.02")],
+            true
+          )
+      ).to.be.revertedWith("invalid");
+    });
+    it("Should revert if fee is more than maximum fee threshold", async () => {
+      await expect(
+        settings
+          .connect(owner)
+          .setNetworkSupportedChains(
+            [1, 2, 9],
+            [parseEther("0.01"), parseEther("0.02"), parseEther("3000000")],
+            true
+          )
+      ).to.be.revertedWith("fee threshold Error");
+    });
+    it("Should update network fee", async () => {
+      await settings.connect(admin).updateNetworkFee(9, parseEther("0.05"));
+      expect(await settings.networkFee(9)).to.be.equal(parseEther("0.05"));
+    });
+    it("Should revert if update fee for a non supported chain", async () => {
+      await expect(
+        settings.connect(admin).updateNetworkFee(5, parseEther("0.05"))
+      ).to.be.revertedWith("not Supported");
+    });
+    it("Should revert if random address update fee", async () => {
+      await expect(
+        settings.connect(randomAddress).updateNetworkFee(2, parseEther("0.05"))
+      ).to.be.revertedWith("U_A");
+    });
+    it("Should set rail Owner rail fee", async () => {
+      await settings.connect(admin).setRailOwnerFeeShare(30);
+      expect(await settings.railOwnerFeeShare()).to.be.equal(30);
+    });
+    it("Should revert if rail is set by random Address", async () => {
+      await expect(
+        settings.connect(randomAddress).setRailOwnerFeeShare(40)
+      ).be.revertedWith("U_A");
+    });
+
+    it("Should set updatable asset state", async function () {
+      await settings.connect(admin).setUpdatableAssetState(false);
+      expect(await settings.updatableAssetState()).to.be.false;
+    });
+    it("Should set Only Ownable rail State", async function () {
+      await settings.connect(admin).setOnlyOwnableRailState(false);
+      expect(await settings.onlyOwnableRail()).to.be.false;
+    });
+
+    it("Should set rail registration fee", async function () {
+      await settings.connect(admin).setrailRegistrationFee(30);
+      expect(await settings.railRegistrationFee()).to.equal(30);
+    });
+    // it("", async () => {});
+    // it("", async () => {});
+    // it("", async () => {});
+    // it("", async () => {});
+    // it("", async () => {});
+    // it("", async () => {});
   });
 });

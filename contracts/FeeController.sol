@@ -37,14 +37,14 @@ contract FeeController {
         uint256 newBrgHoldingIncentive
     );
     modifier onlyOwner() {
-        require(controller.owner() == msg.sender, " caller is not the owner");
+        require(controller.owner() == msg.sender, "caller is not the owner");
         _;
     }
 
     modifier Admin() {
         require(
             controller.owner() == msg.sender || controller.isAdmin(msg.sender),
-            " caller is not the admin"
+            "caller is not the admin"
         );
         _;
     }
