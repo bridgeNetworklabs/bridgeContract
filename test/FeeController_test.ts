@@ -43,22 +43,39 @@ describe("FeeController", () => {
     const TokenContract = await ethers.getContractFactory("Token");
     asset1 = await TokenContract.deploy("AssetOne", "A1");
     const BrdgContract = await ethers.getContractFactory("Token");
-    brdgToken = await BrdgContract.connect(owner).deploy("Bridge Token", "brdg");
+    brdgToken = await BrdgContract.connect(owner).deploy(
+      "Bridge Token",
+      "brdg"
+    );
+  });
+
+  describe("Constructor", () => {
+    it("Should properly assign controller contract and settings contract", async () => {
+      expect(await feeController.controller()).to.be.equal(controller.address);
+      expect(await feeController.settings()).to.be.equal(settings.address);
+    });
   });
 
   describe("Bridge holding incentive", () => {
     it("Should activate bridge holding incentive ", async () => {
-      const tx = await feeController.connect(admin).activateBrgHoldingIncentive(true);
+      const tx = await feeController
+        .connect(admin)
+        .activateBrgHoldingIncentive(true);
       expect(await feeController.usebrgHoldingIncentive()).to.be.true;
-      expect(tx).emit(feeController, "BrgHoldingIncentiveStatusChanged").withArgs(true)
-      
+      expect(tx)
+        .emit(feeController, "BrgHoldingIncentiveStatusChanged")
+        .withArgs(true);
     });
 
     it("Should deactivate bridge holding incentive ", async () => {
       await feeController.connect(admin).activateBrgHoldingIncentive(true);
-      const tx =  await feeController.connect(admin).activateBrgHoldingIncentive(false);
+      const tx = await feeController
+        .connect(admin)
+        .activateBrgHoldingIncentive(false);
       expect(await feeController.usebrgHoldingIncentive()).to.be.false;
-      expect(tx).emit(feeController, "BrgHoldingIncentiveStatusChanged").withArgs(false)
+      expect(tx)
+        .emit(feeController, "BrgHoldingIncentiveStatusChanged")
+        .withArgs(false);
     });
 
     it("Should revert if random address tries to active bridge holding incentive ", async () => {
@@ -70,15 +87,23 @@ describe("FeeController", () => {
 
   describe("Asset incentive", () => {
     it("Should activate asset incentive ", async () => {
-      const tx = await feeController.connect(admin).activateAssetIncentive(true);
+      const tx = await feeController
+        .connect(admin)
+        .activateAssetIncentive(true);
       expect(await feeController.useAssetIncentive()).to.be.true;
-      expect(tx).emit(feeController, "AssetIncentiveStatusChanged").withArgs(true)
+      expect(tx)
+        .emit(feeController, "AssetIncentiveStatusChanged")
+        .withArgs(true);
     });
 
     it("Should deactivate asset incentive ", async () => {
       await feeController.connect(admin).activateAssetIncentive(true);
-      const tx = await feeController.connect(admin).activateAssetIncentive(false);
-      expect(tx).emit(feeController, "AssetIncentiveStatusChanged").withArgs(false)
+      const tx = await feeController
+        .connect(admin)
+        .activateAssetIncentive(false);
+      expect(tx)
+        .emit(feeController, "AssetIncentiveStatusChanged")
+        .withArgs(false);
       expect(await feeController.useAssetIncentive()).to.be.false;
     });
 
@@ -95,15 +120,23 @@ describe("FeeController", () => {
 
   describe("Address exemption", () => {
     it("Should activate address exemption ", async () => {
-      const tx = await feeController.connect(admin).activateAddressExemption(true);
-      expect(tx).emit(feeController, "AddressExemptionStatusChanged").withArgs(true)
+      const tx = await feeController
+        .connect(admin)
+        .activateAddressExemption(true);
+      expect(tx)
+        .emit(feeController, "AddressExemptionStatusChanged")
+        .withArgs(true);
       expect(await feeController.useExemption()).to.be.true;
     });
 
     it("Should deactivate address exemption ", async () => {
       await feeController.connect(admin).activateAddressExemption(true);
-      const tx = await feeController.connect(admin).activateAddressExemption(false);
-      expect(tx).emit(feeController, "AddressExemptionStatusChanged").withArgs(false)
+      const tx = await feeController
+        .connect(admin)
+        .activateAddressExemption(false);
+      expect(tx)
+        .emit(feeController, "AddressExemptionStatusChanged")
+        .withArgs(false);
       expect(await feeController.useExemption()).to.be.false;
     });
 
@@ -120,17 +153,24 @@ describe("FeeController", () => {
 
   describe("User Exemption", () => {
     it("Should exempt an address", async () => {
-      const tx = await feeController.connect(owner).exemptAddress(assetUser.address, true);
-      expect(tx).emit(feeController, "userExemptStatusChanged").withArgs(assetUser.address,true)
+      const tx = await feeController
+        .connect(owner)
+        .exemptAddress(assetUser.address, true);
+      expect(tx)
+        .emit(feeController, "userExemptStatusChanged")
+        .withArgs(assetUser.address, true);
       expect(await feeController.isExempted(assetUser.address)).to.be.true;
     });
 
     it("Should nonexempt an address", async () => {
       await feeController.connect(owner).exemptAddress(assetUser.address, true);
-      await feeController
+      const tx = await feeController
         .connect(owner)
         .exemptAddress(assetUser.address, false);
       expect(await feeController.isExempted(assetUser.address)).to.be.false;
+      expect(tx)
+        .emit(feeController, "userExemptStatusChanged")
+        .withArgs(assetUser.address, false);
     });
 
     it("Should revert if random address tries to exempt or nonexempt an address", async () => {
@@ -150,12 +190,15 @@ describe("FeeController", () => {
 
   describe("Asset incentivization", () => {
     it("Should set an asset incentivization", async () => {
-      await feeController
+      const tx = await feeController
         .connect(owner)
         .setAssetIncentivization(asset1.address, 40);
       expect(await feeController.assetIncentive(asset1.address)).to.be.equal(
         40
       );
+      expect(tx)
+        .emit(feeController, "AssetIncentiveUpdated")
+        .withArgs(assetUser.address, true);
     });
 
     it("Asset incentivization should not be more than 100", async () => {
@@ -175,8 +218,11 @@ describe("FeeController", () => {
 
   describe("Bridge Holding Threshold", () => {
     it("Should change bridge holding incentive threshold", async () => {
-      await feeController.connect(owner).setBrgHoldingThreshold(40);
+      const tx = await feeController.connect(owner).setBrgHoldingThreshold(40);
       expect(await feeController.brgHoldingThreshold()).to.be.equal(40);
+      expect(tx)
+        .emit(feeController, "BrgHoldingThresholdUpdated")
+        .withArgs(0, 40);
     });
 
     it("Should revert if not owner changing bridge holding incentive threshold", async () => {
@@ -188,8 +234,11 @@ describe("FeeController", () => {
 
   describe("Bridge Holding Incentive", () => {
     it("Should change bridge holding incentive", async () => {
-      await feeController.connect(owner).setBrgHoldingIncentive(40);
+      const tx = await feeController.connect(owner).setBrgHoldingIncentive(40);
       expect(await feeController.brgHoldingIncentive()).to.be.equal(40);
+      expect(tx)
+        .emit(feeController, "BrgHoldingIncentiveUpdated")
+        .withArgs(20, 40);
     });
 
     it("Should revert if bridge holding incentive is not less 100", async () => {
@@ -213,9 +262,11 @@ describe("FeeController", () => {
             [parseEther("0.01"), parseEther("0.02"), parseEther("0.09")],
             true
           );
-          
-        await settings.connect(owner).setbrgToken(brdgToken.address)
-         await brdgToken.connect(owner).transfer(assetUser2.address, parseEther("1000"))
+
+        await settings.connect(owner).setbrgToken(brdgToken.address);
+        await brdgToken
+          .connect(owner)
+          .transfer(assetUser2.address, parseEther("1000"));
       });
 
       it("Should return 0 if user is exempted and address exemption is activated", async () => {
@@ -229,27 +280,42 @@ describe("FeeController", () => {
       });
 
       it("Should get an incentive if asset holding incentive is active", async () => {
-        await feeController.connect(owner).activateAssetIncentive(true)
-        await feeController.connect(owner).setAssetIncentivization(asset1.address, 50)
+        await feeController.connect(owner).activateAssetIncentive(true);
+        await feeController
+          .connect(owner)
+          .setAssetIncentivization(asset1.address, 50);
         expect(
-          await feeController.getBridgeFee(assetUser2.address, asset1.address, 9)
+          await feeController.getBridgeFee(
+            assetUser2.address,
+            asset1.address,
+            9
+          )
         ).to.be.equal(parseEther("0.045"));
-      })
+      });
 
       it("Should get an incentive if user has more than brdg holding threshold and if bridge holding is active", async () => {
-        await feeController.connect(owner).activateBrgHoldingIncentive(true)
-        await feeController.connect(owner).setBrgHoldingThreshold(parseEther("80"))
+        await feeController.connect(owner).activateBrgHoldingIncentive(true);
+        await feeController
+          .connect(owner)
+          .setBrgHoldingThreshold(parseEther("80"));
         expect(
-          await feeController.getBridgeFee(assetUser2.address, asset1.address, 9)
+          await feeController.getBridgeFee(
+            assetUser2.address,
+            asset1.address,
+            9
+          )
         ).to.be.equal(parseEther("0.072"));
-      })
+      });
 
-      it("Should return the exact fee if there are no incentive",async () => {
+      it("Should return the exact fee if there are no incentive", async () => {
         expect(
-          await feeController.getBridgeFee(assetUser2.address, asset1.address, 9)
+          await feeController.getBridgeFee(
+            assetUser2.address,
+            asset1.address,
+            9
+          )
         ).to.be.equal(parseEther("0.09"));
-      })
+      });
     });
-
   });
 });

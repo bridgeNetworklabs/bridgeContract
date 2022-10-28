@@ -14,7 +14,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     Isettings public settings;
     IfeeController public feeController;
     Ibridge public bridge;
-    address feeRemitance;
+    address public feeRemitance;
     uint256 feePercentage;
     bool public paused;
     uint256 constant maxFeePercentage = 10;
@@ -156,7 +156,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address reciever
     ) public payable {
         require(validAsset(assetAddress), "Invalid Asset");
-        (bool success, uint256 _amount, uint gas) = preccessTransaction(
+        (bool success, uint256 _amount, uint gas) = processTransaction(
             assetAddress,
             chainID,
             msg.sender,
@@ -212,7 +212,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         return (amount - socketFee);
     }
 
-    function preccessTransaction(
+    function processTransaction(
         address assetAddress,
         uint256 chainID,
         address sender,
