@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/bridgeSocket.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> bridgeSocket.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">53.06% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>52/98</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">37.5% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>18/48</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">52.38% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>11/21</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">55.21% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>53/96</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.2;
+&nbsp;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./interface/Isettings.sol";
+import "./interface/IfeeController.sol";
+import "./interface/Ibridge.sol";
+&nbsp;
+contract BridgeSocket is Context, ReentrancyGuard, Ownable {
+    using SafeERC20 for IERC20;
+    Isettings public settings;
+    IfeeController public feeController;
+    Ibridge public bridge;
+    address public feeRemitance;
+    uint256 public feePercentage;
+    bool public paused;
+    uint256 constant maxFeePercentage = 10;
+&nbsp;
+    event feeUpdated(uint256 prevFee, uint256 currentFee);
+    event feeRemitanceUpdated(
+        address prevFeeRemitance,
+        address currentFeeRemitance
+    );
+    event socketUpdated(
+        address currentFeeController,
+        address currentSettings,
+        address currentBridge
+    );
+&nbsp;
+    event SendTransaction(
+        bytes32 transactionID,
+        uint256 chainID,
+        address indexed assetAddress,
+        uint256 sendAmount,
+        address indexed receiver,
+        address indexed sender
+    );
+&nbsp;
+    modifier notPaused() {
+        require(!paused, "Socket paused");
+        _;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getNativeAssetCount() public view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        (uint256 nativeAssetCount, , ) = bridge.getAssetCount();</span>
+<span class="cstat-no" title="statement not covered" >        return nativeAssetCount;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getForiegnAssetCount() public view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        (, uint256 foriegnAssetCount, ) = bridge.getAssetCount();</span>
+<span class="cstat-no" title="statement not covered" >        return foriegnAssetCount;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getDirectswapAssetCount() public view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        (, , uint256 directAssetCount) = bridge.getAssetCount();</span>
+<span class="cstat-no" title="statement not covered" >        return directAssetCount;</span>
+    }
+&nbsp;
+    function validAsset(address assetAddress) public view returns (bool) {
+        Ibridge.asset memory currentAsset;
+        currentAsset = bridge.nativeAssets(assetAddress);
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (currentAsset.isSet) {
+            return true;
+        }
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.foriegnAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+        } else <span class="cstat-no" title="statement not covered" >return false;</span>
+    }
+&nbsp;
+    function isNativeAsset(address assetAddress) public view returns (bool) {
+        Ibridge.asset memory currentAsset;
+        currentAsset = bridge.nativeAssets(assetAddress);
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (currentAsset.isSet) {
+            return true;
+        }
+<span class="cstat-no" title="statement not covered" >        return false;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function isForiegnAsset(address assetAddress) public view returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        Ibridge.asset memory currentAsset;</span>
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.foriegnAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+        } else <span class="cstat-no" title="statement not covered" >return false;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getAssetLimits(address assetAddress)</span>
+        public
+        view
+        returns (uint256, uint256)
+    {
+<span class="cstat-no" title="statement not covered" >        Ibridge.asset memory currentAsset;</span>
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.nativeAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return (currentAsset.minAmount, currentAsset.maxAmount);</span>
+        }
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.foriegnAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return (currentAsset.minAmount, currentAsset.maxAmount);</span>
+        } else <span class="cstat-no" title="statement not covered" >return (0, 0);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getSupportedChainIDs() public view returns (uint256[] memory) {</span>
+<span class="cstat-no" title="statement not covered" >        return settings.getNetworkSupportedChains();</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function isSupportedChain(uint256 chainID) public view returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        return settings.isNetworkSupportedChain(chainID);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getAsset(address assetAddress)</span>
+        public
+        view
+        returns (Ibridge.asset memory)
+    {
+<span class="cstat-no" title="statement not covered" >        Ibridge.asset memory currentAsset;</span>
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.nativeAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return currentAsset;</span>
+        }
+<span class="cstat-no" title="statement not covered" >        currentAsset = bridge.foriegnAssets(assetAddress)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentAsset.isSet) {</span>
+<span class="cstat-no" title="statement not covered" >            return currentAsset;</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >            return bridge.nativeAssets(assetAddress);</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getTransactionGas(address sender, address asset, uint256 chainTo)</span>
+        public
+        view
+        returns (uint256)
+    {
+<span class="cstat-no" title="statement not covered" >        return feeController.getBridgeFee(sender, asset, chainTo);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getTransactionFee(uint256 amount) public view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        if (feePercentage == 0 || amount == 0) {</span>
+<span class="cstat-no" title="statement not covered" >            return 0;</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >            return (feePercentage * amount) / 10000;</span>
+        }
+    }
+&nbsp;
+    function bridgeAsset(
+        address assetAddress,
+        uint256 chainID,
+        uint256 amount,
+        address reciever
+    ) public payable notPaused {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(validAsset(assetAddress), "Invalid Asset");
+        (bool success, uint256 _amount, uint gas) = processTransaction(
+            assetAddress,
+            chainID,
+            msg.sender,
+            amount
+        );
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(success &amp;&amp; _amount &gt; 0, "Insuficient funds");
+        _amount = processFees(_amount, assetAddress);
+        bytes32 transactionID;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (isNativeAsset(assetAddress)) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (assetAddress == address(0)) {
+<span class="cstat-no" title="statement not covered" >                transactionID = bridge.send{value: gas + _amount}(</span>
+                    chainID,
+                    assetAddress,
+                    _amount,
+                    reciever
+                );
+            } else {
+                IERC20 token = IERC20(assetAddress);
+                token.approve(address(bridge), _amount);
+                transactionID = bridge.send{value: gas}(
+                    chainID,
+                    assetAddress,
+                    _amount,
+                    reciever
+                );
+            }
+        } else {
+<span class="cstat-no" title="statement not covered" >            transactionID = bridge.burn{value: gas}(</span>
+                assetAddress,
+                _amount,
+                reciever
+            );
+        }
+&nbsp;
+        emit SendTransaction(
+            transactionID,
+            chainID,
+            assetAddress,
+            _amount,
+            reciever,
+            msg.sender
+        );
+    }
+&nbsp;
+    function processFees(uint256 amount, address assetAddress)
+        private
+        returns (uint256)
+    {
+        uint256 baseFeePercentage = settings.baseFeePercentage();
+        uint256 baseFee = (amount * baseFeePercentage) / 10000;
+        uint256 socketFee = ((amount - baseFee) * feePercentage) / 10000;
+        payoutUser(payable(feeRemitance), assetAddress, socketFee);
+        return (amount - socketFee);
+    }
+&nbsp;
+    function processTransaction(
+        address assetAddress,
+        uint256 chainID,
+        address sender,
+        uint256 amount
+    ) internal returns (bool, uint256, uint256) {
+        uint256 gas = feeController.getBridgeFee(sender, assetAddress, chainID);
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (assetAddress == address(0)) {
+<span class="cstat-no" title="statement not covered" >            if (msg.value &gt;= amount + gas &amp;&amp; msg.value &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                uint256 value = msg.value - gas;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                return (true, value, gas);</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                return (false, 0, 0);</span>
+            }
+        } else {
+            IERC20 token = IERC20(assetAddress);
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (
+                token.allowance(_msgSender(), address(this)) &gt;= amount &amp;&amp;
+                (msg.value &gt;= gas)
+            ) {
+                uint256 balanceBefore = token.balanceOf(address(this));
+                token.safeTransferFrom(_msgSender(), address(this), amount);
+                uint256 balanceAfter = token.balanceOf(address(this));
+                return (true, balanceAfter - balanceBefore, gas);
+            } else {
+<span class="cstat-no" title="statement not covered" >                return (false, 0, gas);</span>
+            }
+        }
+    }
+&nbsp;
+    function payoutUser(
+        address payable recipient,
+        address _paymentMethod,
+        uint256 amount
+    ) private {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(recipient != address(0), "invalid recipient");
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (_paymentMethod == address(0)) {
+<span class="cstat-no" title="statement not covered" >            recipient.transfer(amount)</span>;
+        } else {
+            IERC20 currentPaymentMethod = IERC20(_paymentMethod);
+            currentPaymentMethod.safeTransfer(recipient, amount);
+        }
+    }
+&nbsp;
+    function updateFee(uint256 fee) public onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(fee &lt;= maxFeePercentage, "Value above max value");
+        feeUpdated(feePercentage, fee);
+        feePercentage = fee;
+    }
+&nbsp;
+    function updateFeeRemitance(address _feeRemitance) public onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(feeRemitance != _feeRemitance, "already set");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_feeRemitance != address(0), "invalid Address");
+        feeRemitanceUpdated(_feeRemitance, feeRemitance);
+        feeRemitance = _feeRemitance;
+    }
+&nbsp;
+    function pauseSocket() public onlyOwner {
+        require(
+            address(feeController) != address(0) ||
+                address(settings) != address(0) ||
+                address(bridge) != address(0),
+            "socket not set"
+        );
+        paused = !paused;
+    }
+&nbsp;
+    function updateSocket(
+        IfeeController _feecontroller,
+        Isettings _settings,
+        Ibridge _bridge
+    ) public onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(
+            address(_feecontroller) != address(0) ||
+                address(_settings) != address(0) ||
+                address(_bridge) != address(0),
+            "invalid address"
+        );
+        settings = _settings;
+        feeController = _feecontroller;
+        bridge = _bridge;
+        paused = false;
+        socketUpdated(
+            address(_feecontroller),
+            address(_settings),
+            address(_bridge)
+        );
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 01 2022 08:31:15 GMT+0100 (West Africa Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

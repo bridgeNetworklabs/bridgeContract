@@ -15,7 +15,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     IfeeController public feeController;
     Ibridge public bridge;
     address public feeRemitance;
-    uint256 feePercentage;
+    uint256 public feePercentage;
     bool public paused;
     uint256 constant maxFeePercentage = 10;
 
@@ -38,6 +38,11 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address indexed receiver,
         address indexed sender
     );
+
+    modifier notPaused() {
+        require(!paused, "Socket paused");
+        _;
+    }
 
     function getNativeAssetCount() public view returns (uint256) {
         (uint256 nativeAssetCount, , ) = bridge.getAssetCount();
@@ -154,7 +159,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         uint256 chainID,
         uint256 amount,
         address reciever
-    ) public payable {
+    ) public payable notPaused {
         require(validAsset(assetAddress), "Invalid Asset");
         (bool success, uint256 _amount, uint gas) = processTransaction(
             assetAddress,

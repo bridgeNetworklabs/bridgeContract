@@ -72,6 +72,7 @@ export interface BridgeSocketInterface extends utils.Interface {
     "bridge()": FunctionFragment;
     "bridgeAsset(address,uint256,uint256,address)": FunctionFragment;
     "feeController()": FunctionFragment;
+    "feePercentage()": FunctionFragment;
     "feeRemitance()": FunctionFragment;
     "getAsset(address)": FunctionFragment;
     "getAssetLimits(address)": FunctionFragment;
@@ -101,6 +102,7 @@ export interface BridgeSocketInterface extends utils.Interface {
       | "bridge"
       | "bridgeAsset"
       | "feeController"
+      | "feePercentage"
       | "feeRemitance"
       | "getAsset"
       | "getAssetLimits"
@@ -137,6 +139,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "feeController",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "feePercentage",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -234,6 +240,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "feeController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "feePercentage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -423,6 +433,8 @@ export interface BridgeSocket extends BaseContract {
 
     feeController(overrides?: CallOverrides): Promise<[string]>;
 
+    feePercentage(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     feeRemitance(overrides?: CallOverrides): Promise<[string]>;
 
     getAsset(
@@ -524,6 +536,8 @@ export interface BridgeSocket extends BaseContract {
 
   feeController(overrides?: CallOverrides): Promise<string>;
 
+  feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
+
   feeRemitance(overrides?: CallOverrides): Promise<string>;
 
   getAsset(
@@ -624,6 +638,8 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<void>;
 
     feeController(overrides?: CallOverrides): Promise<string>;
+
+    feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     feeRemitance(overrides?: CallOverrides): Promise<string>;
 
@@ -777,6 +793,8 @@ export interface BridgeSocket extends BaseContract {
 
     feeController(overrides?: CallOverrides): Promise<BigNumber>;
 
+    feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
+
     feeRemitance(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAsset(
@@ -878,6 +896,8 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     feeController(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feePercentage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     feeRemitance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

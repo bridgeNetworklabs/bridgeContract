@@ -117,9 +117,21 @@ describe("BridgeSocket", () => {
         .withArgs(ethers.constants.AddressZero, feeRemittance.address);
     });
 
-    it("Should update the fee remittance address", async () => {
+    it("Should revert if a random address tries to update the fee remittance address", async () => {
       await expect(
         socket.connect(randomAddress).updateFeeRemitance(feeRemittance.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+  });
+
+  describe("UpdateFee", () => {
+    it("Should update the socket fee", async () => {
+      await socket.connect(owner).updateFee(1);
+      expect(await socket.feePercentage()).to.be.equal(1);
+    });
+    it("Should revert if a random address tries to update the update fee", async () => {
+      await expect(
+        socket.connect(randomAddress).updateFee(feeRemittance.address)
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
@@ -199,18 +211,67 @@ describe("BridgeSocket", () => {
           assetOwner.address
         );
     });
+
+    it("Should revert when socket is paused", async () => {
+      await socket
+        .connect(owner)
+        .updateSocket(feeController.address, settings.address, bridge.address);
+      //console.log(await bridge.nativeAssets(asset1.address))
+      await asset1
+        .connect(assetOwner)
+        .approve(socket.address, parseEther("100"));
+      await socket.connect(owner).updateFeeRemitance(feeRemittance.address);
+      await socket.connect(owner).pauseSocket();
+
+      await expect(
+        socket
+          .connect(assetOwner)
+          .bridgeAsset(
+            asset1.address,
+            2,
+            parseEther("0.02"),
+            randomAddress.address,
+            { value: parseEther("0.01") }
+          )
+      ).to.be.revertedWith("Socket paused");
+    });
+
+    it("Should the right amount to th fee remittance address", async () => {
+      await socket
+        .connect(owner)
+        .updateSocket(feeController.address, settings.address, bridge.address);
+      await socket.connect(owner).updateFee(1);
+      await asset1
+        .connect(assetOwner)
+        .approve(socket.address, parseEther("100"));
+      await socket.connect(owner).updateFeeRemitance(feeRemittance.address);
+      const tx = await socket
+        .connect(assetOwner)
+        .bridgeAsset(
+          asset1.address,
+          2,
+          parseEther("0.02"),
+          randomAddress.address,
+          { value: parseEther("0.01") }
+        );
+      expect(await asset1.balanceOf(feeRemittance.address)).to.be.equal(
+        parseEther("0.000001998")
+      );
+    });
   });
 
   describe("pauseSocket", () => {
     it("Should be revert because socket is not set", async () => {
-      await expect(socket.connect(owner).pauseSocket()).to.be.revertedWith("socket not set")
-    })
+      await expect(socket.connect(owner).pauseSocket()).to.be.revertedWith(
+        "socket not set"
+      );
+    });
     it("Should be able to pause when socket is set", async () => {
       await socket
         .connect(owner)
         .updateSocket(feeController.address, settings.address, bridge.address);
-      await socket.connect(owner).pauseSocket()
-      expect(await socket.paused()).to.be.true
-    })
-  })
+      await socket.connect(owner).pauseSocket();
+      expect(await socket.paused()).to.be.true;
+    });
+  });
 });

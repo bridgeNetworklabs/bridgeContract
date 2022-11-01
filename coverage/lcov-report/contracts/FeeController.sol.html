@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/FeeController.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> FeeController.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95.45% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>42/44</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">72.22% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>26/36</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>12/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95.56% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>43/45</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">270×</span>
+<span class="cline-any cline-yes">270×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.2;
+&nbsp;
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interface/Isettings.sol";
+import "./interface/Icontroller.sol";
+&nbsp;
+contract FeeController {
+    IController public controller;
+    Isettings public settings;
+    mapping(address =&gt; bool) public isExempted;
+    uint256 public brgHoldingThreshold;
+    uint256 public brgHoldingIncentive = 20;
+&nbsp;
+    mapping(address =&gt; uint256) public assetIncentive;
+&nbsp;
+    bool public useExemption;
+    bool public usebrgHoldingIncentive;
+    bool public useAssetIncentive;
+    uint256 public minUpdateDelay;
+&nbsp;
+    event BrgHoldingIncentiveStatusChanged(bool status);
+    event AssetIncentiveStatusChanged(bool status);
+    event AddressExemptionStatusChanged(bool status);
+    event AssetIncentiveUpdated(
+        address indexed asset,
+        uint256 oldIncentive,
+        uint256 newIncentive
+    );
+    event userExemptStatusChanged(address indexed user, bool exemptionStatus);
+    event BrgHoldingThresholdUpdated(
+        uint256 prevBrgHoldingThreshold,
+        uint256 newBrgHoldingThreshold
+    );
+    event BrgHoldingIncentiveUpdated(
+        uint256 prevBrgHoldingIncentive,
+        uint256 newBrgHoldingIncentive
+    );
+    modifier onlyOwner() {
+        require(controller.owner() == msg.sender, "caller is not the owner");
+        _;
+    }
+&nbsp;
+    modifier Admin() {
+        require(
+            controller.owner() == msg.sender || controller.isAdmin(msg.sender),
+            "caller is not the admin"
+        );
+        _;
+    }
+&nbsp;
+    constructor(IController _controller, Isettings _settings) {
+        controller = _controller;
+        settings = _settings;
+    }
+&nbsp;
+    function activateBrgHoldingIncentive(bool status) public Admin {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(usebrgHoldingIncentive != status, "already set");
+        emit BrgHoldingIncentiveStatusChanged(status);
+        usebrgHoldingIncentive = status;
+    }
+&nbsp;
+    function activateAssetIncentive(bool status) public Admin {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(useAssetIncentive != status, "already set");
+        emit AssetIncentiveStatusChanged(status);
+        useAssetIncentive = status;
+    }
+&nbsp;
+    function activateAddressExemption(bool status) public Admin {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(useExemption != status, "already set");
+        AddressExemptionStatusChanged(status);
+        useExemption = status;
+    }
+&nbsp;
+    function exemptAddress(address user, bool status) external onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(isExempted[user] != status, "already set");
+        emit userExemptStatusChanged(user, status);
+        isExempted[user] = status;
+    }
+&nbsp;
+    function setAssetIncentivization(address asset, uint256 incentive)
+        external
+        onlyOwner
+    {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(assetIncentive[asset] != incentive, "already set");
+        require(incentive + brgHoldingIncentive &lt; 100, "above limit");
+        emit AssetIncentiveUpdated(asset, assetIncentive[asset], incentive);
+        assetIncentive[asset] = incentive;
+    }
+&nbsp;
+    function setBrgHoldingThreshold(uint256 threshold) external onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(brgHoldingThreshold != threshold, "already set");
+        emit BrgHoldingThresholdUpdated(brgHoldingThreshold, threshold);
+        brgHoldingThreshold = threshold;
+    }
+&nbsp;
+    function setBrgHoldingIncentive(uint256 incentive) external onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(brgHoldingIncentive != incentive, "already set");
+        require(incentive &lt; 100, "above limit");
+        emit BrgHoldingIncentiveUpdated(brgHoldingIncentive, incentive);
+        brgHoldingIncentive = incentive;
+    }
+&nbsp;
+    function getBridgeFee(address sender, address asset, uint256 chainTo)
+        external
+        view
+        returns (uint256)
+    {
+        uint256 fees = settings.networkFee(chainTo);
+        uint256 totalIncentive;
+        if (useExemption &amp;&amp; isExempted[sender]) {
+            return 0;
+        }
+        if (usebrgHoldingIncentive) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (
+                IERC20(settings.brgToken()).balanceOf(sender) &gt;=
+                brgHoldingThreshold
+            ) {
+                totalIncentive += brgHoldingIncentive;
+            }
+        }
+        if (useAssetIncentive &amp;&amp; assetIncentive[asset] &gt; 0) {
+            totalIncentive += assetIncentive[asset];
+        }
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (totalIncentive &gt;= 100) {
+<span class="cstat-no" title="statement not covered" >            return 0;</span>
+        } else if (totalIncentive == 0) {
+            return fees;
+        } else {
+            return fees - getIncentive(fees, totalIncentive);
+        }
+    }
+&nbsp;
+    function getIncentive(uint256 fee, uint256 incentive)
+        public
+        pure
+        returns (uint256)
+    {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (incentive &gt; 100 || incentive == 0) {
+<span class="cstat-no" title="statement not covered" >            return 0;</span>
+        } else {
+            return (incentive * fee) / 100;
+        }
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 01 2022 08:31:15 GMT+0100 (West Africa Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/Controller.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> Controller.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>54/54</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88.24% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>30/34</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>10/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>55/55</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">192×</span>
+<span class="cline-any cline-yes">186×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">276×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">349×</span>
+<span class="cline-any cline-yes">347×</span>
+<span class="cline-any cline-yes">346×</span>
+<span class="cline-any cline-yes">346×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">348×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30×</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">126×</span>
+<span class="cline-any cline-yes">124×</span>
+<span class="cline-any cline-yes">123×</span>
+<span class="cline-any cline-yes">123×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">125×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.2;
+&nbsp;
+import "@openzeppelin/contracts/access/Ownable.sol";
+&nbsp;
+contract Controller is Ownable {
+    mapping(address =&gt; bool) public isAdmin;
+    mapping(address =&gt; bool) public isRegistrar;
+    mapping(address =&gt; bool) public isOracle;
+    mapping(address =&gt; bool) public isValidator;
+    address[] public validators;
+    address[] public admins;
+    address[] public oracles;
+    address[] public registrars;
+&nbsp;
+    event AdminAdded(address indexed admin);
+    event AdminRemoved(address indexed admin);
+    event RegistrarAdded(address indexed registrar);
+    event RegistrarRemoved(address indexed registrar);
+    event OracleAdded(address indexed oracle);
+    event OracleRemoved(address indexed oracle);
+    event ValidatorAdded(address indexed validator);
+    event ValidatorRemoved(address indexed validator);
+&nbsp;
+    modifier onlyAdmin() {
+        require(isAdmin[_msgSender()] || owner() == _msgSender(), "U_A");
+        _;
+    }
+&nbsp;
+    constructor() {
+        // isAdmin[_msgSender()] = true;
+        addAdmin(_msgSender(), true);
+    }
+&nbsp;
+    function addAdmin(address _admin, bool add) public onlyOwner {
+        if (add) {
+            require(!isAdmin[_admin], "already an admin");
+            emit AdminAdded(_admin);
+            admins.push(_admin);
+        } else {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(isAdmin[_admin], "not an admin");
+            uint256 adminLength = admins.length;
+            for (uint256 index; index &lt; adminLength; index++) {
+                if (admins[index] == _admin) {
+                    admins[index] = admins[adminLength - 1];
+                    admins.pop();
+                }
+            }
+            emit AdminRemoved(_admin);
+        }
+        isAdmin[_admin] = add;
+    }
+&nbsp;
+    function addRegistrar(address _registrar, bool add) external onlyAdmin {
+        if (add) {
+            require(!isRegistrar[_registrar], "already a Registrer");
+            emit RegistrarAdded(_registrar);
+            registrars.push(_registrar);
+        } else {
+            uint256 registrarLength = registrars.length;
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(isRegistrar[_registrar], "not a Registrer");
+            for (uint256 index; index &lt; registrarLength; index++) {
+                if (registrars[index] == _registrar) {
+                    registrars[index] = registrars[registrarLength - 1];
+                    registrars.pop();
+                }
+            }
+            emit RegistrarRemoved(_registrar);
+        }
+        isRegistrar[_registrar] = add;
+    }
+&nbsp;
+    function addOracle(address _oracle, bool add) external onlyAdmin {
+        if (add) {
+            require(!isOracle[_oracle], "already an oracle");
+            emit OracleAdded(_oracle);
+            oracles.push(_oracle);
+        } else {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(isOracle[_oracle], "not an oracle");
+            uint256 oracleLength = oracles.length;
+            for (uint256 index; index &lt; oracleLength; index++) {
+                if (oracles[index] == _oracle) {
+                    oracles[index] = oracles[oracleLength - 1];
+                    oracles.pop();
+                }
+            }
+            emit OracleRemoved(_oracle);
+        }
+        isOracle[_oracle] = add;
+    }
+&nbsp;
+    function addValidator(address _validator, bool add) external onlyAdmin {
+        if (add) {
+            require(!isValidator[_validator], "already a Validator");
+            emit ValidatorAdded(_validator);
+            validators.push(_validator);
+        } else {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(isValidator[_validator], "not a Validator");
+            uint256 validatorLength = validators.length;
+            for (uint256 index; index &lt; validatorLength; index++) {
+                if (validators[index] == _validator) {
+                    validators[index] = validators[validatorLength - 1];
+                    validators.pop();
+                }
+            }
+            emit ValidatorRemoved(_validator);
+        }
+        isValidator[_validator] = add;
+    }
+&nbsp;
+    function validatorsCount() public view returns (uint256) {
+        return validators.length;
+    }
+&nbsp;
+    function oraclesCount() public view returns (uint256) {
+        return oracles.length;
+    }
+&nbsp;
+    function adminsCount() public view returns (uint256) {
+        return admins.length;
+    }
+&nbsp;
+    function registrarsCount() public view returns (uint256) {
+        return registrars.length;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 01 2022 08:31:15 GMT+0100 (West Africa Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
