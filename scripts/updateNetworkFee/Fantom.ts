@@ -10,26 +10,26 @@ async function main() {
     const network = data.networks
     let settingAddress;
     for(let i = 0; i < network.length; i++) {
-        if(network[i].chain_id == "321"){
+        if(network[i].chain_id == "250"){
             settingAddress = network[i].settings_address;
         }
     }
-    const fees = fs.readFileSync("./netWorkFees/kcs.json")
+    const fees = fs.readFileSync("./netWorkFees/ftm.json")
     const config = JSON.parse(fees.toString())
     const chainId = []
-    const bnbValue = []
+    const ftmValue = []
     /// making sure you don't add the chainId of the chain
     for(let i = 0; i < config.length; i++){
-        if(config[i].chainId != "321"){
+        if(config[i].chainId != "250"){
             chainId.push(Number(config[i].chainId))
-            bnbValue.push(parseEther(config[i].kcsValue.toFixed(8)))
+            ftmValue.push(parseEther(config[i].ftmValue))
         }
     }
     const settingsContract = await ethers.getContractAt("Settings", settingAddress)
     await settingsContract.setNetworkSupportedChains(
-        chainId,bnbValue,true
+        chainId,ftmValue,true
     )
-    console.log("updated fee on ethereum successfully")
+    console.log("updated fee on Fantom Opera successfully")
 }
 
 

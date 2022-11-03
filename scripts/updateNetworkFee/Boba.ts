@@ -8,26 +8,26 @@ async function main() {
     const network = data.networks
     let settingAddress;
     for(let i = 0; i < network.length; i++) {
-        if(network[i].chain_id == "10"){
+        if(network[i].chain_id == "288"){
             settingAddress = network[i].settings_address;
         }
     }
     const fees = fs.readFileSync("./netWorkFees/eth.json")
     const config = JSON.parse(fees.toString())
     const chainId = []
-    const bnbValue = []
+    const ethValue = []
     /// making sure you don't add the chainId of the chain
     for(let i = 0; i < config.length; i++){
-        if(config[i].chainId != "10"){
+        if(config[i].chainId != "288"){
             chainId.push(Number(config[i].chainId))
-            bnbValue.push(parseEther(config[i].bnbValue.toFixed(8)))
+            ethValue.push(parseEther(config[i].ethValue.toFixed(8)))
         }
     }
     const settingsContract = await ethers.getContractAt("Settings", settingAddress)
     await settingsContract.setNetworkSupportedChains(
-        chainId,bnbValue,true
+        chainId,ethValue,true
     )
-    console.log("updated fee on Optimism successfully")
+    console.log("updated fee on Boba Mainnet successfully")
 }
 
 
