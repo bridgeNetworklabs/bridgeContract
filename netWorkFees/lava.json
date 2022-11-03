@@ -1,0 +1,62 @@
+[
+  {
+    "chainId": "321",
+    "lavaValue": 0.06769
+  },
+  {
+    "chainId": "56",
+    "lavaValue": 10.813649999999999
+  },
+  {
+    "chainId": "42161",
+    "lavaValue": 2.0410399999999997
+  },
+  {
+    "chainId": "10",
+    "lavaValue": 4.5404
+  },
+  {
+    "chainId": "1",
+    "lavaValue": 107.38816999999999
+  },
+  {
+    "chainId": "250",
+    "lavaValue": 0.006449999999999999
+  },
+  {
+    "chainId": "43114",
+    "lavaValue": 2.8878199999999996
+  },
+  {
+    "chainId": "137",
+    "lavaValue": 0.31911
+  },
+  {
+    "chainId": "288",
+    "lavaValue": 13.566189999999999
+  },
+  {
+    "chainId": "66",
+    "lavaValue": 0.01028
+  },
+  {
+    "chainId": "1666600000",
+    "lavaValue": 0.01175
+  },
+  {
+    "chainId": "42170",
+    "lavaValue": 1.0129
+  },
+  {
+    "chainId": "2000",
+    "lavaValue": 0.043039999999999995
+  },
+  {
+    "chainId": "1338",
+    "lavaValue": 0.0006
+  },
+  {
+    "chainId": "43288",
+    "lavaValue": 0.10226
+  }
+]

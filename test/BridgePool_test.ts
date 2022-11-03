@@ -10,7 +10,7 @@ import type {
   Registry,
   BridgeSocket,
   Token,
-  WrappedToken
+  WrappedToken,
 } from "../typechain-types";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
@@ -36,7 +36,7 @@ describe("BridgePool", () => {
   let assetToken: Token;
   let brdg: Token;
   let pendingBridge: SignerWithAddress;
-  let wrappedAsset:WrappedToken
+  let wrappedAsset: WrappedToken;
 
   beforeEach(async () => {
     [
@@ -271,7 +271,9 @@ describe("BridgePool", () => {
 
     it("Should deposit successfully", async () => {
       await pool.connect(owner).initializePool(bridge.address);
-      await assetToken.connect(assetOwner).approve(pool.address,ethers.constants.MaxUint256)
+      await assetToken
+        .connect(assetOwner)
+        .approve(pool.address, ethers.constants.MaxUint256);
       await pool
         .connect(owner)
         .createPool(assetToken.address, parseEther("100"));
@@ -288,7 +290,7 @@ describe("BridgePool", () => {
     });
   });
 
-  describe("withdraw",() => {
+  describe("withdraw", () => {
     it("Should revert if pool is not initialized", async () => {
       await expect(
         pool.connect(assetOwner).withdraw(assetToken.address, parseEther("10"))
@@ -304,25 +306,27 @@ describe("BridgePool", () => {
 
     it("Should withdraw successfully", async () => {
       await pool.connect(owner).initializePool(bridge.address);
-      await assetToken.connect(assetOwner).approve(pool.address,ethers.constants.MaxUint256)
+      await assetToken
+        .connect(assetOwner)
+        .approve(pool.address, ethers.constants.MaxUint256);
       await pool
         .connect(owner)
         .createPool(assetToken.address, parseEther("100"));
       await pool
         .connect(assetOwner)
         .deposit(assetToken.address, parseEther("1"));
-      const wrappedAddress =  (await pool.pools(assetToken.address)).wrappedAsset
-      wrappedAsset = await ethers.getContractAt("WrappedToken",wrappedAddress)
-      await wrappedAsset.connect(assetOwner).approve(pool.address, ethers.constants.MaxUint256)
-      const tx = await pool.connect(assetOwner).withdraw(assetToken.address, parseEther("1"))
+      const wrappedAddress = (await pool.pools(assetToken.address))
+        .wrappedAsset;
+      wrappedAsset = await ethers.getContractAt("WrappedToken", wrappedAddress);
+      await wrappedAsset
+        .connect(assetOwner)
+        .approve(pool.address, ethers.constants.MaxUint256);
+      const tx = await pool
+        .connect(assetOwner)
+        .withdraw(assetToken.address, parseEther("1"));
       expect(tx)
         .to.emit(pool, "AssetWithdrawn")
-        .withArgs(
-          assetToken.address,
-          assetOwner.address,
-          parseEther("1")
-        );
+        .withArgs(assetToken.address, assetOwner.address, parseEther("1"));
     });
-
-  })
+  });
 });

@@ -1,0 +1,62 @@
+[
+  {
+    "chainId": "321",
+    "amountUsd": 0.006769
+  },
+  {
+    "chainId": "56",
+    "amountUsd": 1.081365
+  },
+  {
+    "chainId": "42161",
+    "amountUsd": 0.204104
+  },
+  {
+    "chainId": "10",
+    "amountUsd": 0.45404
+  },
+  {
+    "chainId": "1",
+    "amountUsd": 10.738817
+  },
+  {
+    "chainId": "250",
+    "amountUsd": 0.000645
+  },
+  {
+    "chainId": "43114",
+    "amountUsd": 0.288782
+  },
+  {
+    "chainId": "137",
+    "amountUsd": 0.031911
+  },
+  {
+    "chainId": "288",
+    "amountUsd": 1.356619
+  },
+  {
+    "chainId": "66",
+    "amountUsd": 0.001028
+  },
+  {
+    "chainId": "1666600000",
+    "amountUsd": 0.001175
+  },
+  {
+    "chainId": "42170",
+    "amountUsd": 0.10129
+  },
+  {
+    "chainId": "2000",
+    "amountUsd": 0.004304
+  },
+  {
+    "chainId": "1338",
+    "amountUsd": 0.00006
+  },
+  {
+    "chainId": "43288",
+    "amountUsd": 0.010226
+  }
+]

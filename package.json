@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",
-    "hardhat": "^2.10.1"
+    "hardhat": "^2.10.1",
+    "isomorphic-unfetch": "^3.1.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
