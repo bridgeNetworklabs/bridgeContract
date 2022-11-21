@@ -51,14 +51,15 @@ contract BridgeSocket is Context , ReentrancyGuard , Ownable{
      bridge = _bridge;
      feeRemitance = _feeRemittance;
     }
-    function getNativeAssetCount() public view returns (uint256) {
-        return bridge.getAssetCount()[0];
+    function getNativeAssetCount() public view returns (uint256 native) {
+        (native, ,) = bridge.getAssetCount();
+      
     }
-    function getForiegnAssetCount() public view returns (uint256)  {
-        return bridge.getAssetCount()[1];
+    function getForiegnAssetCount() public view returns (uint256 foriegn)  {
+        (, foriegn,) = bridge.getAssetCount();
     }
-    function getDirectswapAssetCount() public view returns (uint256)  {
-        return bridge.getAssetCount()[2];
+    function getDirectswapAssetCount() public view returns (uint256 direct)  {
+        (, ,direct) = bridge.getAssetCount();
     }
     function validAsset(address assetAddress) public view returns ( bool ){
         Ibridge.asset memory currentAsset;

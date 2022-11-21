@@ -80,7 +80,7 @@ describe("BridgeSocket", () => {
     const BridgeSocketContract = await ethers.getContractFactory(
       "BridgeSocket"
     );
-    socket = await BridgeSocketContract.connect(owner).deploy();
+    socket = await BridgeSocketContract.connect(owner).deploy(randomAddress.address, randomAddress.address, randomAddress.address ,  randomAddress.address);
     await registry.connect(owner).transferOwnership(bridge.address);
   });
 
@@ -88,8 +88,9 @@ describe("BridgeSocket", () => {
     it("Should update socket contract", async () => {
       const tx = await socket
         .connect(owner)
-        .updateSocket(feeController.address, settings.address, bridge.address);
+        .updateSocket( feeController.address, settings.address, bridge.address);
       expect(tx)
+      
         .emit(deployer, "socketUpdated")
         .withArgs(feeController.address, settings.address, bridge.address);
       expect(await socket.bridge()).to.be.equal(bridge.address);
@@ -261,11 +262,7 @@ describe("BridgeSocket", () => {
   });
 
   describe("pauseSocket", () => {
-    it("Should be revert because socket is not set", async () => {
-      await expect(socket.connect(owner).pauseSocket()).to.be.revertedWith(
-        "socket not set"
-      );
-    });
+    
     it("Should be able to pause when socket is set", async () => {
       await socket
         .connect(owner)

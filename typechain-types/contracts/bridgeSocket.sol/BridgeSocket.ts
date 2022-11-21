@@ -82,9 +82,11 @@ export interface BridgeSocketInterface extends utils.Interface {
     "getSupportedChainIDs()": FunctionFragment;
     "getTransactionFee(uint256)": FunctionFragment;
     "getTransactionGas(address,address,uint256)": FunctionFragment;
+    "innitialized()": FunctionFragment;
     "isForiegnAsset(address)": FunctionFragment;
     "isNativeAsset(address)": FunctionFragment;
     "isSupportedChain(uint256)": FunctionFragment;
+    "maxFeePercentage()": FunctionFragment;
     "owner()": FunctionFragment;
     "pauseSocket()": FunctionFragment;
     "paused()": FunctionFragment;
@@ -112,9 +114,11 @@ export interface BridgeSocketInterface extends utils.Interface {
       | "getSupportedChainIDs"
       | "getTransactionFee"
       | "getTransactionGas"
+      | "innitialized"
       | "isForiegnAsset"
       | "isNativeAsset"
       | "isSupportedChain"
+      | "maxFeePercentage"
       | "owner"
       | "pauseSocket"
       | "paused"
@@ -186,6 +190,10 @@ export interface BridgeSocketInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "innitialized",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isForiegnAsset",
     values: [PromiseOrValue<string>]
   ): string;
@@ -196,6 +204,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "isSupportedChain",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "maxFeePercentage",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -280,6 +292,10 @@ export interface BridgeSocketInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "innitialized",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "isForiegnAsset",
     data: BytesLike
   ): Result;
@@ -289,6 +305,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "isSupportedChain",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "maxFeePercentage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -447,11 +467,17 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
-    getDirectswapAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getDirectswapAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { direct: BigNumber }>;
 
-    getForiegnAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getForiegnAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { foriegn: BigNumber }>;
 
-    getNativeAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getNativeAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { native: BigNumber }>;
 
     getSupportedChainIDs(overrides?: CallOverrides): Promise<[BigNumber[]]>;
 
@@ -467,6 +493,8 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    innitialized(overrides?: CallOverrides): Promise<[boolean]>;
+
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -481,6 +509,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -570,6 +600,8 @@ export interface BridgeSocket extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  innitialized(overrides?: CallOverrides): Promise<boolean>;
+
   isForiegnAsset(
     assetAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -584,6 +616,8 @@ export interface BridgeSocket extends BaseContract {
     chainID: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -673,6 +707,8 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    innitialized(overrides?: CallOverrides): Promise<boolean>;
+
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -687,6 +723,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -827,6 +865,8 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    innitialized(overrides?: CallOverrides): Promise<BigNumber>;
+
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -841,6 +881,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -939,6 +981,8 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    innitialized(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -953,6 +997,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

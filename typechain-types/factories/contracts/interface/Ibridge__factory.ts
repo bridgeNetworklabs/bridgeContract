@@ -42,6 +42,11 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "chainID",
+        type: "uint256",
+      },
+      {
         internalType: "address",
         name: "assetAddress",
         type: "address",

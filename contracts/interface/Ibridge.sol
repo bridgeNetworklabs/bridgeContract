@@ -42,29 +42,6 @@ interface Ibridge {
         view
         returns (uint256, uint256);
 
-<<<<<<< HEAD
-    function assetLimits(address _asset, bool native) external view returns (uint256 , uint256);
-
-
-    function foriegnAssets(address assetAddress) external view returns (asset memory);
-    
-    function nativeAssets(address assetAddress) external view returns (asset memory);
-  
-    function wrappedForiegnPair(address assetAddress , uint256 chainID) external view returns (address);
-
-    function udpadateBridgePool(address _bridgePool) external;
-
-    function isDirectSwap(address assetAddress ,uint256 chainID) external view returns (bool);
-
-    function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable  returns (bytes32 transactionID);
-    
-    function burn(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable  returns (bytes32 transactionID);
-
-    function getAssetCount() external view returns (uint256[3] memory);
-
-    
-}
-=======
     function foriegnAssets(address assetAddress)
         external
         view
@@ -96,9 +73,8 @@ interface Ibridge {
         address receiver
     ) external payable returns (bytes32);
 
-    function burn(address assetAddress, uint256 amount, address receiver)
+    function burn(uint256 chainID , address assetAddress, uint256 amount, address receiver)
         external
         payable
         returns (bytes32);
 }
->>>>>>> dev
