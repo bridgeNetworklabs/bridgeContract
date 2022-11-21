@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/ERC20.sol)
 
-
 pragma solidity ^0.8.2;
 
 /**
@@ -20,7 +19,11 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /**
      * @dev Returns the amount of tokens in existence.
@@ -48,7 +51,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -75,12 +81,11 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount)
+        external
+        returns (bool);
 }
+
 interface IERC20Metadata is IERC20 {
     /**
      * @dev Returns the name of the token.
@@ -136,12 +141,15 @@ pragma solidity >=0.6.0;
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
-    constructor ()  {
+    constructor() {
         address msgSender = _msgSender();
         _owner = msgSender;
         emit OwnershipTransferred(address(0), msgSender);
@@ -179,7 +187,10 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
@@ -212,7 +223,7 @@ abstract contract Ownable is Context {
  */
 //  ["0x0000000000000000000000000000000000000000" , "0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000"]
 // ["1000000000000000000" , "1000000000000000000" , "1000000000000000000"]
-contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
+contract TestToken is Context, IERC20, IERC20Metadata, Ownable {
     mapping(address => uint256) private _balances;
     mapping(address => bool) public blacklisted;
     mapping(address => bool) public isAdmin;
@@ -224,7 +235,10 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
     string private _symbol;
     uint8 private _decimals;
     modifier onlyAdmin() {
-        require( isAdmin[_msgSender()] || owner() == _msgSender() , " caller is not authorised");
+        require(
+            isAdmin[_msgSender()] || owner() == _msgSender(),
+            " caller is not authorised"
+        );
         _;
     }
 
@@ -238,12 +252,11 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * construction.
      */
 
-    constructor(string memory name_, string memory symbol_ , uint8 _decimal) {
+    constructor(string memory name_, string memory symbol_, uint8 _decimal) {
         _name = name_;
         _symbol = symbol_;
         _decimals = _decimal;
-        _mint(msg.sender , 500000000 * 10**_decimals);
-
+        _mint(msg.sender, 500000000 * 10**_decimals);
     }
 
     /**
@@ -260,9 +273,11 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
     }
-    function time() public view  returns (uint256) {
+
+    function time() public view returns (uint256) {
         return block.timestamp;
     }
+
     /**
      * @dev Returns the number of decimals used to get its user representation.
      * For example, if `decimals` equals `2`, a balance of `505` tokens should
@@ -290,7 +305,13 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) public view virtual override returns (uint256) {
+    function balanceOf(address account)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _balances[account];
     }
 
@@ -302,7 +323,12 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * - `to` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+    function transfer(address to, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         address owner = _msgSender();
         _transfer(owner, to, amount);
         return true;
@@ -311,27 +337,37 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
     function addAdmin(address admin) public onlyOwner {
-       require(!isAdmin[admin] , "already an Admin");
-       isAdmin[admin] = true;
-   }
-   function removeAdmin(address admin) public onlyOwner {
-       require(isAdmin[admin] , " not Admin");
-       isAdmin[admin] = false;
-   }
-   function blacklistAddress(address user) public onlyAdmin {
-       require(!blacklisted[user] , "already blacklisted");
-       blacklisted[user] = true;
-   }
-   function removeBlacklistedAddress(address user) public onlyAdmin {
-       require(blacklisted[user] , " not blacklisted");
-       blacklisted[user] = false;
-   }
-       /**
+        require(!isAdmin[admin], "already an Admin");
+        isAdmin[admin] = true;
+    }
+
+    function removeAdmin(address admin) public onlyOwner {
+        require(isAdmin[admin], " not Admin");
+        isAdmin[admin] = false;
+    }
+
+    function blacklistAddress(address user) public onlyAdmin {
+        require(!blacklisted[user], "already blacklisted");
+        blacklisted[user] = true;
+    }
+
+    function removeBlacklistedAddress(address user) public onlyAdmin {
+        require(blacklisted[user], " not blacklisted");
+        blacklisted[user] = false;
+    }
+
+    /**
      * @dev See {IERC20-approve}.
      *
      * NOTE: If `amount` is the maximum `uint256`, the allowance is not updated on
@@ -341,7 +377,12 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(address spender, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         address owner = _msgSender();
         _approve(owner, spender, amount);
         return true;
@@ -363,12 +404,13 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * - the caller must have allowance for ``from``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) public virtual override returns (bool) {
-        require(!blacklisted[from] , "blacklisted");
+    function transferFrom(address from, address to, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
+        require(!blacklisted[from], "blacklisted");
         address spender = _msgSender();
         _spendAllowance(from, spender, amount);
         _transfer(from, to, amount);
@@ -387,7 +429,11 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        virtual
+        returns (bool)
+    {
         address owner = _msgSender();
         _approve(owner, spender, allowance(owner, spender) + addedValue);
         return true;
@@ -407,10 +453,17 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        virtual
+        returns (bool)
+    {
         address owner = _msgSender();
         uint256 currentAllowance = allowance(owner, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
         unchecked {
             _approve(owner, spender, currentAllowance - subtractedValue);
         }
@@ -432,19 +485,21 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * - `to` cannot be the zero address.
      * - `from` must have a balance of at least `amount`.
      */
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal virtual {
-        require(!blacklisted[from] , "blacklisted");
+    function _transfer(address from, address to, uint256 amount)
+        internal
+        virtual
+    {
+        require(!blacklisted[from], "blacklisted");
         require(from != address(0), "ERC20: transfer from the zero address");
         require(to != address(0), "ERC20: transfer to the zero address");
 
         _beforeTokenTransfer(from, to, amount);
 
         uint256 fromBalance = _balances[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        require(
+            fromBalance >= amount,
+            "ERC20: transfer amount exceeds balance"
+        );
         unchecked {
             _balances[from] = fromBalance - amount;
         }
@@ -517,11 +572,10 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal virtual {
+    function _approve(address owner, address spender, uint256 amount)
+        internal
+        virtual
+    {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -537,14 +591,16 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      *
      * Might emit an {Approval} event.
      */
-    function _spendAllowance(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal virtual {
+    function _spendAllowance(address owner, address spender, uint256 amount)
+        internal
+        virtual
+    {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            require(
+                currentAllowance >= amount,
+                "ERC20: insufficient allowance"
+            );
             unchecked {
                 _approve(owner, spender, currentAllowance - amount);
             }
@@ -565,11 +621,10 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from, address to, uint256 amount)
+        internal
+        virtual
+    {}
 
     /**
      * @dev Hook that is called after any transfer of tokens. This includes
@@ -585,9 +640,8 @@ contract TestToken is Context, IERC20, IERC20Metadata , Ownable {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal virtual {}
+    function _afterTokenTransfer(address from, address to, uint256 amount)
+        internal
+        virtual
+    {}
 }

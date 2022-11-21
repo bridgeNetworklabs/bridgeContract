@@ -2,12 +2,14 @@
 pragma solidity 0.8.2;
 
 interface Isettings {
-
     function networkFee(uint256 chainId) external view returns (uint256);
 
     function minValidations() external view returns (uint256);
-    
-    function isNetworkSupportedChain(uint256 chainID) external view returns (bool);
+
+    function isNetworkSupportedChain(uint256 chainID)
+        external
+        view
+        returns (bool);
 
     function feeRemitance() external view returns (address);
 
@@ -23,12 +25,17 @@ interface Isettings {
 
     function brgToken() external view returns (address);
 
-    function getNetworkSupportedChains() external view returns(uint256[] memory);
-    
-    function baseFeePercentage() external view returns(uint256);
+    function getNetworkSupportedChains()
+        external
+        view
+        returns (uint256[] memory);
 
-    function baseFeeEnable() external view returns(bool);
+    function baseFeePercentage() external view returns (uint256);
 
-    function approvedToAdd(address token , address user) external view returns(bool);
+    function baseFeeEnable() external view returns (bool);
+
+    function approvedToAdd(address token, address user)
+        external
+        view
+        returns (bool);
 }
-
