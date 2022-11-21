@@ -3,7 +3,7 @@
 The Bridge socket contract is a stateless contract that does not hold token balances. They interact with one or more bridge network core contract but is not part of the core contract. 
 It helps with easy interaction with the bridge network core contract.
 With the bridge Socket projects can intergrate bridgenetwork directly into their Dapps seamlessly and bridge assets accross all supported chains.
-Projects can earn fees upto 1% of the transaction amount for every transaction that comes through the deployeed socket.
+Projects can earn fees upto 0.1% of the transaction amount for every transaction that comes through the deployeed socket.
 
 Deployment and Setup.
 
