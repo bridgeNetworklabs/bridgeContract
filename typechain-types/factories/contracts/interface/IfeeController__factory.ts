@@ -22,11 +22,6 @@ const _abi = [
         name: "asset",
         type: "address",
       },
-      {
-        internalType: "uint256",
-        name: "chainTo",
-        type: "uint256",
-      },
     ],
     name: "getBridgeFee",
     outputs: [

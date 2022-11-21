@@ -48,7 +48,7 @@ export interface BridgeInterface extends utils.Interface {
     "foriegnAssetsList(uint256)": FunctionFragment;
     "getAssetCount()": FunctionFragment;
     "getAssetSupportedChainIds(address)": FunctionFragment;
-    "initiateMigration(address)": FunctionFragment;
+    "initialMigration(address)": FunctionFragment;
     "isActiveNativeAsset(address)": FunctionFragment;
     "isAssetSupportedChain(address,uint256)": FunctionFragment;
     "isDirectSwap(address,uint256)": FunctionFragment;
@@ -67,6 +67,7 @@ export interface BridgeInterface extends utils.Interface {
     "send(uint256,address,uint256,address)": FunctionFragment;
     "settings()": FunctionFragment;
     "standardDecimals()": FunctionFragment;
+    "totalGas()": FunctionFragment;
     "updateAddresses(address,address,address)": FunctionFragment;
     "updateAsset(address,address,address,uint256,uint256)": FunctionFragment;
     "wrappedForiegnPair(address,uint256)": FunctionFragment;
@@ -92,7 +93,7 @@ export interface BridgeInterface extends utils.Interface {
       | "foriegnAssetsList"
       | "getAssetCount"
       | "getAssetSupportedChainIds"
-      | "initiateMigration"
+      | "initialMigration"
       | "isActiveNativeAsset"
       | "isAssetSupportedChain"
       | "isDirectSwap"
@@ -111,6 +112,7 @@ export interface BridgeInterface extends utils.Interface {
       | "send"
       | "settings"
       | "standardDecimals"
+      | "totalGas"
       | "updateAddresses"
       | "updateAsset"
       | "wrappedForiegnPair"
@@ -198,7 +200,7 @@ export interface BridgeInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "initiateMigration",
+    functionFragment: "initialMigration",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -304,6 +306,7 @@ export interface BridgeInterface extends utils.Interface {
     functionFragment: "standardDecimals",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "totalGas", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "updateAddresses",
     values: [
@@ -379,7 +382,7 @@ export interface BridgeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "initiateMigration",
+    functionFragment: "initialMigration",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -436,6 +439,7 @@ export interface BridgeInterface extends utils.Interface {
     functionFragment: "standardDecimals",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "totalGas", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateAddresses",
     data: BytesLike
@@ -716,10 +720,7 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber
+        string
       ]
     >;
 
@@ -776,24 +777,22 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        boolean,
-        string,
-        string,
         BigNumber,
         boolean,
-        BigNumber
+        string,
+        string,
+        boolean
       ] & {
         tokenAddress: string;
         minAmount: BigNumber;
         maxAmount: BigNumber;
-        feeBalance: BigNumber;
+        ownerFeeBalance: BigNumber;
+        networkFeeBalance: BigNumber;
         collectedFees: BigNumber;
         ownedRail: boolean;
         manager: string;
         feeRemitance: string;
-        balance: BigNumber;
         isSet: boolean;
-        baseFeeCollected: BigNumber;
       }
     >;
 
@@ -811,7 +810,7 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
 
-    initiateMigration(
+    initialMigration(
       _newbridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -859,24 +858,22 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        boolean,
-        string,
-        string,
         BigNumber,
         boolean,
-        BigNumber
+        string,
+        string,
+        boolean
       ] & {
         tokenAddress: string;
         minAmount: BigNumber;
         maxAmount: BigNumber;
-        feeBalance: BigNumber;
+        ownerFeeBalance: BigNumber;
+        networkFeeBalance: BigNumber;
         collectedFees: BigNumber;
         ownedRail: boolean;
         manager: string;
         feeRemitance: string;
-        balance: BigNumber;
         isSet: boolean;
-        baseFeeCollected: BigNumber;
       }
     >;
 
@@ -892,7 +889,7 @@ export interface Bridge extends BaseContract {
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     registerForiegnMigration(
-      wrappedAddress: PromiseOrValue<string>,
+      foriegnAddress: PromiseOrValue<string>,
       chainID: PromiseOrValue<BigNumberish>,
       minAmount: PromiseOrValue<BigNumberish>,
       maxAmount: PromiseOrValue<BigNumberish>,
@@ -901,7 +898,7 @@ export interface Bridge extends BaseContract {
       feeAddress: PromiseOrValue<string>,
       _collectedFees: PromiseOrValue<BigNumberish>,
       directSwap: PromiseOrValue<boolean>,
-      foriegnAddress: PromiseOrValue<string>,
+      wrappedAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -954,6 +951,8 @@ export interface Bridge extends BaseContract {
     settings(overrides?: CallOverrides): Promise<[string]>;
 
     standardDecimals(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    totalGas(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     updateAddresses(
       _settings: PromiseOrValue<string>,
@@ -1016,10 +1015,7 @@ export interface Bridge extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      string,
-      string,
-      BigNumber,
-      BigNumber
+      string
     ]
   >;
 
@@ -1076,24 +1072,22 @@ export interface Bridge extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      boolean,
-      string,
-      string,
       BigNumber,
       boolean,
-      BigNumber
+      string,
+      string,
+      boolean
     ] & {
       tokenAddress: string;
       minAmount: BigNumber;
       maxAmount: BigNumber;
-      feeBalance: BigNumber;
+      ownerFeeBalance: BigNumber;
+      networkFeeBalance: BigNumber;
       collectedFees: BigNumber;
       ownedRail: boolean;
       manager: string;
       feeRemitance: string;
-      balance: BigNumber;
       isSet: boolean;
-      baseFeeCollected: BigNumber;
     }
   >;
 
@@ -1111,7 +1105,7 @@ export interface Bridge extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
 
-  initiateMigration(
+  initialMigration(
     _newbridge: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1159,24 +1153,22 @@ export interface Bridge extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      boolean,
-      string,
-      string,
       BigNumber,
       boolean,
-      BigNumber
+      string,
+      string,
+      boolean
     ] & {
       tokenAddress: string;
       minAmount: BigNumber;
       maxAmount: BigNumber;
-      feeBalance: BigNumber;
+      ownerFeeBalance: BigNumber;
+      networkFeeBalance: BigNumber;
       collectedFees: BigNumber;
       ownedRail: boolean;
       manager: string;
       feeRemitance: string;
-      balance: BigNumber;
       isSet: boolean;
-      baseFeeCollected: BigNumber;
     }
   >;
 
@@ -1192,7 +1184,7 @@ export interface Bridge extends BaseContract {
   paused(overrides?: CallOverrides): Promise<boolean>;
 
   registerForiegnMigration(
-    wrappedAddress: PromiseOrValue<string>,
+    foriegnAddress: PromiseOrValue<string>,
     chainID: PromiseOrValue<BigNumberish>,
     minAmount: PromiseOrValue<BigNumberish>,
     maxAmount: PromiseOrValue<BigNumberish>,
@@ -1201,7 +1193,7 @@ export interface Bridge extends BaseContract {
     feeAddress: PromiseOrValue<string>,
     _collectedFees: PromiseOrValue<BigNumberish>,
     directSwap: PromiseOrValue<boolean>,
-    foriegnAddress: PromiseOrValue<string>,
+    wrappedAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1254,6 +1246,8 @@ export interface Bridge extends BaseContract {
   settings(overrides?: CallOverrides): Promise<string>;
 
   standardDecimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+  totalGas(overrides?: CallOverrides): Promise<BigNumber>;
 
   updateAddresses(
     _settings: PromiseOrValue<string>,
@@ -1316,10 +1310,7 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber
+        string
       ]
     >;
 
@@ -1374,24 +1365,22 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        boolean,
-        string,
-        string,
         BigNumber,
         boolean,
-        BigNumber
+        string,
+        string,
+        boolean
       ] & {
         tokenAddress: string;
         minAmount: BigNumber;
         maxAmount: BigNumber;
-        feeBalance: BigNumber;
+        ownerFeeBalance: BigNumber;
+        networkFeeBalance: BigNumber;
         collectedFees: BigNumber;
         ownedRail: boolean;
         manager: string;
         feeRemitance: string;
-        balance: BigNumber;
         isSet: boolean;
-        baseFeeCollected: BigNumber;
       }
     >;
 
@@ -1409,7 +1398,7 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    initiateMigration(
+    initialMigration(
       _newbridge: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1457,24 +1446,22 @@ export interface Bridge extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        boolean,
-        string,
-        string,
         BigNumber,
         boolean,
-        BigNumber
+        string,
+        string,
+        boolean
       ] & {
         tokenAddress: string;
         minAmount: BigNumber;
         maxAmount: BigNumber;
-        feeBalance: BigNumber;
+        ownerFeeBalance: BigNumber;
+        networkFeeBalance: BigNumber;
         collectedFees: BigNumber;
         ownedRail: boolean;
         manager: string;
         feeRemitance: string;
-        balance: BigNumber;
         isSet: boolean;
-        baseFeeCollected: BigNumber;
       }
     >;
 
@@ -1488,7 +1475,7 @@ export interface Bridge extends BaseContract {
     paused(overrides?: CallOverrides): Promise<boolean>;
 
     registerForiegnMigration(
-      wrappedAddress: PromiseOrValue<string>,
+      foriegnAddress: PromiseOrValue<string>,
       chainID: PromiseOrValue<BigNumberish>,
       minAmount: PromiseOrValue<BigNumberish>,
       maxAmount: PromiseOrValue<BigNumberish>,
@@ -1497,7 +1484,7 @@ export interface Bridge extends BaseContract {
       feeAddress: PromiseOrValue<string>,
       _collectedFees: PromiseOrValue<BigNumberish>,
       directSwap: PromiseOrValue<boolean>,
-      foriegnAddress: PromiseOrValue<string>,
+      wrappedAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1550,6 +1537,8 @@ export interface Bridge extends BaseContract {
     settings(overrides?: CallOverrides): Promise<string>;
 
     standardDecimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalGas(overrides?: CallOverrides): Promise<BigNumber>;
 
     updateAddresses(
       _settings: PromiseOrValue<string>,
@@ -1810,7 +1799,7 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    initiateMigration(
+    initialMigration(
       _newbridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1865,7 +1854,7 @@ export interface Bridge extends BaseContract {
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     registerForiegnMigration(
-      wrappedAddress: PromiseOrValue<string>,
+      foriegnAddress: PromiseOrValue<string>,
       chainID: PromiseOrValue<BigNumberish>,
       minAmount: PromiseOrValue<BigNumberish>,
       maxAmount: PromiseOrValue<BigNumberish>,
@@ -1874,7 +1863,7 @@ export interface Bridge extends BaseContract {
       feeAddress: PromiseOrValue<string>,
       _collectedFees: PromiseOrValue<BigNumberish>,
       directSwap: PromiseOrValue<boolean>,
-      foriegnAddress: PromiseOrValue<string>,
+      wrappedAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1927,6 +1916,8 @@ export interface Bridge extends BaseContract {
     settings(overrides?: CallOverrides): Promise<BigNumber>;
 
     standardDecimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalGas(overrides?: CallOverrides): Promise<BigNumber>;
 
     updateAddresses(
       _settings: PromiseOrValue<string>,
@@ -2033,7 +2024,7 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    initiateMigration(
+    initialMigration(
       _newbridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -2088,7 +2079,7 @@ export interface Bridge extends BaseContract {
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     registerForiegnMigration(
-      wrappedAddress: PromiseOrValue<string>,
+      foriegnAddress: PromiseOrValue<string>,
       chainID: PromiseOrValue<BigNumberish>,
       minAmount: PromiseOrValue<BigNumberish>,
       maxAmount: PromiseOrValue<BigNumberish>,
@@ -2097,7 +2088,7 @@ export interface Bridge extends BaseContract {
       feeAddress: PromiseOrValue<string>,
       _collectedFees: PromiseOrValue<BigNumberish>,
       directSwap: PromiseOrValue<boolean>,
-      foriegnAddress: PromiseOrValue<string>,
+      wrappedAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2150,6 +2141,8 @@ export interface Bridge extends BaseContract {
     settings(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     standardDecimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    totalGas(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     updateAddresses(
       _settings: PromiseOrValue<string>,

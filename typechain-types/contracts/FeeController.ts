@@ -30,47 +30,39 @@ import type {
 export interface FeeControllerInterface extends utils.Interface {
   functions: {
     "activateAddressExemption(bool)": FunctionFragment;
-    "activateAssetIncentive(bool)": FunctionFragment;
     "activateBrgHoldingIncentive(bool)": FunctionFragment;
-    "assetIncentive(address)": FunctionFragment;
-    "brgHoldingIncentive()": FunctionFragment;
-    "brgHoldingThreshold()": FunctionFragment;
+    "activateIndexedTokenIncentive(address)": FunctionFragment;
     "controller()": FunctionFragment;
+    "deActivateIndexedTokenIncentive(address)": FunctionFragment;
     "exemptAddress(address,bool)": FunctionFragment;
-    "getBridgeFee(address,address,uint256)": FunctionFragment;
-    "getIncentive(uint256,uint256)": FunctionFragment;
+    "getBridgeFee(address,address)": FunctionFragment;
     "isExempted(address)": FunctionFragment;
-    "minUpdateDelay()": FunctionFragment;
-    "setAssetIncentivization(address,uint256)": FunctionFragment;
-    "setBrgHoldingIncentive(uint256)": FunctionFragment;
-    "setBrgHoldingThreshold(uint256)": FunctionFragment;
     "settings()": FunctionFragment;
-    "useAssetIncentive()": FunctionFragment;
+    "updatIndexedTokenIncentivePercentage(address,uint256)": FunctionFragment;
+    "updateTokenHoldingIncentivePercentage(bytes32,uint256)": FunctionFragment;
+    "updateTokenHoldingIncentiveThreshold(bytes32,uint256)": FunctionFragment;
+    "updateUserExemptionPercentage(address,uint256)": FunctionFragment;
     "useExemption()": FunctionFragment;
-    "usebrgHoldingIncentive()": FunctionFragment;
+    "useHolderIncentive()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "activateAddressExemption"
-      | "activateAssetIncentive"
       | "activateBrgHoldingIncentive"
-      | "assetIncentive"
-      | "brgHoldingIncentive"
-      | "brgHoldingThreshold"
+      | "activateIndexedTokenIncentive"
       | "controller"
+      | "deActivateIndexedTokenIncentive"
       | "exemptAddress"
       | "getBridgeFee"
-      | "getIncentive"
       | "isExempted"
-      | "minUpdateDelay"
-      | "setAssetIncentivization"
-      | "setBrgHoldingIncentive"
-      | "setBrgHoldingThreshold"
       | "settings"
-      | "useAssetIncentive"
+      | "updatIndexedTokenIncentivePercentage"
+      | "updateTokenHoldingIncentivePercentage"
+      | "updateTokenHoldingIncentiveThreshold"
+      | "updateUserExemptionPercentage"
       | "useExemption"
-      | "usebrgHoldingIncentive"
+      | "useHolderIncentive"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -78,28 +70,20 @@ export interface FeeControllerInterface extends utils.Interface {
     values: [PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
-    functionFragment: "activateAssetIncentive",
-    values: [PromiseOrValue<boolean>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "activateBrgHoldingIncentive",
     values: [PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
-    functionFragment: "assetIncentive",
+    functionFragment: "activateIndexedTokenIncentive",
     values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "brgHoldingIncentive",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "brgHoldingThreshold",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "controller",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "deActivateIndexedTokenIncentive",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "exemptAddress",
@@ -107,47 +91,35 @@ export interface FeeControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getBridgeFee",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getIncentive",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isExempted",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(functionFragment: "settings", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "minUpdateDelay",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setAssetIncentivization",
+    functionFragment: "updatIndexedTokenIncentivePercentage",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setBrgHoldingIncentive",
-    values: [PromiseOrValue<BigNumberish>]
+    functionFragment: "updateTokenHoldingIncentivePercentage",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setBrgHoldingThreshold",
-    values: [PromiseOrValue<BigNumberish>]
+    functionFragment: "updateTokenHoldingIncentiveThreshold",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
-  encodeFunctionData(functionFragment: "settings", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "useAssetIncentive",
-    values?: undefined
+    functionFragment: "updateUserExemptionPercentage",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "useExemption",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "usebrgHoldingIncentive",
+    functionFragment: "useHolderIncentive",
     values?: undefined
   ): string;
 
@@ -156,26 +128,18 @@ export interface FeeControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "activateAssetIncentive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "activateBrgHoldingIncentive",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "assetIncentive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "brgHoldingIncentive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "brgHoldingThreshold",
+    functionFragment: "activateIndexedTokenIncentive",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "deActivateIndexedTokenIncentive",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "exemptAddress",
     data: BytesLike
@@ -184,30 +148,22 @@ export interface FeeControllerInterface extends utils.Interface {
     functionFragment: "getBridgeFee",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "getIncentive",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "isExempted", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "minUpdateDelay",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setAssetIncentivization",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setBrgHoldingIncentive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setBrgHoldingThreshold",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "settings", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "useAssetIncentive",
+    functionFragment: "updatIndexedTokenIncentivePercentage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateTokenHoldingIncentivePercentage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateTokenHoldingIncentiveThreshold",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateUserExemptionPercentage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -215,7 +171,7 @@ export interface FeeControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "usebrgHoldingIncentive",
+    functionFragment: "useHolderIncentive",
     data: BytesLike
   ): Result;
 
@@ -226,6 +182,7 @@ export interface FeeControllerInterface extends utils.Interface {
     "BrgHoldingIncentiveStatusChanged(bool)": EventFragment;
     "BrgHoldingIncentiveUpdated(uint256,uint256)": EventFragment;
     "BrgHoldingThresholdUpdated(uint256,uint256)": EventFragment;
+    "UserIncentiveUpdate(address,uint256,uint256)": EventFragment;
     "userExemptStatusChanged(address,bool)": EventFragment;
   };
 
@@ -241,6 +198,7 @@ export interface FeeControllerInterface extends utils.Interface {
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BrgHoldingIncentiveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BrgHoldingThresholdUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UserIncentiveUpdate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "userExemptStatusChanged"): EventFragment;
 }
 
@@ -314,9 +272,22 @@ export type BrgHoldingThresholdUpdatedEvent = TypedEvent<
 export type BrgHoldingThresholdUpdatedEventFilter =
   TypedEventFilter<BrgHoldingThresholdUpdatedEvent>;
 
+export interface UserIncentiveUpdateEventObject {
+  user: string;
+  previousIncentive: BigNumber;
+  currentIncentive: BigNumber;
+}
+export type UserIncentiveUpdateEvent = TypedEvent<
+  [string, BigNumber, BigNumber],
+  UserIncentiveUpdateEventObject
+>;
+
+export type UserIncentiveUpdateEventFilter =
+  TypedEventFilter<UserIncentiveUpdateEvent>;
+
 export interface userExemptStatusChangedEventObject {
   user: string;
-  exemptionStatus: boolean;
+  status: boolean;
 }
 export type userExemptStatusChangedEvent = TypedEvent<
   [string, boolean],
@@ -358,26 +329,22 @@ export interface FeeController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    activateAssetIncentive(
-      status: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     activateBrgHoldingIncentive(
       status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    assetIncentive(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    brgHoldingIncentive(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    brgHoldingThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
+    activateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     controller(overrides?: CallOverrides): Promise<[string]>;
+
+    deActivateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     exemptAddress(
       user: PromiseOrValue<string>,
@@ -388,13 +355,6 @@ export interface FeeController extends BaseContract {
     getBridgeFee(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getIncentive(
-      fee: PromiseOrValue<BigNumberish>,
-      incentive: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -403,39 +363,38 @@ export interface FeeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    minUpdateDelay(overrides?: CallOverrides): Promise<[BigNumber]>;
+    settings(overrides?: CallOverrides): Promise<[string]>;
 
-    setAssetIncentivization(
+    updatIndexedTokenIncentivePercentage(
       asset: PromiseOrValue<string>,
-      incentive: PromiseOrValue<BigNumberish>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    setBrgHoldingIncentive(
-      incentive: PromiseOrValue<BigNumberish>,
+    updateTokenHoldingIncentivePercentage(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    setBrgHoldingThreshold(
+    updateTokenHoldingIncentiveThreshold(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
       threshold: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    settings(overrides?: CallOverrides): Promise<[string]>;
-
-    useAssetIncentive(overrides?: CallOverrides): Promise<[boolean]>;
+    updateUserExemptionPercentage(
+      user: PromiseOrValue<string>,
+      percentage: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     useExemption(overrides?: CallOverrides): Promise<[boolean]>;
 
-    usebrgHoldingIncentive(overrides?: CallOverrides): Promise<[boolean]>;
+    useHolderIncentive(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
   activateAddressExemption(
-    status: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  activateAssetIncentive(
     status: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -445,16 +404,17 @@ export interface FeeController extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  assetIncentive(
-    arg0: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  brgHoldingIncentive(overrides?: CallOverrides): Promise<BigNumber>;
-
-  brgHoldingThreshold(overrides?: CallOverrides): Promise<BigNumber>;
+  activateIndexedTokenIncentive(
+    token: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   controller(overrides?: CallOverrides): Promise<string>;
+
+  deActivateIndexedTokenIncentive(
+    token: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   exemptAddress(
     user: PromiseOrValue<string>,
@@ -465,13 +425,6 @@ export interface FeeController extends BaseContract {
   getBridgeFee(
     sender: PromiseOrValue<string>,
     asset: PromiseOrValue<string>,
-    chainTo: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getIncentive(
-    fee: PromiseOrValue<BigNumberish>,
-    incentive: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -480,39 +433,38 @@ export interface FeeController extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  minUpdateDelay(overrides?: CallOverrides): Promise<BigNumber>;
+  settings(overrides?: CallOverrides): Promise<string>;
 
-  setAssetIncentivization(
+  updatIndexedTokenIncentivePercentage(
     asset: PromiseOrValue<string>,
-    incentive: PromiseOrValue<BigNumberish>,
+    percentage: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  setBrgHoldingIncentive(
-    incentive: PromiseOrValue<BigNumberish>,
+  updateTokenHoldingIncentivePercentage(
+    tokenHoldingLevel: PromiseOrValue<BytesLike>,
+    percentage: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  setBrgHoldingThreshold(
+  updateTokenHoldingIncentiveThreshold(
+    tokenHoldingLevel: PromiseOrValue<BytesLike>,
     threshold: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  settings(overrides?: CallOverrides): Promise<string>;
-
-  useAssetIncentive(overrides?: CallOverrides): Promise<boolean>;
+  updateUserExemptionPercentage(
+    user: PromiseOrValue<string>,
+    percentage: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   useExemption(overrides?: CallOverrides): Promise<boolean>;
 
-  usebrgHoldingIncentive(overrides?: CallOverrides): Promise<boolean>;
+  useHolderIncentive(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
     activateAddressExemption(
-      status: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    activateAssetIncentive(
       status: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -522,16 +474,17 @@ export interface FeeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    assetIncentive(
-      arg0: PromiseOrValue<string>,
+    activateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    brgHoldingIncentive(overrides?: CallOverrides): Promise<BigNumber>;
-
-    brgHoldingThreshold(overrides?: CallOverrides): Promise<BigNumber>;
+    ): Promise<void>;
 
     controller(overrides?: CallOverrides): Promise<string>;
+
+    deActivateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     exemptAddress(
       user: PromiseOrValue<string>,
@@ -542,13 +495,6 @@ export interface FeeController extends BaseContract {
     getBridgeFee(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getIncentive(
-      fee: PromiseOrValue<BigNumberish>,
-      incentive: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -557,31 +503,35 @@ export interface FeeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    minUpdateDelay(overrides?: CallOverrides): Promise<BigNumber>;
+    settings(overrides?: CallOverrides): Promise<string>;
 
-    setAssetIncentivization(
+    updatIndexedTokenIncentivePercentage(
       asset: PromiseOrValue<string>,
-      incentive: PromiseOrValue<BigNumberish>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBrgHoldingIncentive(
-      incentive: PromiseOrValue<BigNumberish>,
+    updateTokenHoldingIncentivePercentage(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBrgHoldingThreshold(
+    updateTokenHoldingIncentiveThreshold(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
       threshold: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    settings(overrides?: CallOverrides): Promise<string>;
-
-    useAssetIncentive(overrides?: CallOverrides): Promise<boolean>;
+    updateUserExemptionPercentage(
+      user: PromiseOrValue<string>,
+      percentage: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     useExemption(overrides?: CallOverrides): Promise<boolean>;
 
-    usebrgHoldingIncentive(overrides?: CallOverrides): Promise<boolean>;
+    useHolderIncentive(overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
@@ -635,13 +585,24 @@ export interface FeeController extends BaseContract {
       newBrgHoldingThreshold?: null
     ): BrgHoldingThresholdUpdatedEventFilter;
 
-    "userExemptStatusChanged(address,bool)"(
+    "UserIncentiveUpdate(address,uint256,uint256)"(
       user?: PromiseOrValue<string> | null,
-      exemptionStatus?: null
+      previousIncentive?: null,
+      currentIncentive?: null
+    ): UserIncentiveUpdateEventFilter;
+    UserIncentiveUpdate(
+      user?: PromiseOrValue<string> | null,
+      previousIncentive?: null,
+      currentIncentive?: null
+    ): UserIncentiveUpdateEventFilter;
+
+    "userExemptStatusChanged(address,bool)"(
+      user?: null,
+      status?: null
     ): userExemptStatusChangedEventFilter;
     userExemptStatusChanged(
-      user?: PromiseOrValue<string> | null,
-      exemptionStatus?: null
+      user?: null,
+      status?: null
     ): userExemptStatusChangedEventFilter;
   };
 
@@ -651,26 +612,22 @@ export interface FeeController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    activateAssetIncentive(
-      status: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     activateBrgHoldingIncentive(
       status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    assetIncentive(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
+    activateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    brgHoldingIncentive(overrides?: CallOverrides): Promise<BigNumber>;
-
-    brgHoldingThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
     controller(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deActivateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     exemptAddress(
       user: PromiseOrValue<string>,
@@ -681,13 +638,6 @@ export interface FeeController extends BaseContract {
     getBridgeFee(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getIncentive(
-      fee: PromiseOrValue<BigNumberish>,
-      incentive: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -696,31 +646,35 @@ export interface FeeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    minUpdateDelay(overrides?: CallOverrides): Promise<BigNumber>;
+    settings(overrides?: CallOverrides): Promise<BigNumber>;
 
-    setAssetIncentivization(
+    updatIndexedTokenIncentivePercentage(
       asset: PromiseOrValue<string>,
-      incentive: PromiseOrValue<BigNumberish>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setBrgHoldingIncentive(
-      incentive: PromiseOrValue<BigNumberish>,
+    updateTokenHoldingIncentivePercentage(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setBrgHoldingThreshold(
+    updateTokenHoldingIncentiveThreshold(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
       threshold: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    settings(overrides?: CallOverrides): Promise<BigNumber>;
-
-    useAssetIncentive(overrides?: CallOverrides): Promise<BigNumber>;
+    updateUserExemptionPercentage(
+      user: PromiseOrValue<string>,
+      percentage: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     useExemption(overrides?: CallOverrides): Promise<BigNumber>;
 
-    usebrgHoldingIncentive(overrides?: CallOverrides): Promise<BigNumber>;
+    useHolderIncentive(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -729,30 +683,22 @@ export interface FeeController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    activateAssetIncentive(
-      status: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     activateBrgHoldingIncentive(
       status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    assetIncentive(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    brgHoldingIncentive(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    brgHoldingThreshold(
-      overrides?: CallOverrides
+    activateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     controller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    deActivateIndexedTokenIncentive(
+      token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     exemptAddress(
       user: PromiseOrValue<string>,
@@ -763,13 +709,6 @@ export interface FeeController extends BaseContract {
     getBridgeFee(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getIncentive(
-      fee: PromiseOrValue<BigNumberish>,
-      incentive: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -778,31 +717,35 @@ export interface FeeController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    minUpdateDelay(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    settings(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    setAssetIncentivization(
+    updatIndexedTokenIncentivePercentage(
       asset: PromiseOrValue<string>,
-      incentive: PromiseOrValue<BigNumberish>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBrgHoldingIncentive(
-      incentive: PromiseOrValue<BigNumberish>,
+    updateTokenHoldingIncentivePercentage(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
+      percentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBrgHoldingThreshold(
+    updateTokenHoldingIncentiveThreshold(
+      tokenHoldingLevel: PromiseOrValue<BytesLike>,
       threshold: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    settings(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    useAssetIncentive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    updateUserExemptionPercentage(
+      user: PromiseOrValue<string>,
+      percentage: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     useExemption(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    usebrgHoldingIncentive(
+    useHolderIncentive(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

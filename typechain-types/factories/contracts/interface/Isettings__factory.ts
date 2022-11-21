@@ -88,6 +88,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "gasBank",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getNetworkSupportedChains",
     outputs: [
       {
@@ -113,6 +126,19 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "maxFeeThreshold",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -152,7 +178,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "networkFee",
+    name: "networkGas",
     outputs: [
       {
         internalType: "uint256",
