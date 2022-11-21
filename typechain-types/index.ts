@@ -66,6 +66,8 @@ export type { Registry } from "./contracts/Registry";
 export { Registry__factory } from "./factories/contracts/Registry__factory";
 export type { Settings } from "./contracts/Settings";
 export { Settings__factory } from "./factories/contracts/Settings__factory";
+export type { TestToken } from "./contracts/testToken.sol/TestToken";
+export { TestToken__factory } from "./factories/contracts/testToken.sol/TestToken__factory";
 export type { Token } from "./contracts/Token";
 export { Token__factory } from "./factories/contracts/Token__factory";
 export type { BasicToken } from "./contracts/token2.sol/BasicToken";

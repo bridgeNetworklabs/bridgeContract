@@ -3,6 +3,7 @@
 /* eslint-disable */
 export * as bridgeSocketSol from "./bridgeSocket.sol";
 export * as interface from "./interface";
+export * as testTokenSol from "./testToken.sol";
 export * as token2Sol from "./token2.sol";
 export { Bridge__factory } from "./Bridge__factory";
 export { BridgePool__factory } from "./BridgePool__factory";

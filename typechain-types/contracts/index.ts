@@ -5,6 +5,8 @@ import type * as bridgeSocketSol from "./bridgeSocket.sol";
 export type { bridgeSocketSol };
 import type * as interface from "./interface";
 export type { interface };
+import type * as testTokenSol from "./testToken.sol";
+export type { testTokenSol };
 import type * as token2Sol from "./token2.sol";
 export type { token2Sol };
 export type { Bridge } from "./Bridge";
