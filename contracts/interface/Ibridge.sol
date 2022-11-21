@@ -1,15 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.2;
 
-<<<<<<< HEAD
-
-interface Ibridge{    struct asset {
-        address tokenAddress; 
-=======
 interface Ibridge {
     struct asset {
         address tokenAddress;
->>>>>>> dev
         uint256 minAmount;
         uint256 maxAmount;
         uint256 feeBalance;
