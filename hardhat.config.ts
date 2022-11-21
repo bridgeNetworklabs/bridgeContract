@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "solidity-coverage"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -96,11 +97,11 @@ const config: HardhatUserConfig = {
     //   chainId : 43288,
     //   accounts: {mnemonic : mnemonic},
     // },
-    // bscTestnet: {
-    //   url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-    //   chainId : 97,
-    //   accounts: {mnemonic : mnemonic},
-    // },
+    bscTestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      chainId : 97,
+      accounts: [],
+    },
     // arbizoomTestnet: {
     //   url: "https://nitro-devnet.arbitrum.io/rpc",
     //   chainId : 421612,
