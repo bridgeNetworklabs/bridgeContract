@@ -51,6 +51,7 @@ export interface SettingsInterface extends utils.Interface {
     "railRegistrationFee()": FunctionFragment;
     "setApprovedToAdd(address,address,bool)": FunctionFragment;
     "setFeeRemitanceAddress(address)": FunctionFragment;
+    "setGasBank(address)": FunctionFragment;
     "setMinValidationPercentage(uint256)": FunctionFragment;
     "setNetworkSupportedChains(uint256[],uint256[],bool)": FunctionFragment;
     "setOnlyOwnableRailState(bool)": FunctionFragment;
@@ -61,7 +62,6 @@ export interface SettingsInterface extends utils.Interface {
     "setminWithdrawableFee(uint256)": FunctionFragment;
     "setrailRegistrationFee(uint256)": FunctionFragment;
     "updatableAssetState()": FunctionFragment;
-    "updateGasBank(address)": FunctionFragment;
     "updateNetworkGas(uint256,uint256)": FunctionFragment;
   };
 
@@ -89,6 +89,7 @@ export interface SettingsInterface extends utils.Interface {
       | "railRegistrationFee"
       | "setApprovedToAdd"
       | "setFeeRemitanceAddress"
+      | "setGasBank"
       | "setMinValidationPercentage"
       | "setNetworkSupportedChains"
       | "setOnlyOwnableRailState"
@@ -99,7 +100,6 @@ export interface SettingsInterface extends utils.Interface {
       | "setminWithdrawableFee"
       | "setrailRegistrationFee"
       | "updatableAssetState"
-      | "updateGasBank"
       | "updateNetworkGas"
   ): FunctionFragment;
 
@@ -190,6 +190,10 @@ export interface SettingsInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setGasBank",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setMinValidationPercentage",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -232,10 +236,6 @@ export interface SettingsInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "updatableAssetState",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateGasBank",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "updateNetworkGas",
@@ -318,6 +318,7 @@ export interface SettingsInterface extends utils.Interface {
     functionFragment: "setFeeRemitanceAddress",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setGasBank", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMinValidationPercentage",
     data: BytesLike
@@ -356,10 +357,6 @@ export interface SettingsInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "updatableAssetState",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateGasBank",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -669,6 +666,11 @@ export interface Settings extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setMinValidationPercentage(
       _ValidationPercentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -717,11 +719,6 @@ export interface Settings extends BaseContract {
     ): Promise<ContractTransaction>;
 
     updatableAssetState(overrides?: CallOverrides): Promise<[boolean]>;
-
-    updateGasBank(
-      _gasbank: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
@@ -797,6 +794,11 @@ export interface Settings extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setGasBank(
+    _gasBank: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setMinValidationPercentage(
     _ValidationPercentage: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -845,11 +847,6 @@ export interface Settings extends BaseContract {
   ): Promise<ContractTransaction>;
 
   updatableAssetState(overrides?: CallOverrides): Promise<boolean>;
-
-  updateGasBank(
-    _gasbank: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   updateNetworkGas(
     chainId: PromiseOrValue<BigNumberish>,
@@ -923,6 +920,11 @@ export interface Settings extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setMinValidationPercentage(
       _ValidationPercentage: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -971,11 +973,6 @@ export interface Settings extends BaseContract {
     ): Promise<void>;
 
     updatableAssetState(overrides?: CallOverrides): Promise<boolean>;
-
-    updateGasBank(
-      _gasbank: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
@@ -1176,6 +1173,11 @@ export interface Settings extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setMinValidationPercentage(
       _ValidationPercentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1224,11 +1226,6 @@ export interface Settings extends BaseContract {
     ): Promise<BigNumber>;
 
     updatableAssetState(overrides?: CallOverrides): Promise<BigNumber>;
-
-    updateGasBank(
-      _gasbank: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
@@ -1315,6 +1312,11 @@ export interface Settings extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setMinValidationPercentage(
       _ValidationPercentage: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1364,11 +1366,6 @@ export interface Settings extends BaseContract {
 
     updatableAssetState(
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    updateGasBank(
-      _gasbank: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     updateNetworkGas(

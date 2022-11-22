@@ -69,21 +69,21 @@ export interface IfeeController extends BaseContract {
   functions: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
 
   getBridgeFee(
     sender: PromiseOrValue<string>,
-    asset: PromiseOrValue<string>,
+    assetAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   callStatic: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -93,7 +93,7 @@ export interface IfeeController extends BaseContract {
   estimateGas: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -101,7 +101,7 @@ export interface IfeeController extends BaseContract {
   populateTransaction: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

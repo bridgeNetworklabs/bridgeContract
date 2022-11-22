@@ -25,7 +25,8 @@ describe("Settings", () => {
     const SettingsContract = await ethers.getContractFactory("Settings");
     settings = await SettingsContract.deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
 
     const TokenContract = await ethers.getContractFactory("Token");

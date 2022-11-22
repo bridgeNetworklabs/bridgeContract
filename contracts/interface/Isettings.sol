@@ -31,8 +31,12 @@ interface Isettings {
         returns (uint256[] memory);
 
     function baseFeePercentage() external view returns (uint256);
+    
+    function networkGas(uint256 chainID) external view returns (uint256);
+    function gasBank() external view returns (address);
 
     function baseFeeEnable() external view returns (bool);
+    function maxFeeThreshold() external view returns (uint256);
 
     function approvedToAdd(address token, address user)
         external

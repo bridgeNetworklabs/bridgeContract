@@ -53,11 +53,12 @@ describe("BridgeSocket", () => {
     deployer = await DeployerContract.connect(owner).deploy(controller.address);
     const registryContract = await ethers.getContractFactory("Registry");
     registry = await registryContract.connect(owner).deploy();
-
+    
     const SettingContract = await ethers.getContractFactory("Settings");
     settings = await SettingContract.connect(owner).deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
     const feeControllerContract = await ethers.getContractFactory(
       "FeeController"
@@ -80,7 +81,7 @@ describe("BridgeSocket", () => {
     const BridgeSocketContract = await ethers.getContractFactory(
       "BridgeSocket"
     );
-    socket = await BridgeSocketContract.connect(owner).deploy(randomAddress.address, randomAddress.address, randomAddress.address ,  randomAddress.address);
+    socket = await BridgeSocketContract.connect(owner).deploy( randomAddress.address, randomAddress.address ,  randomAddress.address);
     await registry.connect(owner).transferOwnership(bridge.address);
   });
 
@@ -88,7 +89,7 @@ describe("BridgeSocket", () => {
     it("Should update socket contract", async () => {
       const tx = await socket
         .connect(owner)
-        .updateSocket( feeController.address, settings.address, bridge.address);
+        .updateSocket( settings.address, bridge.address);
       expect(tx)
       
         .emit(deployer, "socketUpdated")
