@@ -258,11 +258,5 @@ describe("Settings", () => {
       await settings.connect(admin).setrailRegistrationFee(30);
       expect(await settings.railRegistrationFee()).to.equal(30);
     });
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
   });
 });

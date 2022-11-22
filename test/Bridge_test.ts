@@ -13,6 +13,7 @@ import type {
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { parseEther, parseUnits } from "ethers/lib/utils";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Bridge", function () {
   let controller: Controller;
@@ -1017,16 +1018,16 @@ describe("Bridge", function () {
         transaction[4]
       );
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
         await ethers.utils.arrayify(message)
@@ -1113,19 +1114,19 @@ describe("Bridge", function () {
         transaction[4]
       );
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
 
       await registry
@@ -1277,5 +1278,90 @@ describe("Bridge", function () {
       let balance = await wrappedToken.balanceOf(Admin.address);
       expect(balance).to.equal("100000000000000000000");
     });
+  });
+
+  describe.only("Migration", () => {
+    let newBridge: Bridge;
+    beforeEach(async () => {
+      await settings
+        .connect(Admin)
+        .setNetworkSupportedChains([2], [parseEther("0.01")], true);
+      await brgToken
+        .connect(Admin)
+        .transfer(assetAdmin.address, settings.railRegistrationFee());
+      await brgToken
+        .connect(assetAdmin)
+        .approve(bridge.address, settings.railRegistrationFee());
+
+      const TestToken = await ethers.getContractFactory("Token");
+      const foreignToken = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+
+      await bridge
+        .connect(assetAdmin)
+        .registerRail(
+          assetToken.address,
+          parseEther("0.01"),
+          parseEther("100000"),
+          [2],
+          [zeroAddress],
+          false,
+          assetFeeRemittance.address,
+          assetManager.address,
+          2
+        );
+
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          false,
+          assetToken.address
+        );
+
+      const Bridge = await ethers.getContractFactory("Bridge");
+      newBridge = await Bridge.deploy(
+        controller.address,
+        settings.address,
+        registry.address,
+        deployer.address,
+        feeController.address,
+        pool.address,
+        bridge.address
+      );
+    });
+
+    it("Should Migrate Bridge", async () => {
+      await bridge.connect(Admin).initiateMigration(newBridge.address);
+      await time.increase(2 * 24 * 60 * 60);
+      await bridge.connect(Admin).migrateForiegn(1, false);
+      await bridge.connect(Admin).migrateNative(1);
+      await bridge.connect(Admin).completeMigration();
+      expect(await bridge.getAssetCount()).to.deep.equal(
+        await newBridge.getAssetCount()
+      );
+    });
+
+    it("Should not be able to migrate without initialization", async () => {
+      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith("N_Y_T")
+      await expect(bridge.connect(Admin).migrateForiegn(1, false)).to.be.revertedWith("N_Y_T")
+    })
+
+    it("Should not be migrate until migration delay is completed", async () => {
+      await bridge.connect(Admin).initiateMigration(newBridge.address);
+      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith("N_Y_T")
+      await expect(bridge.connect(Admin).migrateForiegn(1, false)).to.be.revertedWith("N_Y_T")
+    })
+
+
   });
 });
