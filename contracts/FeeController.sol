@@ -97,14 +97,18 @@ contract FeeController {
             3,
             50000 ether
         );
-        tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(
+        tokenHolderIncentive[BETA] = tokenHolderIncentiveModel(
             7,
             2000000 ether
         );
-        tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(
+        tokenHolderIncentive[ALPHA] = tokenHolderIncentiveModel(
             15,
             10000000 ether
         );
+    }
+
+    function activateBRDGHoldingIncentive(bool status) public Admin {
+        require(useBRDGHoldingIncentive != status, "already set");
     }
 
     function activateBRDGHoldingIncentive(bool status) public Admin {
