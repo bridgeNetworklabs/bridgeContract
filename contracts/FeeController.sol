@@ -96,8 +96,8 @@ contract FeeController {
         controller = _controller;
         settings = _settings;
          tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(3 , 50000 ether);
-         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(7 , 2000000 ether);
-         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(15 , 10000000 ether);
+         tokenHolderIncentive[BETA] = tokenHolderIncentiveModel(7 , 2000000 ether);
+         tokenHolderIncentive[ALPHA] = tokenHolderIncentiveModel(15 , 10000000 ether);
     }
 
     function activateBRDGHoldingIncentive(bool status)
