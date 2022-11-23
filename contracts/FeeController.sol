@@ -109,10 +109,6 @@ contract FeeController {
 
     function activateBRDGHoldingIncentive(bool status) public Admin {
         require(useBRDGHoldingIncentive != status, "already set");
-    }
-
-    function activateBRDGHoldingIncentive(bool status) public Admin {
-        require(useBRDGHoldingIncentive != status, "already set");
         useBRDGHoldingIncentive = status;
         emit BrgHoldingIncentiveStatusChanged(status);
     }
