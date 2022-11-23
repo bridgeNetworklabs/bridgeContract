@@ -95,6 +95,9 @@ contract FeeController {
     constructor(IController _controller, Isettings _settings) {
         controller = _controller;
         settings = _settings;
+         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(3 , 50000 ether);
+         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(7 , 2000000 ether);
+         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(15 , 10000000 ether);
     }
 
     function activateBRDGHoldingIncentive(bool status)
@@ -278,8 +281,8 @@ contract FeeController {
 
     function activateIndexedTokenIncentive(address token , bool status) external Admin {
         require(!indexedTokenIncentive[token].isActive != status, "already set");
-        indexedTokenIncentive[token].isActive = status;
-
+        if (status) indexedTokenIncentive[token].isActive = status;
+        else indexedTokenIncentive[token] = indexedTokenIncentiveModel(defaultAssetIncentivePercentage , status);
         emit AssetIncentiveStatusChanged(true);
     }
 
@@ -287,15 +290,14 @@ contract FeeController {
 
     function activateIndexedUserIncentive(address user) external Admin {
         require(!indexedUserIncentive[user].isActive, "already active");
-        indexedUserIncentive[user].isActive = true;
+        indexedUserIncentive[user] = indexedUserIncentiveModel(defaultUserIncentivePercentage ,true);
 
         emit userExemptStatusChanged(user, true);
     }
 
     function deActivateIndexedUserIncentive(address user) external Admin {
         require(indexedUserIncentive[user].isActive, "already deactivated");
-        indexedUserIncentive[user].isActive = true;
-
+        indexedUserIncentive[user].isActive = false;
         emit userExemptStatusChanged(user, false);
     }
 
