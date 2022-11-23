@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -6,13 +5,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interface/Isettings.sol";
-import "./interface/IfeeController.sol";
 import "./interface/Ibridge.sol";
 
 contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     using SafeERC20 for IERC20;
     Isettings public settings;
-    IfeeController public feeController;
     Ibridge public bridge;
     address public feeRemitance;
     uint256 public feePercentage;
@@ -30,11 +27,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address prevFeeRemitance,
         address currentFeeRemitance
     );
-    event socketUpdated(
-        address currentFeeController,
-        address currentSettings,
-        address currentBridge
-    );
+    event socketUpdated(address currentSettings, address currentBridge);
 
     event SendTransaction(
         bytes32 transactionID,
@@ -45,21 +38,14 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address indexed sender
     );
 
-    constructor(
-        Isettings _settings,
-        IfeeController _feeController,
-        Ibridge _bridge,
-        address _feeRemittance
-    ) {
+    constructor(Isettings _settings, Ibridge _bridge, address _feeRemittance) {
         require(
             _feeRemittance != address(0) &&
-                address(_feeController) != address(0) &&
                 address(_settings) != address(0) &&
                 address(_bridge) != address(0),
             "invalid address"
         );
         settings = _settings;
-        feeController = _feeController;
         bridge = _bridge;
         feeRemitance = _feeRemittance;
     }
@@ -155,12 +141,8 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         }
     }
 
-    function getTransactionGas(address sender, address asset, uint256 chainTo)
-        public
-        view
-        returns (uint256)
-    {
-        return feeController.getBridgeFee(sender, asset, chainTo);
+    function getTransactionGas(uint256 chainTo) public view returns (uint256) {
+        return settings.networkGas(chainTo);
     }
 
     function getTransactionFee(uint256 amount) public view returns (uint256) {
@@ -178,7 +160,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address reciever
     ) public payable notPaused {
         require(validAsset(assetAddress), "Invalid Asset");
-        (bool success, uint256 _amount, uint gas) = preccessTransaction(
+        (bool success, uint256 _amount, uint256 gas) = preccessTransaction(
             assetAddress,
             chainID,
             msg.sender,
@@ -241,7 +223,7 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address sender,
         uint256 amount
     ) internal returns (bool, uint256, uint256) {
-        uint256 gas = feeController.getBridgeFee(sender, assetAddress, chainID);
+        uint256 gas = getTransactionGas(chainID);
         if (assetAddress == address(0)) {
             if (msg.value >= amount + gas && msg.value > 0) {
                 uint256 value = msg.value - gas;
@@ -298,34 +280,20 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     }
 
     function pauseSocket() public onlyOwner {
-        require(
-            address(feeController) != address(0) ||
-                address(settings) != address(0) ||
-                address(bridge) != address(0),
-            "socket not set"
-        );
         paused = !paused;
     }
 
-    function updateSocket(
-        IfeeController _feecontroller,
-        Isettings _settings,
-        Ibridge _bridge
-    ) public onlyOwner {
+    function updateSocket(Isettings _settings, Ibridge _bridge)
+        public
+        onlyOwner
+    {
         require(
-            address(_feecontroller) != address(0) &&
-                address(_settings) != address(0) &&
-                address(_bridge) != address(0),
+            address(_settings) != address(0) && address(_bridge) != address(0),
             "invalid address"
         );
         settings = _settings;
-        feeController = _feecontroller;
         bridge = _bridge;
         paused = false;
-        socketUpdated(
-            address(_feecontroller),
-            address(_settings),
-            address(_bridge)
-        );
+        socketUpdated(address(_settings), address(_bridge));
     }
 }

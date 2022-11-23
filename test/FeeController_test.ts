@@ -1,3 +1,4 @@
+import { getIncentiveIdentifier } from "./utils/utils";
 import { ethers } from "hardhat";
 import type {
   Settings,
@@ -21,6 +22,9 @@ describe("FeeController", () => {
   let assetUser2: SignerWithAddress;
   let asset1: Token;
   let brdgToken: Token;
+  const COMMON = getIncentiveIdentifier("COMMON");
+  const ALPHA = getIncentiveIdentifier("ALPHA");
+  const BETA = getIncentiveIdentifier("BETA");
 
   beforeEach(async () => {
     [feeRemittance, owner, admin, assetUser, randomAddress, assetUser2] =
@@ -31,7 +35,8 @@ describe("FeeController", () => {
     const SettingsContract = await ethers.getContractFactory("Settings");
     settings = await SettingsContract.deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
     const feeControllerContract = await ethers.getContractFactory(
       "FeeController"
@@ -60,19 +65,19 @@ describe("FeeController", () => {
     it("Should activate bridge holding incentive ", async () => {
       const tx = await feeController
         .connect(admin)
-        .activateBrgHoldingIncentive(true);
-      expect(await feeController.usebrgHoldingIncentive()).to.be.true;
+        .activateBRDGHoldingIncentive(true);
+      expect(await feeController.useBRDGHoldingIncentive()).to.be.true;
       expect(tx)
         .emit(feeController, "BrgHoldingIncentiveStatusChanged")
         .withArgs(true);
     });
 
     it("Should deactivate bridge holding incentive ", async () => {
-      await feeController.connect(admin).activateBrgHoldingIncentive(true);
+      await feeController.connect(admin).activateBRDGHoldingIncentive(true);
       const tx = await feeController
         .connect(admin)
-        .activateBrgHoldingIncentive(false);
-      expect(await feeController.usebrgHoldingIncentive()).to.be.false;
+        .activateBRDGHoldingIncentive(false);
+      expect(await feeController.useBRDGHoldingIncentive()).to.be.false;
       expect(tx)
         .emit(feeController, "BrgHoldingIncentiveStatusChanged")
         .withArgs(false);
@@ -80,7 +85,7 @@ describe("FeeController", () => {
 
     it("Should revert if random address tries to active bridge holding incentive ", async () => {
       await expect(
-        feeController.connect(randomAddress).activateBrgHoldingIncentive(true)
+        feeController.connect(randomAddress).activateBRDGHoldingIncentive(true)
       ).to.be.revertedWith("caller is not the admin");
     });
   });
@@ -192,130 +197,63 @@ describe("FeeController", () => {
     it("Should set an asset incentivization", async () => {
       const tx = await feeController
         .connect(owner)
-        .setAssetIncentivization(asset1.address, 40);
-      expect(await feeController.assetIncentive(asset1.address)).to.be.equal(
-        40
-      );
+        .updateUserExemptionPercentage(asset1.address, 40);
+      expect(
+        (await feeController.indexedUserIncentive(asset1.address))
+          .incentivePercentage
+      ).to.be.equal(40);
       expect(tx)
         .emit(feeController, "AssetIncentiveUpdated")
         .withArgs(assetUser.address, true);
     });
 
-    it("Asset incentivization should not be more than 100", async () => {
-      await expect(
-        feeController.connect(owner).setAssetIncentivization(asset1.address, 90)
-      ).to.be.revertedWith("above limit");
-    });
+    // it("Asset incentivization should not be more than 100", async () => {
+    //   await expect(
+    //     feeController.connect(owner).updateUserExemptionPercentage(asset1.address, 90)
+    //   ).to.be.revertedWith("above limit");
+    // });
 
     it("Should revert if any address apart from owner tries to set asset incentivization", async () => {
       await expect(
         feeController
           .connect(randomAddress)
-          .setAssetIncentivization(asset1.address, 90)
+          .updateUserExemptionPercentage(asset1.address, 90)
       ).to.be.revertedWith("caller is not the owner");
     });
   });
 
-  describe("Bridge Holding Threshold", () => {
-    it("Should change bridge holding incentive threshold", async () => {
-      const tx = await feeController.connect(owner).setBrgHoldingThreshold(40);
-      expect(await feeController.brgHoldingThreshold()).to.be.equal(40);
-      expect(tx)
-        .emit(feeController, "BrgHoldingThresholdUpdated")
-        .withArgs(0, 40);
+  describe("Bridge Holding Threshold", () => {});
+
+  describe("Bridge Holding Incentive", () => {});
+
+  describe("getBridgeFee", () => {
+    beforeEach(async () => {
+      await settings
+        .connect(owner)
+        .setNetworkSupportedChains(
+          [1, 2, 9],
+          [parseEther("0.01"), parseEther("0.02"), parseEther("0.09")],
+          true
+        );
+
+      await settings.connect(owner).setbrgToken(brdgToken.address);
+      await brdgToken
+        .connect(owner)
+        .transfer(assetUser2.address, parseEther("1000"));
     });
 
-    it("Should revert if not owner changing bridge holding incentive threshold", async () => {
-      await expect(
-        feeController.connect(randomAddress).setBrgHoldingThreshold(50)
-      ).to.be.revertedWith("caller is not the owner");
-    });
-  });
-
-  describe("Bridge Holding Incentive", () => {
-    it("Should change bridge holding incentive", async () => {
-      const tx = await feeController.connect(owner).setBrgHoldingIncentive(40);
-      expect(await feeController.brgHoldingIncentive()).to.be.equal(40);
-      expect(tx)
-        .emit(feeController, "BrgHoldingIncentiveUpdated")
-        .withArgs(20, 40);
+    it("Should return 0 if user is exempted and address exemption is activated", async () => {
+      await feeController.connect(admin).activateAddressExemption(true);
+      await feeController.connect(owner).exemptAddress(assetUser.address, true);
+      expect(
+        await feeController.getBridgeFee(assetUser.address, asset1.address)
+      ).to.be.equal(0);
     });
 
-    it("Should revert if bridge holding incentive is not less 100", async () => {
-      await expect(
-        feeController.connect(owner).setBrgHoldingIncentive(100)
-      ).to.be.revertedWith("above limit");
-    });
+    it("Should get an incentive if asset holding incentive is active", async () => {});
 
-    it("Should revert if not owner changing bridge holding incentive incentive", async () => {
-      await expect(
-        feeController.connect(randomAddress).setBrgHoldingIncentive(50)
-      ).to.be.revertedWith("caller is not the owner");
-    });
+    it("Should get an incentive if user has more than brdg holding threshold and if bridge holding is active", async () => {});
 
-    describe("getBridgeFee", () => {
-      beforeEach(async () => {
-        await settings
-          .connect(owner)
-          .setNetworkSupportedChains(
-            [1, 2, 9],
-            [parseEther("0.01"), parseEther("0.02"), parseEther("0.09")],
-            true
-          );
-
-        await settings.connect(owner).setbrgToken(brdgToken.address);
-        await brdgToken
-          .connect(owner)
-          .transfer(assetUser2.address, parseEther("1000"));
-      });
-
-      it("Should return 0 if user is exempted and address exemption is activated", async () => {
-        await feeController.connect(admin).activateAddressExemption(true);
-        await feeController
-          .connect(owner)
-          .exemptAddress(assetUser.address, true);
-        expect(
-          await feeController.getBridgeFee(assetUser.address, asset1.address, 9)
-        ).to.be.equal(0);
-      });
-
-      it("Should get an incentive if asset holding incentive is active", async () => {
-        await feeController.connect(owner).activateAssetIncentive(true);
-        await feeController
-          .connect(owner)
-          .setAssetIncentivization(asset1.address, 50);
-        expect(
-          await feeController.getBridgeFee(
-            assetUser2.address,
-            asset1.address,
-            9
-          )
-        ).to.be.equal(parseEther("0.045"));
-      });
-
-      it("Should get an incentive if user has more than brdg holding threshold and if bridge holding is active", async () => {
-        await feeController.connect(owner).activateBrgHoldingIncentive(true);
-        await feeController
-          .connect(owner)
-          .setBrgHoldingThreshold(parseEther("80"));
-        expect(
-          await feeController.getBridgeFee(
-            assetUser2.address,
-            asset1.address,
-            9
-          )
-        ).to.be.equal(parseEther("0.072"));
-      });
-
-      it("Should return the exact fee if there are no incentive", async () => {
-        expect(
-          await feeController.getBridgeFee(
-            assetUser2.address,
-            asset1.address,
-            9
-          )
-        ).to.be.equal(parseEther("0.09"));
-      });
-    });
+    it("Should return the exact fee if there are no incentive", async () => {});
   });
 });

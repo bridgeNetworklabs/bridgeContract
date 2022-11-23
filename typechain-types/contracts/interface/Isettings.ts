@@ -34,6 +34,7 @@ export interface IsettingsInterface extends utils.Interface {
     "maxFeeThreshold()": FunctionFragment;
     "minValidations()": FunctionFragment;
     "minWithdrawableFee()": FunctionFragment;
+    "networkFee(uint256)": FunctionFragment;
     "networkGas(uint256)": FunctionFragment;
     "onlyOwnableRail()": FunctionFragment;
     "railOwnerFeeShare()": FunctionFragment;
@@ -54,6 +55,7 @@ export interface IsettingsInterface extends utils.Interface {
       | "maxFeeThreshold"
       | "minValidations"
       | "minWithdrawableFee"
+      | "networkFee"
       | "networkGas"
       | "onlyOwnableRail"
       | "railOwnerFeeShare"
@@ -98,6 +100,10 @@ export interface IsettingsInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "minWithdrawableFee",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "networkFee",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "networkGas",
@@ -158,6 +164,7 @@ export interface IsettingsInterface extends utils.Interface {
     functionFragment: "minWithdrawableFee",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "networkFee", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "networkGas", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onlyOwnableRail",
@@ -237,8 +244,13 @@ export interface Isettings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    networkGas(
+    networkFee(
       chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    networkGas(
+      chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -280,8 +292,13 @@ export interface Isettings extends BaseContract {
 
   minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  networkGas(
+  networkFee(
     chainId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  networkGas(
+    chainID: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -323,8 +340,13 @@ export interface Isettings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    networkGas(
+    networkFee(
       chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    networkGas(
+      chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -369,8 +391,13 @@ export interface Isettings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    networkGas(
+    networkFee(
       chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    networkGas(
+      chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -417,8 +444,13 @@ export interface Isettings extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    networkGas(
+    networkFee(
       chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    networkGas(
+      chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

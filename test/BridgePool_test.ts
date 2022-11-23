@@ -63,7 +63,8 @@ describe("BridgePool", () => {
     const SettingContract = await ethers.getContractFactory("Settings");
     settings = await SettingContract.connect(owner).deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
     const feeControllerContract = await ethers.getContractFactory(
       "FeeController"

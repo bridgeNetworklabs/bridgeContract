@@ -21,14 +21,13 @@ contract Bridge is Context, ReentrancyGuard {
         address tokenAddress;
         uint256 minAmount;
         uint256 maxAmount;
-        uint256 feeBalance;
+        uint256 ownerFeeBalance;
+        uint256 networkFeeBalance;
         uint256 collectedFees;
         bool ownedRail;
         address manager;
         address feeRemitance;
-        uint256 balance;
         bool isSet;
-        uint256 baseFeeCollected;
     }
     struct directForiegnAsset {
         address foriegnAddress;
@@ -55,8 +54,7 @@ contract Bridge is Context, ReentrancyGuard {
     mapping(address => mapping(uint256 => bool)) hasWrappedForiegnPair;
     mapping(address => mapping(uint256 => bool)) public isDirectSwap;
 
-    uint256 totalFees;
-    uint256 feeBalance;
+    uint256 totalGas;
     uint256 public chainId; // current chain id
     //    uint256 public immutable chainId; // current chain id
     address public deployer;
@@ -418,13 +416,13 @@ contract Bridge is Context, ReentrancyGuard {
                 range[1],
                 0,
                 0,
+                0,
                 OwnedRail,
                 manager,
                 feeAddress,
-                0,
-                true,
-                0
+                true
             );
+
             foriegnAssetChainID[wrappedAddress] = chainID;
             foriegnPair[wrappedAddress] = foriegnAddress;
             foriegnAssetsList.push(wrappedAddress);
@@ -496,7 +494,8 @@ contract Bridge is Context, ReentrancyGuard {
                 recievedValue <= nativeAssets[assetAddress].maxAmount,
             "I_F"
         );
-        deductFees(assetAddress, chainTo, true);
+
+        recievedValue = deductFees(assetAddress, recievedValue, true);
         if (isDirectSwap[assetAddress][chainTo]) {
             if (assetAddress == address(0)) {
                 bridgePool.topUp{value: recievedValue}(
@@ -504,14 +503,13 @@ contract Bridge is Context, ReentrancyGuard {
                     recievedValue
                 );
             } else {
-                IERC20(assetAddress).safeApprove(
+                IERC20(assetAddress).approve(
                     address(bridgePool),
                     recievedValue
                 );
                 bridgePool.topUp(assetAddress, recievedValue);
             }
         }
-        nativeAssets[assetAddress].balance += recievedValue;
 
         recievedValue = standaredize(
             recievedValue,
@@ -559,7 +557,7 @@ contract Bridge is Context, ReentrancyGuard {
                 recievedValue <= foriegnAssets[assetAddress].maxAmount,
             "I_F"
         );
-        deductFees(assetAddress, chainTo, false);
+        recievedValue = deductFees(assetAddress, recievedValue, false);
         IwrappedToken(assetAddress).burn(recievedValue);
         address _foriegnAsset = foriegnPair[assetAddress];
         recievedValue = standaredize(
@@ -639,15 +637,12 @@ contract Bridge is Context, ReentrancyGuard {
                 registry.transactionValidated(claimID),
             "AL_E"
         );
-        //    require(, "C");
-        //    require(, "N_V");
 
         payoutUser(
             payable(transaction.receiver),
             transaction.assetAddress,
             amount
         );
-        nativeAssets[transaction.assetAddress].balance -= amount;
         registry.completeClaimTransaction(claimID);
     }
 
@@ -661,28 +656,7 @@ contract Bridge is Context, ReentrancyGuard {
             recipient.transfer(amount);
         } else {
             IERC20 currentPaymentMethod = IERC20(_paymentMethod);
-            currentPaymentMethod.safeTransfer(recipient, amount);
-        }
-    }
-
-    function removeBaseFee(address assetAddress, uint256 amount)
-        private
-        returns (uint256 value)
-    {
-        // removeBaseFee
-        uint256 baseFeePercentage = settings.baseFeePercentage();
-        if (settings.baseFeeEnable() && baseFeePercentage > 0) {
-            uint256 baseFee = (amount * baseFeePercentage) / 10000;
-            payoutUser(payable(settings.feeRemitance()), assetAddress, baseFee);
-            if (nativeAssets[assetAddress].isSet) {
-                nativeAssets[assetAddress].baseFeeCollected += baseFee;
-                value = amount - baseFee;
-            } else {
-                foriegnAssets[assetAddress].baseFeeCollected += baseFee;
-                value = amount - baseFee;
-            }
-        } else {
-            value = amount;
+            require(currentPaymentMethod.transfer(recipient, amount), "I_F");
         }
     }
 
@@ -692,16 +666,17 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 chainID,
         uint256 amount
     ) internal returns (bool, uint256) {
-        uint256 fees = IfeeController(feeController).getBridgeFee(
-            msg.sender,
-            assetAddress,
-            chainID
-        );
+        uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
-            if (msg.value >= amount + fees && msg.value > 0) {
-                uint256 value = msg.value - fees;
-
-                return (true, removeBaseFee(assetAddress, value));
+            if (msg.value >= amount + gas && msg.value > 0) {
+                totalGas += msg.value - amount;
+                if (gas > 0)
+                    payoutUser(
+                        payable(settings.gasBank()),
+                        address(0),
+                        msg.value - amount
+                    );
+                return (true, amount);
             } else {
                 return (false, 0);
             }
@@ -709,15 +684,19 @@ contract Bridge is Context, ReentrancyGuard {
             IERC20 token = IERC20(assetAddress);
             if (
                 token.allowance(_msgSender(), address(this)) >= amount &&
-                (msg.value >= fees)
+                (msg.value >= gas)
             ) {
+                totalGas += msg.value;
+                if (gas > 0)
+                    payoutUser(
+                        payable(settings.gasBank()),
+                        address(0),
+                        msg.value
+                    );
                 uint256 balanceBefore = token.balanceOf(address(this));
                 token.safeTransferFrom(_msgSender(), address(this), amount);
                 uint256 balanceAfter = token.balanceOf(address(this));
-                return (
-                    true,
-                    removeBaseFee(assetAddress, balanceAfter - balanceBefore)
-                );
+                return (true, balanceAfter - balanceBefore);
             } else {
                 return (false, 0);
             }
@@ -725,35 +704,46 @@ contract Bridge is Context, ReentrancyGuard {
     }
 
     // internal fxn for deducting and remitting fees after a sale
-    function deductFees(address assetAddress, uint256 chainID, bool native)
+    function deductFees(address assetAddress, uint256 amount, bool native)
         private
+        returns (uint256)
     {
         asset storage currentasset;
         if (native) currentasset = nativeAssets[assetAddress];
         else currentasset = foriegnAssets[assetAddress];
 
         require(currentasset.isSet, "I_A");
-
-        // uint256 fees_to_deduct = settings.networkFee(chainID);
-        uint256 fees_to_deduct = IfeeController(feeController).getBridgeFee(
-            msg.sender,
-            assetAddress,
-            chainID
-        );
-        totalFees = totalFees + fees_to_deduct;
-
-        if (currentasset.ownedRail) {
-            uint256 ownershare = (fees_to_deduct *
-                settings.railOwnerFeeShare()) / 100;
-            uint256 networkshare = fees_to_deduct - ownershare;
-            currentasset.collectedFees += fees_to_deduct;
-            currentasset.feeBalance += ownershare;
-            feeBalance = feeBalance + networkshare;
-        } else {
-            currentasset.collectedFees += fees_to_deduct;
-            feeBalance = feeBalance + fees_to_deduct;
+        if (!settings.baseFeeEnable()) {
+            return amount;
         }
-        remitFees(assetAddress, native);
+        // uint256 fees_to_deduct = settings.networkFee(chainID);
+
+        uint256 feePercentage = IfeeController(feeController).getBridgeFee(
+            msg.sender,
+            assetAddress
+        );
+
+        if (feePercentage == 0) {
+            return amount;
+        }
+
+        if (feePercentage > settings.maxFeeThreshold()) {
+            feePercentage = settings.maxFeeThreshold();
+        }
+
+        uint256 baseFee = (amount * feePercentage) / 10000;
+        if (currentasset.ownedRail) {
+            uint256 ownershare = (baseFee * settings.railOwnerFeeShare()) / 100;
+            uint256 networkshare = baseFee - ownershare;
+            currentasset.collectedFees += baseFee;
+            currentasset.ownerFeeBalance += ownershare;
+            currentasset.networkFeeBalance += networkshare;
+        } else {
+            currentasset.collectedFees += baseFee;
+            currentasset.networkFeeBalance += baseFee;
+        }
+
+        return amount - baseFee;
     }
 
     function remitFees(address assetAddress, bool native) public {
@@ -762,27 +752,21 @@ contract Bridge is Context, ReentrancyGuard {
         if (native) currentasset = nativeAssets[assetAddress];
         else currentasset = foriegnAssets[assetAddress];
 
-        if (feeBalance > settings.minWithdrawableFee()) {
-            if (currentasset.ownedRail) {
-                if (currentasset.feeBalance > 0) {
-                    amount = currentasset.feeBalance;
-                    currentasset.feeBalance = 0;
-                    payoutUser(
-                        payable(currentasset.feeRemitance),
-                        address(0),
-                        amount
-                    );
-                }
-            }
-            if (feeBalance > 0) {
-                amount = feeBalance;
-                feeBalance = 0;
+        if (currentasset.ownedRail) {
+            if (currentasset.ownerFeeBalance > 0) {
+                amount = currentasset.ownerFeeBalance;
+                currentasset.ownerFeeBalance = 0;
                 payoutUser(
-                    payable(settings.feeRemitance()),
-                    address(0),
+                    payable(currentasset.feeRemitance),
+                    assetAddress,
                     amount
                 );
             }
+        }
+        if (currentasset.networkFeeBalance > 0) {
+            amount = currentasset.networkFeeBalance;
+            currentasset.networkFeeBalance = 0;
+            payoutUser(payable(settings.feeRemitance()), assetAddress, amount);
         }
     }
 
@@ -802,10 +786,7 @@ contract Bridge is Context, ReentrancyGuard {
         isOwner();
 
         require(
-            activeMigration &&
-                nMigrationAt >= nativeAssetsList.length &&
-                fMigrationAt >= foriegnAssetsList.length &&
-                fDirectSwapMigrationAt >= directForiegnCount,
+            activeMigration && fMigrationAt >= foriegnAssetsList.length,
             "P_M"
         );
         registry.transferOwnership(newBridge);
@@ -823,7 +804,7 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 start;
         uint256 migrationAmount;
         if (directSwap) {
-            require(directForiegnCount > fDirectSwapMigrationAt, "completed");
+            require(fDirectSwapMigrationAt < directForiegnCount, "completed");
             if (fDirectSwapMigrationAt == 0) start = fDirectSwapMigrationAt;
             else start = fDirectSwapMigrationAt + 1;
 
@@ -852,7 +833,7 @@ contract Bridge is Context, ReentrancyGuard {
                 }
             }
         } else {
-            require(foriegnAssetsList.length > fMigrationAt, "completed");
+            require(fMigrationAt < foriegnAssetsList.length, "completed");
             if (fMigrationAt == 0) start = fMigrationAt;
             else start = fMigrationAt + 1;
 
@@ -862,17 +843,9 @@ contract Bridge is Context, ReentrancyGuard {
 
             for (uint256 i; i < migrationAmount; i++) {
                 address assetAddress = foriegnAssetsList[start + i];
+                remitFees(assetAddress, false);
                 asset memory foriegnAsset = foriegnAssets[assetAddress];
-                if (foriegnAsset.ownedRail) {
-                    if (foriegnAsset.feeBalance > 0) {
-                        payoutUser(
-                            payable(foriegnAsset.feeRemitance),
-                            address(0),
-                            foriegnAsset.feeBalance
-                        );
-                        foriegnAsset.feeBalance = 0;
-                    }
-                }
+
                 IwrappedToken(assetAddress).transferOwnership(newBridge);
                 IbridgeMigrator(newBridge).registerForiegnMigration(
                     foriegnAsset.tokenAddress,
@@ -904,15 +877,9 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 start;
         if (nMigrationAt == 0) start = nMigrationAt;
         else start = nMigrationAt + 1;
-        if (limit == 0) {
-            migrationAmount = nativeAssetsList.length - nMigrationAt;
-        } else {
+        if (limit + nativeAssetsList.length < nMigrationAt)
             migrationAmount = limit;
-            require(
-                migrationAmount + nMigrationAt <= nativeAssetsList.length,
-                "M_O"
-            );
-        }
+        else migrationAmount = nativeAssetsList.length - fDirectSwapMigrationAt;
 
         for (uint256 i; i < migrationAmount; i++) {
             _migrateNative(nativeAssetsList[start + i]);
@@ -933,7 +900,11 @@ contract Bridge is Context, ReentrancyGuard {
                 nativeAsset.ownedRail,
                 nativeAsset.manager,
                 nativeAsset.feeRemitance,
-                [nativeAsset.balance, balance, nativeAsset.feeBalance],
+                [
+                    nativeAsset.ownerFeeBalance,
+                    balance,
+                    nativeAsset.networkFeeBalance
+                ],
                 isActiveNativeAsset[assetAddress],
                 assetSupportedChainIds[assetAddress]
             );
@@ -947,7 +918,11 @@ contract Bridge is Context, ReentrancyGuard {
                 nativeAsset.ownedRail,
                 nativeAsset.manager,
                 nativeAsset.feeRemitance,
-                [nativeAsset.balance, balance, nativeAsset.feeBalance],
+                [
+                    nativeAsset.ownerFeeBalance,
+                    balance,
+                    nativeAsset.networkFeeBalance
+                ],
                 isActiveNativeAsset[assetAddress],
                 assetSupportedChainIds[assetAddress]
             );
@@ -988,8 +963,8 @@ contract Bridge is Context, ReentrancyGuard {
             manager,
             true
         );
-        nativeAssets[assetAddress].balance = balances[0];
-        nativeAssets[assetAddress].feeBalance = balances[2];
+        nativeAssets[assetAddress].ownerFeeBalance = balances[0];
+        nativeAssets[assetAddress].networkFeeBalance = balances[2];
         nativeAssets[assetAddress].collectedFees = collectedFees;
 
         if (active) {
@@ -1014,8 +989,7 @@ contract Bridge is Context, ReentrancyGuard {
         require(
             settings.isNetworkSupportedChain(chainID) &&
                 !hasWrappedForiegnPair[foriegnAddress][chainID] &&
-                _msgSender() == migrator &&
-                wrappedAddress != address(0),
+                _msgSender() == migrator,
             "U_A"
         );
 
@@ -1034,13 +1008,12 @@ contract Bridge is Context, ReentrancyGuard {
                 minAmount,
                 maxAmount,
                 0,
+                0,
                 _collectedFees,
                 ownedRail,
                 manager,
                 feeAddress,
-                0,
-                true,
-                0
+                true
             );
             foriegnAssetChainID[wrappedAddress] = chainID;
             foriegnPair[wrappedAddress] = foriegnAddress;
@@ -1144,10 +1117,7 @@ contract Bridge is Context, ReentrancyGuard {
             uint256,
             uint256,
             uint256,
-            address,
-            address,
-            uint256,
-            uint256
+            address
         )
     {
         return (
@@ -1159,10 +1129,7 @@ contract Bridge is Context, ReentrancyGuard {
             fMigrationAt,
             fDirectSwapMigrationAt,
             nMigrationAt,
-            deployer,
-            feeController,
-            totalFees,
-            feeBalance
+            feeController
         );
     }
 }

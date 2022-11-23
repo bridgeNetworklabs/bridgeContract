@@ -40,7 +40,8 @@ describe("Deployer", () => {
     const SettingContract = await ethers.getContractFactory("Settings");
     settings = await SettingContract.deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
     const feeControllerContract = await ethers.getContractFactory(
       "FeeController"

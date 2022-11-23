@@ -42,6 +42,7 @@ describe("Bridge", function () {
   let registrar: SignerWithAddress;
   let user1: SignerWithAddress;
   let user2: SignerWithAddress;
+  let owner: SignerWithAddress;
   const zeroAddress = ethers.constants.AddressZero;
 
   beforeEach(async () => {
@@ -62,6 +63,7 @@ describe("Bridge", function () {
       registrar,
       user1,
       user2,
+      owner,
     ] = await ethers.getSigners();
 
     const controllerContract = await ethers.getContractFactory("Controller");
@@ -80,7 +82,8 @@ describe("Bridge", function () {
     const SettingContract = await ethers.getContractFactory("Settings");
     settings = await SettingContract.deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
 
     const feeControllerContract = await ethers.getContractFactory(
@@ -516,8 +519,7 @@ describe("Bridge", function () {
         .approve(bridge.address, ethers.utils.parseEther("1"));
       let val = await feeController.getBridgeFee(
         user1.address,
-        assetToken.address,
-        2
+        assetToken.address
       );
       let transactionID = await registry.getID(
         bridge.chainId(),
@@ -544,11 +546,6 @@ describe("Bridge", function () {
     });
 
     it("Should be able Bridge assetToken With any decimals", async function () {
-      const assetTokenContract2 = await ethers.getContractFactory("TestToken");
-
-      const token = await assetTokenContract2
-        .connect(assetAdmin)
-        .deploy("Token", "tkn", 6);
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], ["10000000000000000000"], true);
@@ -558,17 +555,21 @@ describe("Bridge", function () {
       await brgToken
         .connect(assetManager)
         .approve(bridge.address, settings.railRegistrationFee());
+      const assetTokenContract = await ethers.getContractFactory("TestToken");
+      const token = await assetTokenContract
+        .connect(assetAdmin)
+        .deploy("Token", "tkn", 6);
       await settings
         .connect(Admin)
         .setApprovedToAdd(assetManager.address, token.address, true);
-      // await settings.connect(Admin).enableBaseFee()
+      await settings.connect(Admin).enableBaseFee();
 
       await bridge
         .connect(assetManager)
         .registerRail(
           token.address,
-          ethers.utils.parseUnits("0.001", 6),
-          ethers.utils.parseUnits("1000", 6),
+          parseUnits("0.001", 6),
+          parseUnits("100", 6),
           [2],
           [zeroAddress],
           false,
@@ -581,35 +582,23 @@ describe("Bridge", function () {
       await bridge.connect(Admin).activeNativeAsset(token.address, true);
       await token
         .connect(assetAdmin)
-        .transfer(user1.address, ethers.utils.parseUnits("10", 6));
-      await token
-        .connect(user1)
-        .approve(bridge.address, ethers.utils.parseUnits("1", 6));
-      let val = await feeController.getBridgeFee(
-        user1.address,
-        token.address,
-        2
-      );
+        .transfer(user1.address, parseUnits("1", 6));
+      await token.connect(user1).approve(bridge.address, parseUnits("10", 6));
+      let val = await feeController.getBridgeFee(user1.address, token.address);
       let transactionID = await registry.getID(
         bridge.chainId(),
         2,
         token.address,
-        ethers.utils.parseUnits("1", 16), // to get the correct transaction you have to standardizes the token
+        parseUnits("0.01", 6),
         user2.address,
         registry.getUserNonce(user1.address)
       );
 
       await bridge
         .connect(user1)
-        .send(
-          2,
-          token.address,
-          ethers.utils.parseUnits("0.01", 6),
-          user2.address,
-          {
-            value: val,
-          }
-        );
+        .send(2, token.address, parseUnits("0.01", 6), user2.address, {
+          value: val,
+        });
 
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
@@ -656,22 +645,22 @@ describe("Bridge", function () {
           assetFeeRemittance.address,
           3,
           true,
-          assetToken2.address
+          assetToken.address
         );
       // let fees = await ethers.utils.parseEther(val)
       await bridge.connect(Admin).activeNativeAsset(assetToken2.address, true);
       await assetToken2.connect(Admin).approve(bridge.address, "1000000000");
       let val = await feeController.getBridgeFee(
         Admin.address,
-        assetToken2.address,
-        2
+        assetToken2.address
       );
-
-      await bridge
-        .connect(Admin)
-        .send(2, assetToken2.address, "1000000000", Admin.address, {
-          value: val,
-        });
+      console.log(
+        await bridge
+          .connect(Admin)
+          .send(2, assetToken2.address, "1000000000", Admin.address, {
+            value: val,
+          })
+      );
 
       let mintID = await registry.getID(
         2,
@@ -744,9 +733,7 @@ describe("Bridge", function () {
       await brgToken
         .connect(assetManager)
         .approve(bridge.address, settings.railRegistrationFee());
-      await settings
-        .connect(Admin)
-        .setApprovedToAdd(assetManager.address, assetToken.address, true);
+
       await bridge
         .connect(assetManager)
         .registerRail(
@@ -789,9 +776,6 @@ describe("Bridge", function () {
       await brgToken
         .connect(assetManager)
         .approve(bridge.address, settings.railRegistrationFee());
-      await settings
-        .connect(Admin)
-        .setApprovedToAdd(assetManager.address, assetToken.address, true);
 
       await bridge
         .connect(assetManager)
@@ -851,13 +835,10 @@ describe("Bridge", function () {
       await brgToken
         .connect(Admin)
         .transfer(assetManager.address, settings.railRegistrationFee());
-
       await brgToken
         .connect(assetManager)
         .approve(bridge.address, settings.railRegistrationFee());
-      await settings
-        .connect(Admin)
-        .setApprovedToAdd(assetManager.address, assetToken.address, true);
+
       await bridge
         .connect(assetManager)
         .registerRail(
@@ -879,12 +860,9 @@ describe("Bridge", function () {
         .approve(bridge.address, "100000000000000000000");
       let val = await feeController.getBridgeFee(
         assetManager.address,
-        assetToken.address,
-        2
+        assetToken.address
       );
-      await assetToken
-        .connect(assetAdmin)
-        .transfer(assetManager.address, "100000000000000000000");
+
       await bridge
         .connect(assetManager)
         .send(2, assetToken.address, "100000000000000000000", Admin.address, {
@@ -972,13 +950,12 @@ describe("Bridge", function () {
 
       // let fees = await ethers.utils.parseEther(val)
       await bridge.connect(Admin).activeNativeAsset(assetToken2.address, true);
-      await assetToken2
+      await assetToken
         .connect(assetManager)
         .approve(bridge.address, "1000000000");
       let val = await feeController.getBridgeFee(
         assetManager.address,
-        assetToken2.address,
-        2
+        assetToken2.address
       );
 
       await bridge
@@ -1067,26 +1044,25 @@ describe("Bridge", function () {
         );
 
       // let fees = await ethers.utils.parseEther(val)
-      await bridge.connect(Admin).activeNativeAsset(assetToken2.address, true);
-      await assetToken2
+      await bridge.connect(Admin).activeNativeAsset(assetToken.address, true);
+      await assetToken
         .connect(assetManager)
         .approve(bridge.address, "1000000000");
       let val = await feeController.getBridgeFee(
         assetManager.address,
-        assetToken2.address,
-        2
+        assetToken.address
       );
 
       await bridge
         .connect(assetManager)
-        .send(2, assetToken2.address, "1000000000", Admin.address, {
+        .send(2, assetToken.address, "1000000000", Admin.address, {
           value: val,
         });
 
       let claimID = await registry.getID(
         2,
         bridge.chainId(),
-        assetToken2.address,
+        assetToken.address,
         "1000000000000000000000",
         Admin.address,
         0
@@ -1096,7 +1072,7 @@ describe("Bridge", function () {
         .registerClaimTransaction(
           claimID,
           2,
-          assetToken2.address,
+          assetToken.address,
           "1000000000000000000000",
           Admin.address,
           0
@@ -1133,14 +1109,15 @@ describe("Bridge", function () {
         .connect(validator3)
         .validateTransaction(claimID, signatures, false);
 
-      let balance = await assetToken2.balanceOf(Admin.address);
+      let balance = await assetToken.balanceOf(Admin.address);
+      console.log(balance);
       expect(balance).to.equal("1000000000");
     });
     it("should be able to register foriegn asset", async function () {
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], ["10000000000000000000"], true);
-      await settings.isNetworkSupportedChain(2);
+      console.log(await settings.isNetworkSupportedChain(2));
       expect(
         await bridge
           .connect(registrar)
@@ -1162,6 +1139,7 @@ describe("Bridge", function () {
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], ["10000000000000000000"], true);
+      console.log(await settings.isNetworkSupportedChain(2));
       await bridge
         .connect(registrar)
         .addForiegnAsset(
@@ -1176,7 +1154,7 @@ describe("Bridge", function () {
           false,
           zeroAddress
         );
-      await bridge.wrappedForiegnPair(zeroAddress, 2);
+      console.log(await bridge.wrappedForiegnPair(zeroAddress, 2));
       let mintID = await registry.getID(
         2,
         bridge.chainId(),
@@ -1202,6 +1180,7 @@ describe("Bridge", function () {
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], ["10000000000000000000"], true);
+      console.log(await settings.isNetworkSupportedChain(2));
       await bridge
         .connect(registrar)
         .addForiegnAsset(
@@ -1217,6 +1196,7 @@ describe("Bridge", function () {
           zeroAddress
         );
       let wrapped = await bridge.wrappedForiegnPair(zeroAddress, 2);
+      console.log(wrapped);
       let mintID = await registry.getID(
         2,
         bridge.chainId(),
@@ -1270,13 +1250,15 @@ describe("Bridge", function () {
         .validateTransaction(mintID, signatures, true);
 
       let wrappedAddress = await bridge.wrappedForiegnPair(zeroAddress, 2);
+      console.log(wrappedAddress);
       let wrappedToken = await ethers.getContractAt(
         "WrappedToken",
         wrappedAddress,
         Admin
       );
       let balance = await wrappedToken.balanceOf(Admin.address);
-      expect(balance).to.equal("100000000000000000000");
+      console.log(balance);
+      await expect(balance).to.equal("100000000000000000000");
     });
   });
 
@@ -1352,16 +1334,22 @@ describe("Bridge", function () {
     });
 
     it("Should not be able to migrate without initialization", async () => {
-      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith("N_Y_T")
-      await expect(bridge.connect(Admin).migrateForiegn(1, false)).to.be.revertedWith("N_Y_T")
-    })
+      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith(
+        "N_Y_T"
+      );
+      await expect(
+        bridge.connect(Admin).migrateForiegn(1, false)
+      ).to.be.revertedWith("N_Y_T");
+    });
 
     it("Should not be migrate until migration delay is completed", async () => {
       await bridge.connect(Admin).initiateMigration(newBridge.address);
-      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith("N_Y_T")
-      await expect(bridge.connect(Admin).migrateForiegn(1, false)).to.be.revertedWith("N_Y_T")
-    })
-
-
+      await expect(bridge.connect(Admin).migrateNative(1)).to.be.revertedWith(
+        "N_Y_T"
+      );
+      await expect(
+        bridge.connect(Admin).migrateForiegn(1, false)
+      ).to.be.revertedWith("N_Y_T");
+    });
   });
 });
