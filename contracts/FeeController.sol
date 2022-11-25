@@ -338,13 +338,13 @@ contract FeeController {
         if (useExemption && isExempted[sender]) {
          return 0;
       }
-        if( useUserIncentive){
+        if(useAssetIncentive ){
             if (indexedTokenIncentive[asset].isActive) {
                 totalIncentive += indexedTokenIncentive[asset].incentivePercentage;
             }
         }
 
-        if(useAssetIncentive) {
+        if(useUserIncentive) {
             if (indexedUserIncentive[sender].isActive) {
                 totalIncentive += indexedUserIncentive[sender].incentivePercentage;
             }
