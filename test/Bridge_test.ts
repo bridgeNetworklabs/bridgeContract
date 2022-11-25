@@ -1262,7 +1262,7 @@ describe("Bridge", function () {
     });
   });
 
-  describe.only("Migration", () => {
+  describe("Migration", () => {
     let newBridge: Bridge;
     beforeEach(async () => {
       await settings

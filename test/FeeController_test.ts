@@ -534,7 +534,7 @@ describe("FeeController", () => {
     });
   });
 
-  describe.only("getBridgeFee", () => {
+  describe("getBridgeFee", () => {
     beforeEach(async () => {
       await settings
         .connect(owner)
