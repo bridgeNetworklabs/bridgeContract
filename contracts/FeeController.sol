@@ -38,7 +38,7 @@ contract FeeController {
     uint256 public defaultAssetIncentivePercentage = 10;
 
     mapping(bytes32 => tokenHolderIncentiveModel) public tokenHolderIncentive;
-    mapping(address => indexedTokenIncentiveModel) indexedTokenIncentive;
+    mapping(address => indexedTokenIncentiveModel) public indexedTokenIncentive;
     mapping(address => indexedUserIncentiveModel) public indexedUserIncentive;
 
     event BrgHoldingIncentiveStatusChanged(bool status);
@@ -78,14 +78,14 @@ contract FeeController {
     );
 
     modifier onlyOwner() {
-        require(controller.owner() == msg.sender, " caller is not the owner");
+        require(controller.owner() == msg.sender, "caller is not the owner");
         _;
     }
 
     modifier Admin() {
         require(
             controller.owner() == msg.sender || controller.isAdmin(msg.sender),
-            " caller is not the admin"
+            "caller is not the admin"
         );
         _;
     }
@@ -201,7 +201,7 @@ contract FeeController {
         useExemption = status;
     }
 
-    function updatIndexedTokenIncentivePercentage(
+    function updateIndexedTokenIncentivePercentage(
         address asset,
         uint256 percentage
     ) public Admin {
@@ -293,10 +293,7 @@ contract FeeController {
         external
         Admin
     {
-        require(
-            !indexedTokenIncentive[token].isActive != status,
-            "already set"
-        );
+        require(indexedTokenIncentive[token].isActive != status, "already set");
         if (status) indexedTokenIncentive[token].isActive = status;
         else
             indexedTokenIncentive[token] = indexedTokenIncentiveModel(
