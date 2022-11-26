@@ -13,7 +13,7 @@ contract Settings {
     uint256 public railOwnerFeeShare = 20;
     uint256 public minWithdrawableFee = 1 * 10**17;
     uint256 public constant minValidationPercentage = 51;
-    uint256 public maxFeeThreshold = 1000;
+    uint256 public maxFeeThreshold = 1000; // this varaiable is only
     uint256 public ValidationPercentage = minValidationPercentage;
     bool public onlyOwnableRail = true;
     bool public updatableAssetState = true;
@@ -64,9 +64,11 @@ contract Settings {
         gasBank = _gasBank;
     }
 
-    function setApprovedToAdd(address user, address token, bool status)
-        external
-    {
+    function setApprovedToAdd(
+        address user,
+        address token,
+        bool status
+    ) external {
         onlyAdmin();
         require(approvedToAdd[token][user] != status, "same status");
         emit ApprovedToAdd(token, user, status);

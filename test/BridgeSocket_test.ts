@@ -33,6 +33,7 @@ describe("BridgeSocket", () => {
   let socket: BridgeSocket;
   let asset1: Token;
   let brdg: Token;
+  let feeRemittance2: SignerWithAddress;
 
   beforeEach(async () => {
     [
@@ -43,6 +44,7 @@ describe("BridgeSocket", () => {
       randomAddress,
       lossLess,
       assetOwner,
+      feeRemittance2
     ] = await ethers.getSigners();
     const BridgeToken = await ethers.getContractFactory("Token");
     brdg = await BridgeToken.connect(owner).deploy("Bridge NetWork", "brdg");
@@ -115,8 +117,8 @@ describe("BridgeSocket", () => {
     it("Should update the fee remittance address", async () => {
       const tx = await socket
         .connect(owner)
-        .updateFeeRemitance(feeRemittance.address);
-      expect(await socket.feeRemitance()).to.be.equal(feeRemittance.address);
+        .updateFeeRemitance(feeRemittance2.address);
+      expect(await socket.feeRemitance()).to.be.equal(feeRemittance2.address);
       expect(tx)
         .emit(socket, "feeRemitanceUpdated")
         .withArgs(ethers.constants.AddressZero, feeRemittance.address);
@@ -185,7 +187,6 @@ describe("BridgeSocket", () => {
       await asset1
         .connect(assetOwner)
         .approve(socket.address, parseEther("100"));
-      await socket.connect(owner).updateFeeRemitance(feeRemittance.address);
       const tx = await socket
         .connect(assetOwner)
         .bridgeAsset(
@@ -225,7 +226,7 @@ describe("BridgeSocket", () => {
       await asset1
         .connect(assetOwner)
         .approve(socket.address, parseEther("100"));
-      await socket.connect(owner).updateFeeRemitance(feeRemittance.address);
+
       await socket.connect(owner).pauseSocket();
 
       await expect(
@@ -249,7 +250,7 @@ describe("BridgeSocket", () => {
       await asset1
         .connect(assetOwner)
         .approve(socket.address, parseEther("100"));
-      await socket.connect(owner).updateFeeRemitance(feeRemittance.address);
+
       const tx = await socket
         .connect(assetOwner)
         .bridgeAsset(

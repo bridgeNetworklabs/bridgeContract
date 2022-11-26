@@ -193,13 +193,15 @@ describe("FeeController", () => {
     });
   });
 
-  describe("Asset incentivization", () => {
-    it("Should set an asset incentivization", async () => {
+  describe("user incentivization", () => {
+
+    it("Should set an user incentive percent", async () => {
+      await feeController.connect(admin).activateIndexedUserIncentive(assetUser.address)
       const tx = await feeController
         .connect(owner)
-        .updateUserExemptionPercentage(asset1.address, 40);
+        .updateUserExemptionPercentage(assetUser.address, 40);
       expect(
-        (await feeController.indexedUserIncentive(asset1.address))
+        (await feeController.indexedUserIncentive(assetUser.address))
           .incentivePercentage
       ).to.be.equal(40);
       expect(tx)
@@ -207,18 +209,27 @@ describe("FeeController", () => {
         .withArgs(assetUser.address, true);
     });
 
-    // it("Asset incentivization should not be more than 100", async () => {
-    //   await expect(
-    //     feeController.connect(owner).updateUserExemptionPercentage(asset1.address, 90)
-    //   ).to.be.revertedWith("above limit");
-    // });
 
-    it("Should revert if any address apart from owner tries to set asset incentivization", async () => {
+    it("Should deactivate user incentive percent", async () => {
+      await feeController.connect(admin).activateIndexedUserIncentive(assetUser.address)
+      await feeController.connect(admin).deActivateIndexedUserIncentive(assetUser.address)
+      await expect(feeController
+        .connect(owner)
+        .updateUserExemptionPercentage(assetUser.address, 40)).to.be.revertedWith("FeeController: user exemption not active")
+      expect(
+        (await feeController.indexedUserIncentive(assetUser.address))
+          .isActive
+      ).to.be.equal(false);
+    });
+
+
+
+    it("Should revert if any address apart from owner tries to set user incentive percent", async () => {
       await expect(
         feeController
           .connect(randomAddress)
           .updateUserExemptionPercentage(asset1.address, 90)
-      ).to.be.revertedWith("caller is not the owner");
+      ).to.be.revertedWith("caller is not the admin");
     });
   });
 
@@ -558,12 +569,25 @@ describe("FeeController", () => {
       ).to.be.equal(0);
     });
 
-    it("Should get an incentive if asset holding incentive is active", async () => {
+    it("Should get an incentive if asset holding incentive is active and there is an incentive percentage", async () => {
       await feeController.connect(admin).activateAssetIncentive(true)
+      await feeController.connect(admin).activateIndexedTokenIncentive(asset1.address, true)
+      await settings.connect(owner).enableBaseFee()
+      await feeController.connect(admin).updateIndexedTokenIncentivePercentage(asset1.address, 10)
+      expect(
+        await feeController.getBridgeFee(assetUser.address, asset1.address)
+      ).to.be.equal(9);
 
     });
 
-    it("Should get an incentive if user has more than brdg holding threshold and if bridge holding is active", async () => { });
+
+    it("Should get an incentive depending on brdg holding threshold and if bridge holding is active", async () => {
+      await feeController.connect(admin).activateBRDGHoldingIncentive(true)
+      await brdgToken.transfer(assetUser.address, parseEther("50000"))
+      expect(
+        await feeController.getBridgeFee(assetUser.address, asset1.address)
+      ).to.be.equal(0);
+    });
 
     it("Should return the exact fee if there are no incentive", async () => { });
   });
