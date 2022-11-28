@@ -581,12 +581,14 @@ describe("FeeController", () => {
     });
 
 
-    it("Should get an incentive depending on brdg holding threshold and if bridge holding is active", async () => {
+    it.only("Should get an incentive depending on brdg holding threshold and if bridge holding is active", async () => {
       await feeController.connect(admin).activateBRDGHoldingIncentive(true)
+      await settings.connect(owner).enableBaseFee()
       await brdgToken.transfer(assetUser.address, parseEther("50000"))
+      console.log(await feeController.getBridgeFee(assetUser.address, asset1.address))
       expect(
         await feeController.getBridgeFee(assetUser.address, asset1.address)
-      ).to.be.equal(0);
+      ).to.be.equal(10);
     });
 
     it("Should return the exact fee if there are no incentive", async () => { });

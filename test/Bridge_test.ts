@@ -1248,19 +1248,19 @@ describe("Bridge", function () {
       );
 
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
 
       await registry

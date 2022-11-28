@@ -94,15 +94,15 @@ contract FeeController {
         controller = _controller;
         settings = _settings;
         tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(
-            3,
+            20,
             50000 ether
         );
         tokenHolderIncentive[BETA] = tokenHolderIncentiveModel(
-            7,
+            30,
             2000000 ether
         );
         tokenHolderIncentive[ALPHA] = tokenHolderIncentiveModel(
-            15,
+            50,
             10000000 ether
         );
     }
