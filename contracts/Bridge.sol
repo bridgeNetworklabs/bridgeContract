@@ -17,8 +17,8 @@ import "./interface/IbridgePool.sol";
 
 contract Bridge is Context, ReentrancyGuard {
     using SafeERC20 for IERC20;
-      struct asset {
-        address tokenAddress; 
+    struct asset {
+        address tokenAddress;
         uint256 minAmount;
         uint256 maxAmount;
         uint256 ownerFeeBalance;
@@ -28,13 +28,13 @@ contract Bridge is Context, ReentrancyGuard {
         address manager;
         address feeRemitance;
         bool isSet;
-   }
-   struct directForiegnAsset {
-          address foriegnAddress;
-          address nativeAddress;
-          uint256 chainID;
-          bool isSet;
-   }
+    }
+    struct directForiegnAsset {
+        address foriegnAddress;
+        address nativeAddress;
+        uint256 chainID;
+        bool isSet;
+    }
 
     IController public controller;
     Isettings public settings;
@@ -468,30 +468,62 @@ contract Bridge is Context, ReentrancyGuard {
     {
         return amount / (10**(standardDecimals - decimals));
     }
-function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  address receiver ) external payable nonReentrant returns (bytes32 transactionID) {
-       notPaused();
-    //    require(, "C_E");
-       require(isActiveNativeAsset[assetAddress] && isAssetSupportedChain[assetAddress][chainTo] , "AL_E");
-       noneZeroAddress(receiver);
-       (bool success, uint256 recievedValue ) =  processedPayment(assetAddress ,chainTo, amount );
-       require(success && recievedValue >= nativeAssets[assetAddress].minAmount && recievedValue  <= nativeAssets[assetAddress].maxAmount  , "I_F");
 
-       recievedValue =  deductFees( assetAddress  , recievedValue , true);
-       if(isDirectSwap[assetAddress][chainTo]){
-           if(assetAddress == address(0)){
-               bridgePool.topUp{ value : recievedValue}(assetAddress , recievedValue);
-           }else {
-               IERC20(assetAddress).approve(address(bridgePool), recievedValue);
-               bridgePool.topUp(assetAddress , recievedValue);
-           }
-       }
-       
+    function send(
+        uint256 chainTo,
+        address assetAddress,
+        uint256 amount,
+        address receiver
+    ) external payable nonReentrant returns (bytes32 transactionID) {
+        notPaused();
+        //    require(, "C_E");
+        require(
+            isActiveNativeAsset[assetAddress] &&
+                isAssetSupportedChain[assetAddress][chainTo],
+            "AL_E"
+        );
+        noneZeroAddress(receiver);
+        (bool success, uint256 recievedValue) = processedPayment(
+            assetAddress,
+            chainTo,
+            amount
+        );
+        require(
+            success &&
+                recievedValue >= nativeAssets[assetAddress].minAmount &&
+                recievedValue <= nativeAssets[assetAddress].maxAmount,
+            "I_F"
+        );
 
-       recievedValue = standaredize(recievedValue, getAssetDecimals(assetAddress));
+        recievedValue = deductFees(assetAddress, recievedValue, true);
+        if (isDirectSwap[assetAddress][chainTo]) {
+            if (assetAddress == address(0)) {
+                bridgePool.topUp{value: recievedValue}(
+                    assetAddress,
+                    recievedValue
+                );
+            } else {
+                IERC20(assetAddress).approve(
+                    address(bridgePool),
+                    recievedValue
+                );
+                bridgePool.topUp(assetAddress, recievedValue);
+            }
+        }
+
+        recievedValue = standaredize(
+            recievedValue,
+            getAssetDecimals(assetAddress)
+        );
         uint256 nounce;
-        (transactionID , nounce) = registry.registerTransaction(chainTo , assetAddress , recievedValue , receiver  , 0);
-      
-     
+        (transactionID, nounce) = registry.registerTransaction(
+            chainTo,
+            assetAddress,
+            recievedValue,
+            receiver,
+            0
+        );
+
         emit SendTransaction(
             transactionID,
             chainTo,
@@ -501,24 +533,45 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
             nounce,
             msg.sender
         );
-   
-   }
+    }
 
+    function burn(address assetAddress, uint256 amount, address receiver)
+        external
+        payable
+        nonReentrant
+        returns (bytes32 transactionID)
+    {
+        notPaused();
+        uint256 chainTo = foriegnAssetChainID[assetAddress];
+        require(foriegnAssets[assetAddress].isSet, "I_A");
 
-   function burn( address assetAddress , uint256 amount ,  address receiver) external payable  nonReentrant returns (bytes32 transactionID){
-       notPaused();
-       uint256 chainTo = foriegnAssetChainID[assetAddress];
-       require(foriegnAssets[assetAddress].isSet  , "I_A");
-       
-       noneZeroAddress(receiver);
-        (bool success, uint256 recievedValue) =  processedPayment(assetAddress ,chainTo, amount);
-       require(success && recievedValue  >= foriegnAssets[assetAddress].minAmount && recievedValue  <= foriegnAssets[assetAddress].maxAmount, "I_F");
-        recievedValue =  deductFees( assetAddress  , recievedValue , false); 
-       IwrappedToken(assetAddress).burn(recievedValue);
-       address _foriegnAsset = foriegnPair[assetAddress];
-       recievedValue = standaredize(recievedValue, getAssetDecimals(assetAddress));
-       uint256 nounce;
-        (transactionID , nounce)  = registry.registerTransaction( chainTo , _foriegnAsset ,recievedValue , receiver , 1);
+        noneZeroAddress(receiver);
+        (bool success, uint256 recievedValue) = processedPayment(
+            assetAddress,
+            chainTo,
+            amount
+        );
+        require(
+            success &&
+                recievedValue >= foriegnAssets[assetAddress].minAmount &&
+                recievedValue <= foriegnAssets[assetAddress].maxAmount,
+            "I_F"
+        );
+        recievedValue = deductFees(assetAddress, recievedValue, false);
+        IwrappedToken(assetAddress).burn(recievedValue);
+        address _foriegnAsset = foriegnPair[assetAddress];
+        recievedValue = standaredize(
+            recievedValue,
+            getAssetDecimals(assetAddress)
+        );
+        uint256 nounce;
+        (transactionID, nounce) = registry.registerTransaction(
+            chainTo,
+            _foriegnAsset,
+            recievedValue,
+            receiver,
+            1
+        );
 
         emit BurnTransaction(
             transactionID,
@@ -530,155 +583,198 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
             msg.sender
         );
     }
-   
-  
-   function mint(bytes32 mintID) public  nonReentrant { 
-       notPaused();
-    //    require(, "MI_E");
-       IRegistery.Transaction memory transaction = registry.mintTransactions(mintID);
-       require(registry.isMintTransaction(mintID) && !transaction.isCompleted && registry.transactionValidated(mintID), "M");
-       uint256 amount  = convertToAssetDecimals(transaction.amount, getAssetDecimals(transaction.assetAddress));
-       if (isDirectSwap[transaction.assetAddress][transaction.chainId]) {
-           
-           bridgePool.sendOut(transaction.assetAddress, transaction.receiver , amount);
-       } else {
-           IwrappedToken(transaction.assetAddress).mint(transaction.receiver , amount);
-       }
-       
-       registry.completeMintTransaction(mintID);
-   }
 
-
-   function claim(bytes32 claimID) public  nonReentrant {
-       notPaused();
-    //    require( , "CI_E");
-       IRegistery.Transaction memory transaction = registry.claimTransactions(claimID);
-       uint256 amount  = convertToAssetDecimals(transaction.amount , getAssetDecimals(transaction.assetAddress));
-       require(registry.isClaimTransaction(claimID) && registry.assetChainBalance(transaction.assetAddress,transaction.chainId) >= amount  && !transaction.isCompleted && registry.transactionValidated(claimID) ,"AL_E");
-
-       
-       payoutUser(payable(transaction.receiver), transaction.assetAddress , amount);
-       registry.completeClaimTransaction(claimID);
-   }
-
-
-   function payoutUser(address payable recipient , address _paymentMethod , uint256 amount) private {
-       noneZeroAddress(recipient);
-        if (_paymentMethod == address(0)) {
-          recipient.transfer(amount);
+    function mint(bytes32 mintID) public nonReentrant {
+        notPaused();
+        //    require(, "MI_E");
+        IRegistery.Transaction memory transaction = registry.mintTransactions(
+            mintID
+        );
+        require(
+            registry.isMintTransaction(mintID) &&
+                !transaction.isCompleted &&
+                registry.transactionValidated(mintID),
+            "M"
+        );
+        uint256 amount = convertToAssetDecimals(
+            transaction.amount,
+            getAssetDecimals(transaction.assetAddress)
+        );
+        if (isDirectSwap[transaction.assetAddress][transaction.chainId]) {
+            bridgePool.sendOut(
+                transaction.assetAddress,
+                transaction.receiver,
+                amount
+            );
         } else {
-             IERC20 currentPaymentMethod = IERC20(_paymentMethod);
-             require(currentPaymentMethod.transfer(recipient , amount) ,"I_F");
+            IwrappedToken(transaction.assetAddress).mint(
+                transaction.receiver,
+                amount
+            );
+        }
+
+        registry.completeMintTransaction(mintID);
+    }
+
+    function claim(bytes32 claimID) public nonReentrant {
+        notPaused();
+        //    require( , "CI_E");
+        IRegistery.Transaction memory transaction = registry.claimTransactions(
+            claimID
+        );
+        uint256 amount = convertToAssetDecimals(
+            transaction.amount,
+            getAssetDecimals(transaction.assetAddress)
+        );
+        require(
+            registry.isClaimTransaction(claimID) &&
+                registry.assetChainBalance(
+                    transaction.assetAddress,
+                    transaction.chainId
+                ) >=
+                amount &&
+                !transaction.isCompleted &&
+                registry.transactionValidated(claimID),
+            "AL_E"
+        );
+
+        payoutUser(
+            payable(transaction.receiver),
+            transaction.assetAddress,
+            amount
+        );
+        registry.completeClaimTransaction(claimID);
+    }
+
+    function payoutUser(
+        address payable recipient,
+        address _paymentMethod,
+        uint256 amount
+    ) private {
+        noneZeroAddress(recipient);
+        if (_paymentMethod == address(0)) {
+            recipient.transfer(amount);
+        } else {
+            IERC20 currentPaymentMethod = IERC20(_paymentMethod);
+            require(currentPaymentMethod.transfer(recipient, amount), "I_F");
         }
     }
 
-     
-    // internal fxn used to process incoming payments 
-    function processedPayment(address assetAddress ,uint256 chainID, uint256 amount  ) internal returns (bool , uint256) {
+    // internal fxn used to process incoming payments
+    function processedPayment(
+        address assetAddress,
+        uint256 chainID,
+        uint256 amount
+    ) internal returns (bool, uint256) {
         uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
-            if(msg.value >= amount + gas &&  msg.value > 0){
-                
+            if (msg.value >= amount + gas && msg.value > 0) {
                 totalGas += msg.value - amount;
-                if( gas > 0) payoutUser(payable(settings.gasBank()), address(0), msg.value - amount );
-                return (true , amount);
+                if (gas > 0)
+                    payoutUser(
+                        payable(settings.gasBank()),
+                        address(0),
+                        msg.value - amount
+                    );
+                return (true, amount);
             } else {
-                return (false , 0);
+                return (false, 0);
             }
-            
         } else {
             IERC20 token = IERC20(assetAddress);
-            if (token.allowance(_msgSender(), address(this)) >= amount && (msg.value >=  gas)) {
+            if (
+                token.allowance(_msgSender(), address(this)) >= amount &&
+                (msg.value >= gas)
+            ) {
                 totalGas += msg.value;
-                if( gas > 0) payoutUser(payable(settings.gasBank()), address(0), msg.value );
+                if (gas > 0)
+                    payoutUser(
+                        payable(settings.gasBank()),
+                        address(0),
+                        msg.value
+                    );
                 uint256 balanceBefore = token.balanceOf(address(this));
-                token.safeTransferFrom(_msgSender() , address(this) , amount);
+                token.safeTransferFrom(_msgSender(), address(this), amount);
                 uint256 balanceAfter = token.balanceOf(address(this));
-               return (true , balanceAfter - balanceBefore);
+                return (true, balanceAfter - balanceBefore);
             } else {
-                return (false , 0);
+                return (false, 0);
             }
         }
     }
 
+    // internal fxn for deducting and remitting fees after a sale
+    function deductFees(address assetAddress, uint256 amount, bool native)
+        private
+        returns (uint256)
+    {
+        asset storage currentasset;
+        if (native) currentasset = nativeAssets[assetAddress];
+        else currentasset = foriegnAssets[assetAddress];
 
-   // internal fxn for deducting and remitting fees after a sale
-    function deductFees(address assetAddress,uint256 amount , bool native) private returns (uint256) {
-            asset storage currentasset;
-            if(native)
-                currentasset = nativeAssets[assetAddress];
-            else
-                currentasset = foriegnAssets[assetAddress];
-            
-            require(currentasset.isSet ,"I_A");
-            if(!settings.baseFeeEnable()){
-                return amount;
-             }
-            // uint256 fees_to_deduct = settings.networkFee(chainID);
-            
-            uint256 feePercentage = IfeeController(feeController).getBridgeFee(msg.sender, assetAddress ) ;
-            
-            if (feePercentage == 0 ) {
-                return amount;
-              }
-            
-            if ( feePercentage > settings.maxFeeThreshold()){
-                feePercentage = settings.maxFeeThreshold();
-            }
+        require(currentasset.isSet, "I_A");
+        if (!settings.baseFeeEnable()) {
+            return amount;
+        }
+        // uint256 fees_to_deduct = settings.networkFee(chainID);
 
-           
-            uint256 baseFee = amount * feePercentage / 10000;
-            if (currentasset.ownedRail) {
-                uint256 ownershare = baseFee * settings.railOwnerFeeShare() / 100;
-                uint256 networkshare = baseFee - ownershare;
-                currentasset.collectedFees += baseFee;
-                currentasset.ownerFeeBalance += ownershare;
-                currentasset.networkFeeBalance += networkshare;
+        uint256 feePercentage = IfeeController(feeController).getBridgeFee(
+            msg.sender,
+            assetAddress
+        );
 
-            } else {
-                currentasset.collectedFees += baseFee;
-                currentasset.networkFeeBalance += baseFee;
-            }
+        if (feePercentage == 0) {
+            return amount;
+        }
 
-            return amount - baseFee;
+        if (feePercentage > settings.maxFeeThreshold()) {
+            feePercentage = settings.maxFeeThreshold();
+        }
 
-           
-     }
+        uint256 baseFee = (amount * feePercentage) / 10000;
+        if (currentasset.ownedRail) {
+            uint256 ownershare = (baseFee * settings.railOwnerFeeShare()) / 100;
+            uint256 networkshare = baseFee - ownershare;
+            currentasset.collectedFees += baseFee;
+            currentasset.ownerFeeBalance += ownershare;
+            currentasset.networkFeeBalance += networkshare;
+        } else {
+            currentasset.collectedFees += baseFee;
+            currentasset.networkFeeBalance += baseFee;
+        }
 
-    function  remitFees(address assetAddress, bool native) public {
-        
-         asset storage currentasset;
-         uint256 amount;
-            if(native)
-                currentasset = nativeAssets[assetAddress];
-            else
-                currentasset = foriegnAssets[assetAddress];
-
-       
-        
-
-                if (currentasset.ownedRail) {
-                    if (currentasset.ownerFeeBalance > 0) {
-                         amount = currentasset.ownerFeeBalance;
-                        currentasset.ownerFeeBalance = 0;
-                        payoutUser(payable(currentasset.feeRemitance), assetAddress , amount );
-                         
-                    }
-                }
-                if (currentasset.networkFeeBalance > 0) {
-                         amount = currentasset.networkFeeBalance;
-                        currentasset.networkFeeBalance = 0;
-                        payoutUser(payable(settings.feeRemitance()), assetAddress , amount );
-                         
-                }
-                
-            
+        return amount - baseFee;
     }
+
+    function remitFees(address assetAddress, bool native) public {
+        asset storage currentasset;
+        uint256 amount;
+        if (native) currentasset = nativeAssets[assetAddress];
+        else currentasset = foriegnAssets[assetAddress];
+
+        if (currentasset.ownedRail) {
+            if (currentasset.ownerFeeBalance > 0) {
+                amount = currentasset.ownerFeeBalance;
+                currentasset.ownerFeeBalance = 0;
+                payoutUser(
+                    payable(currentasset.feeRemitance),
+                    assetAddress,
+                    amount
+                );
+            }
+        }
+        if (currentasset.networkFeeBalance > 0) {
+            amount = currentasset.networkFeeBalance;
+            currentasset.networkFeeBalance = 0;
+            payoutUser(payable(settings.feeRemitance()), assetAddress, amount);
+        }
+    }
+
     function initiateMigration(address _newbridge) external {
         notPaused();
         isOwner();
         noneZeroAddress(_newbridge);
-        require(!activeMigration , "P_M");
+        require(!activeMigration, "P_M");
         newBridge = _newbridge;
         activeMigration = true;
         paused = true;
@@ -690,8 +786,7 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
         isOwner();
 
         require(
-            activeMigration &&
-            fMigrationAt >= foriegnAssetsList.length ,
+            activeMigration && fMigrationAt >= foriegnAssetsList.length,
             "P_M"
         );
         registry.transferOwnership(newBridge);
@@ -709,10 +804,10 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
         uint256 start;
         uint256 migrationAmount;
         if (directSwap) {
-            require(fDirectSwapMigrationAt < directForiegnCount , "completed");
+            require(fDirectSwapMigrationAt < directForiegnCount, "completed");
             if (fDirectSwapMigrationAt == 0) start = fDirectSwapMigrationAt;
             else start = fDirectSwapMigrationAt + 1;
-    
+
             if (limit + fDirectSwapMigrationAt < directForiegnCount)
                 migrationAmount = limit;
             else migrationAmount = directForiegnCount - fDirectSwapMigrationAt;
@@ -750,7 +845,7 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
                 address assetAddress = foriegnAssetsList[start + i];
                 remitFees(assetAddress, false);
                 asset memory foriegnAsset = foriegnAssets[assetAddress];
-                
+
                 IwrappedToken(assetAddress).transferOwnership(newBridge);
                 IbridgeMigrator(newBridge).registerForiegnMigration(
                     foriegnAsset.tokenAddress,
@@ -783,8 +878,8 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
         if (nMigrationAt == 0) start = nMigrationAt;
         else start = nMigrationAt + 1;
         if (limit + nativeAssetsList.length < nMigrationAt)
-                migrationAmount = limit;
-            else migrationAmount = nativeAssetsList.length - fDirectSwapMigrationAt;
+            migrationAmount = limit;
+        else migrationAmount = nativeAssetsList.length - fDirectSwapMigrationAt;
 
         for (uint256 i; i < migrationAmount; i++) {
             _migrateNative(nativeAssetsList[start + i]);
@@ -805,7 +900,11 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
                 nativeAsset.ownedRail,
                 nativeAsset.manager,
                 nativeAsset.feeRemitance,
-               [nativeAsset.ownerFeeBalance, balance , nativeAsset.networkFeeBalance] ,
+                [
+                    nativeAsset.ownerFeeBalance,
+                    balance,
+                    nativeAsset.networkFeeBalance
+                ],
                 isActiveNativeAsset[assetAddress],
                 assetSupportedChainIds[assetAddress]
             );
@@ -819,7 +918,11 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
                 nativeAsset.ownedRail,
                 nativeAsset.manager,
                 nativeAsset.feeRemitance,
-                [nativeAsset.ownerFeeBalance, balance , nativeAsset.networkFeeBalance],
+                [
+                    nativeAsset.ownerFeeBalance,
+                    balance,
+                    nativeAsset.networkFeeBalance
+                ],
                 isActiveNativeAsset[assetAddress],
                 assetSupportedChainIds[assetAddress]
             );
@@ -886,7 +989,7 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
         require(
             settings.isNetworkSupportedChain(chainID) &&
                 !hasWrappedForiegnPair[foriegnAddress][chainID] &&
-                _msgSender() == migrator ,
+                _msgSender() == migrator,
             "U_A"
         );
 
@@ -901,16 +1004,16 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
             directForiegnCount++;
         } else {
             foriegnAssets[wrappedAddress] = asset(
-                    wrappedAddress,
-                    minAmount,
-                    maxAmount,
-                    0,
-                    0,
-                    _collectedFees,
-                    ownedRail,
-                    manager,
-                    feeAddress,
-                    true
+                wrappedAddress,
+                minAmount,
+                maxAmount,
+                0,
+                0,
+                _collectedFees,
+                ownedRail,
+                manager,
+                feeAddress,
+                true
             );
             foriegnAssetChainID[wrappedAddress] = chainID;
             foriegnPair[wrappedAddress] = foriegnAddress;
@@ -1002,7 +1105,31 @@ function send(uint256 chainTo ,  address assetAddress , uint256 amount ,  addres
         return isManager;
     }
 
-    function bridgeData() external view returns (address , address , bool  , uint256 , uint256 ,uint256 , uint256 , uint256  ,address ){
-       return( migrator , newBridge , activeMigration , migrationInitiationTime , migrationDelay ,fMigrationAt , fDirectSwapMigrationAt , nMigrationAt  , feeController );
-   }
+    function bridgeData()
+        external
+        view
+        returns (
+            address,
+            address,
+            bool,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address
+        )
+    {
+        return (
+            migrator,
+            newBridge,
+            activeMigration,
+            migrationInitiationTime,
+            migrationDelay,
+            fMigrationAt,
+            fDirectSwapMigrationAt,
+            nMigrationAt,
+            feeController
+        );
+    }
 }

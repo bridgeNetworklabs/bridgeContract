@@ -73,8 +73,10 @@ interface Ibridge {
         address receiver
     ) external payable returns (bytes32);
 
-    function burn(uint256 chainID , address assetAddress, uint256 amount, address receiver)
-        external
-        payable
-        returns (bytes32);
+    function burn(
+        uint256 chainID,
+        address assetAddress,
+        uint256 amount,
+        address receiver
+    ) external payable returns (bytes32);
 }

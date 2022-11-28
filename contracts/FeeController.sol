@@ -5,14 +5,24 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interface/Isettings.sol";
 import "./interface/Icontroller.sol";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
 contract FeeController {
     IController public controller;
     Isettings public settings;
 
+<<<<<<< HEAD
    
     enum HoldingLevels {COMMON ,  BETA , ALPHA }
     mapping (address => bool) public isExempted;
+=======
+    bytes32 COMMON = "COMMON";
+    bytes32 BETA = "BETA";
+    bytes32 ALPHA = "ALPHA";
+    mapping(address => bool) public isExempted;
+>>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
 
     struct tokenHolderIncentiveModel {
         uint256 incentivePercentage;
@@ -37,10 +47,17 @@ contract FeeController {
     uint256 public defaultUserIncentivePercentage = 10;
     uint256 public defaultAssetIncentivePercentage = 10;
 
+<<<<<<< HEAD
     mapping(HoldingLevels => tokenHolderIncentiveModel) tokenHolderIncentive;
     mapping(address => indexedTokenIncentiveModel) indexedTokenIncentive;
     mapping(address => indexedUserIncentiveModel) indexedUserIncentive;
     
+=======
+    mapping(bytes32 => tokenHolderIncentiveModel) public tokenHolderIncentive;
+    mapping(address => indexedTokenIncentiveModel) public indexedTokenIncentive;
+    mapping(address => indexedUserIncentiveModel) public indexedUserIncentive;
+
+>>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
     event BrgHoldingIncentiveStatusChanged(bool status);
     event UserIncentiveStatusChanged(bool status);
     event AssetIncentiveStatusChanged(bool status);
@@ -57,18 +74,18 @@ contract FeeController {
         uint256 previousIncentive,
         uint256 currentIncentive
     );
-    
+
     event BrgHoldingThresholdUpdated(
         uint256 prevBrgHoldingThreshold,
         uint256 newBrgHoldingThreshold
     );
 
-     event DefaultAssetIncentivePercentageUpdated(
+    event DefaultAssetIncentivePercentageUpdated(
         uint256 prevVal,
         uint256 newVal
     );
 
-     event DefaultUserIncentivePercentageUpdated(
+    event DefaultUserIncentivePercentageUpdated(
         uint256 prevVal,
         uint256 newVal
     );
@@ -78,14 +95,14 @@ contract FeeController {
     );
 
     modifier onlyOwner() {
-        require(controller.owner() == msg.sender, " caller is not the owner");
+        require(controller.owner() == msg.sender, "caller is not the owner");
         _;
     }
 
     modifier Admin() {
         require(
             controller.owner() == msg.sender || controller.isAdmin(msg.sender),
-            " caller is not the admin"
+            "caller is not the admin"
         );
         _;
     }
@@ -93,65 +110,88 @@ contract FeeController {
     constructor(IController _controller, Isettings _settings) {
         controller = _controller;
         settings = _settings;
+<<<<<<< HEAD
          tokenHolderIncentive[HoldingLevels.COMMON] = tokenHolderIncentiveModel(3 , 50000 ether);
          tokenHolderIncentive[HoldingLevels.BETA] = tokenHolderIncentiveModel(7 , 2000000 ether);
          tokenHolderIncentive[HoldingLevels.ALPHA] = tokenHolderIncentiveModel(15 , 10000000 ether);
+=======
+        tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(
+            3,
+            50000 ether
+        );
+        tokenHolderIncentive[BETA] = tokenHolderIncentiveModel(
+            7,
+            2000000 ether
+        );
+        tokenHolderIncentive[ALPHA] = tokenHolderIncentiveModel(
+            15,
+            10000000 ether
+        );
+>>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
     }
 
-    function activateBRDGHoldingIncentive(bool status)
-        public
-        Admin
-    {
-        require(
-            useBRDGHoldingIncentive != status,
-            "already set"
-        );
+    function activateBRDGHoldingIncentive(bool status) public Admin {
+        require(useBRDGHoldingIncentive != status, "already set");
         useBRDGHoldingIncentive = status;
         emit BrgHoldingIncentiveStatusChanged(status);
     }
-   function activateUserIncentive(bool status)
-        public
-        Admin
-    {
-        require(
-            useUserIncentive != status,
-            "already set"
-        );
+
+    function activateUserIncentive(bool status) public Admin {
+        require(useUserIncentive != status, "already set");
         useUserIncentive = status;
         emit UserIncentiveStatusChanged(status);
     }
-    function activateAssetIncentive(bool status)
-        public
-        Admin
-    {
-        require(
-            useAssetIncentive != status,
-            "already set"
-        );
+
+    function activateAssetIncentive(bool status) public Admin {
+        require(useAssetIncentive != status, "already set");
         useAssetIncentive = status;
         emit AssetIncentiveStatusChanged(status);
     }
-  
 
-   function updateDefaultAssetIncentivePercentage(uint256 percentage)  external Admin {
-       require(percentage < 50 ,"invalid %");
-       DefaultAssetIncentivePercentageUpdated(defaultAssetIncentivePercentage ,percentage);
-       defaultAssetIncentivePercentage = percentage;
-   }
+    function updateDefaultAssetIncentivePercentage(uint256 percentage)
+        external
+        Admin
+    {
+        require(percentage < 50, "invalid %");
+        DefaultAssetIncentivePercentageUpdated(
+            defaultAssetIncentivePercentage,
+            percentage
+        );
+        defaultAssetIncentivePercentage = percentage;
+    }
 
-   function updateDefaultUserIncentivePercentage(uint256 percentage)  external Admin {
-       require(percentage < 50 ,"invalid %");
-       DefaultUserIncentivePercentageUpdated(defaultUserIncentivePercentage ,percentage);
-       defaultUserIncentivePercentage = percentage;
-   }
+    function updateDefaultUserIncentivePercentage(uint256 percentage)
+        external
+        Admin
+    {
+        require(percentage < 50, "invalid %");
+        DefaultUserIncentivePercentageUpdated(
+            defaultUserIncentivePercentage,
+            percentage
+        );
+        defaultUserIncentivePercentage = percentage;
+    }
+
     function updateBRDGHoldingIncentiveThreshold(
         HoldingLevels tokenHoldingLevel,
         uint256 threshold
     ) external Admin {
+<<<<<<< HEAD
        
         HoldingLevels _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
        
         if (_tokenHoldingLevel == HoldingLevels.ALPHA) {
+=======
+        require(
+            tokenHoldingLevel == COMMON ||
+                tokenHoldingLevel == BETA ||
+                tokenHoldingLevel == ALPHA,
+            "invalid holding Incentive"
+        );
+        bytes32 _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
+
+        if (_tokenHoldingLevel == ALPHA) {
+>>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
             require(
                 threshold > tokenHolderIncentive[HoldingLevels.BETA].threshold &&
                     tokenHolderIncentive[HoldingLevels.BETA].threshold >
@@ -172,23 +212,26 @@ contract FeeController {
                     threshold > 0
             );
         }
-        emit BrgHoldingThresholdUpdated(tokenHolderIncentive[_tokenHoldingLevel].threshold , threshold);
+        emit BrgHoldingThresholdUpdated(
+            tokenHolderIncentive[_tokenHoldingLevel].threshold,
+            threshold
+        );
         tokenHolderIncentive[_tokenHoldingLevel].threshold = threshold;
-
-        
     }
-    function exemptAddress(address user , bool status) external  onlyOwner {
-     require(isExempted[user] != status ,"already set");
-     emit userExemptStatusChanged(user , status);
-     isExempted[user] = status;
-     }
+
+    function exemptAddress(address user, bool status) external onlyOwner {
+        require(isExempted[user] != status, "already set");
+        emit userExemptStatusChanged(user, status);
+        isExempted[user] = status;
+    }
 
     function activateAddressExemption(bool status) public Admin {
-        require(useExemption != status , "already set");
+        require(useExemption != status, "already set");
         AddressExemptionStatusChanged(status);
         useExemption = status;
     }
-    function updatIndexedTokenIncentivePercentage(
+
+    function updateIndexedTokenIncentivePercentage(
         address asset,
         uint256 percentage
     ) public Admin {
@@ -271,18 +314,26 @@ contract FeeController {
         emit BrgHoldingIncentiveUpdated(previousPercentage, percentage);
     }
 
-    function activateIndexedTokenIncentive(address token , bool status) external Admin {
-        require(!indexedTokenIncentive[token].isActive != status, "already set");
+    function activateIndexedTokenIncentive(address token, bool status)
+        external
+        Admin
+    {
+        require(indexedTokenIncentive[token].isActive != status, "already set");
         if (status) indexedTokenIncentive[token].isActive = status;
-        else indexedTokenIncentive[token] = indexedTokenIncentiveModel(defaultAssetIncentivePercentage , status);
+        else
+            indexedTokenIncentive[token] = indexedTokenIncentiveModel(
+                defaultAssetIncentivePercentage,
+                status
+            );
         emit AssetIncentiveStatusChanged(true);
     }
 
-    
-
     function activateIndexedUserIncentive(address user) external Admin {
         require(!indexedUserIncentive[user].isActive, "already active");
-        indexedUserIncentive[user] = indexedUserIncentiveModel(defaultUserIncentivePercentage ,true);
+        indexedUserIncentive[user] = indexedUserIncentiveModel(
+            defaultUserIncentivePercentage,
+            true
+        );
 
         emit userExemptStatusChanged(user, true);
     }
@@ -317,33 +368,37 @@ contract FeeController {
         }
     }
 
-    function getBridgeFee(address sender, address asset )
+    function getBridgeFee(address sender, address asset)
         external
         view
         returns (uint256)
     {
-        if(!settings.baseFeeEnable()) return 0;
+        if (!settings.baseFeeEnable()) return 0;
 
         uint256 fees = settings.baseFeePercentage();
         uint256 totalIncentive;
 
         if (useExemption && isExempted[sender]) {
-         return 0;
-      }
-        if(useAssetIncentive ){
+            return 0;
+        }
+        if (useAssetIncentive) {
             if (indexedTokenIncentive[asset].isActive) {
-                totalIncentive += indexedTokenIncentive[asset].incentivePercentage;
+                totalIncentive += indexedTokenIncentive[asset]
+                    .incentivePercentage;
             }
         }
 
-        if(useUserIncentive) {
+        if (useUserIncentive) {
             if (indexedUserIncentive[sender].isActive) {
-                totalIncentive += indexedUserIncentive[sender].incentivePercentage;
+                totalIncentive += indexedUserIncentive[sender]
+                    .incentivePercentage;
             }
         }
 
-        if(useBRDGHoldingIncentive) {
-            uint256 holderPecentage = determineTokenHolderLevelPercentage(sender);
+        if (useBRDGHoldingIncentive) {
+            uint256 holderPecentage = determineTokenHolderLevelPercentage(
+                sender
+            );
             totalIncentive += holderPecentage;
         }
 
