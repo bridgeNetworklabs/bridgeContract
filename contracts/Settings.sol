@@ -67,7 +67,7 @@ contract Settings {
     
     function setbaseFeePercentage(uint256 _base) external{
         require(msg.sender == controller.owner() ,"U_A");
-        require(_base  < 1000 , "exceed 10%");
+        require(_base  < 1000 , "exceeds 10%");
         emit BaseFeePercentageUpdated(baseFeePercentage , _base);
         baseFeePercentage = _base;
     }
