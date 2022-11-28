@@ -5,24 +5,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interface/Isettings.sol";
 import "./interface/Icontroller.sol";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
 contract FeeController {
     IController public controller;
     Isettings public settings;
 
-<<<<<<< HEAD
    
     enum HoldingLevels {COMMON ,  BETA , ALPHA }
     mapping (address => bool) public isExempted;
-=======
-    bytes32 COMMON = "COMMON";
-    bytes32 BETA = "BETA";
-    bytes32 ALPHA = "ALPHA";
-    mapping(address => bool) public isExempted;
->>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
 
     struct tokenHolderIncentiveModel {
         uint256 incentivePercentage;
@@ -47,17 +36,10 @@ contract FeeController {
     uint256 public defaultUserIncentivePercentage = 10;
     uint256 public defaultAssetIncentivePercentage = 10;
 
-<<<<<<< HEAD
     mapping(HoldingLevels => tokenHolderIncentiveModel) tokenHolderIncentive;
     mapping(address => indexedTokenIncentiveModel) indexedTokenIncentive;
     mapping(address => indexedUserIncentiveModel) indexedUserIncentive;
     
-=======
-    mapping(bytes32 => tokenHolderIncentiveModel) public tokenHolderIncentive;
-    mapping(address => indexedTokenIncentiveModel) public indexedTokenIncentive;
-    mapping(address => indexedUserIncentiveModel) public indexedUserIncentive;
-
->>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
     event BrgHoldingIncentiveStatusChanged(bool status);
     event UserIncentiveStatusChanged(bool status);
     event AssetIncentiveStatusChanged(bool status);
@@ -110,24 +92,9 @@ contract FeeController {
     constructor(IController _controller, Isettings _settings) {
         controller = _controller;
         settings = _settings;
-<<<<<<< HEAD
          tokenHolderIncentive[HoldingLevels.COMMON] = tokenHolderIncentiveModel(3 , 50000 ether);
          tokenHolderIncentive[HoldingLevels.BETA] = tokenHolderIncentiveModel(7 , 2000000 ether);
          tokenHolderIncentive[HoldingLevels.ALPHA] = tokenHolderIncentiveModel(15 , 10000000 ether);
-=======
-        tokenHolderIncentive[COMMON] = tokenHolderIncentiveModel(
-            3,
-            50000 ether
-        );
-        tokenHolderIncentive[BETA] = tokenHolderIncentiveModel(
-            7,
-            2000000 ether
-        );
-        tokenHolderIncentive[ALPHA] = tokenHolderIncentiveModel(
-            15,
-            10000000 ether
-        );
->>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
     }
 
     function activateBRDGHoldingIncentive(bool status) public Admin {
@@ -176,22 +143,10 @@ contract FeeController {
         HoldingLevels tokenHoldingLevel,
         uint256 threshold
     ) external Admin {
-<<<<<<< HEAD
        
         HoldingLevels _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
        
         if (_tokenHoldingLevel == HoldingLevels.ALPHA) {
-=======
-        require(
-            tokenHoldingLevel == COMMON ||
-                tokenHoldingLevel == BETA ||
-                tokenHoldingLevel == ALPHA,
-            "invalid holding Incentive"
-        );
-        bytes32 _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
-
-        if (_tokenHoldingLevel == ALPHA) {
->>>>>>> 8c9597f560eca6914b50572b80df076187a8dfc9
             require(
                 threshold > tokenHolderIncentive[HoldingLevels.BETA].threshold &&
                     tokenHolderIncentive[HoldingLevels.BETA].threshold >

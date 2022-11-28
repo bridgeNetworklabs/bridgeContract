@@ -1310,7 +1310,7 @@ describe("Bridge", function () {
           assetManager.address,
           2
         );
-
+        
       await bridge
         .connect(registrar)
         .addForiegnAsset(
@@ -1325,6 +1325,8 @@ describe("Bridge", function () {
           false,
           assetToken.address
         );
+
+        
 
       const Bridge = await ethers.getContractFactory("Bridge");
       newBridge = await Bridge.deploy(
@@ -1342,7 +1344,7 @@ describe("Bridge", function () {
       await bridge.connect(Admin).initiateMigration(newBridge.address);
       await time.increase(2 * 24 * 60 * 60);
       await bridge.connect(Admin).migrateForiegn(1, false);
-      await bridge.connect(Admin).migrateNative(1);
+      await bridge.connect(Admin).migrateNative(2);
       await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()
