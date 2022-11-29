@@ -1,27 +1,29 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "solidity-coverage"
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config()
 
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [
-      { 
+      {
         version: "0.8.2",
-        settings:{
-          optimizer:{
-            enabled:true,
-            runs:200
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
           }
         }
       },
-      { 
-      version: "0.4.17",
-      settings:{
-        optimizer:{
-          enabled:false,
-          runs:200
+      {
+        version: "0.4.17",
+        settings: {
+          optimizer: {
+            enabled: false,
+            runs: 200
+          }
         }
-      }
       }
     ]
   },
@@ -61,7 +63,7 @@ const config: HardhatUserConfig = {
     //   chainId : 1,
     //   accounts: {mnemonic : mnemonic},
     // },
-    
+
     // optimismMainnet: {
     //   url: "https://mainnet.optimism.io",
     //   chainId : 10,
@@ -99,8 +101,8 @@ const config: HardhatUserConfig = {
     // },
     bscTestnet: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-      chainId : 97,
-      accounts: [],
+      chainId: 97,
+      accounts: [process.env.PRIVATE_KEY],
     },
     // arbizoomTestnet: {
     //   url: "https://nitro-devnet.arbitrum.io/rpc",
@@ -142,7 +144,7 @@ const config: HardhatUserConfig = {
     //   chainId : 83,
     //   accounts: {mnemonic : mnemonic},
     // },
-    
+
     // celotestnet: {
     //   url: "https://alfajores-forno.celo-testnet.org",
     //   chainId : 44787,
@@ -172,7 +174,7 @@ const config: HardhatUserConfig = {
     // apiKey: ""// kcc
     // apiKey: "KXN1I8PNITSUARNZ398W4TV4W93YN8ZIY1"// ftm
     // apiKey: ""// avax
-    
+
   },
 };
 

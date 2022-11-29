@@ -64,11 +64,9 @@ contract Settings {
         gasBank = _gasBank;
     }
 
-    function setApprovedToAdd(
-        address user,
-        address token,
-        bool status
-    ) external {
+    function setApprovedToAdd(address user, address token, bool status)
+        external
+    {
         onlyAdmin();
         require(approvedToAdd[token][user] != status, "same status");
         emit ApprovedToAdd(token, user, status);
