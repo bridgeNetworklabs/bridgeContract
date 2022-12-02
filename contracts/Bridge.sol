@@ -676,14 +676,14 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
             if (msg.value >= amount + gas && msg.value > 0) {
-                totalGas += msg.value - amount;
+                totalGas += gas;
                 if (gas > 0)
                     payoutUser(
                         payable(settings.gasBank()),
                         address(0),
-                        msg.value - amount
+                        gas
                     );
-                return (true, amount);
+                return (true, msg.value - gas);
             } else {
                 return (false, 0);
             }
