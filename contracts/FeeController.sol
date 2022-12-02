@@ -311,7 +311,7 @@ contract FeeController {
     }
 
     function activateIndexedUserIncentive(address user) external Admin {
-        require(!indexedUserIncentive[user].isActive, "already active");
+        require(indexedUserIncentive[user].isActive, "already active");
         indexedUserIncentive[user] = indexedUserIncentiveModel(
             defaultUserIncentivePercentage,
             true
@@ -321,7 +321,7 @@ contract FeeController {
     }
 
     function deActivateIndexedUserIncentive(address user) external Admin {
-        require(indexedUserIncentive[user].isActive, "already deactivated");
+        require(!indexedUserIncentive[user].isActive, "already deactivated");
         indexedUserIncentive[user].isActive = false;
         emit userExemptStatusChanged(user, false);
     }

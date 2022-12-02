@@ -100,9 +100,9 @@ const config: HardhatUserConfig = {
     //   accounts: {mnemonic : mnemonic},
     // },
     bscTestnet: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      url: "https://bsc-testnet.public.blastapi.io/",
       chainId: 97,
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.PRIVATE_KEY_ADMIN],
     },
     // arbizoomTestnet: {
     //   url: "https://nitro-devnet.arbitrum.io/rpc",
