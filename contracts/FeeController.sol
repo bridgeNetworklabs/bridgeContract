@@ -319,18 +319,18 @@ contract FeeController {
         }
     }
     function getTotalIncentives(address sender, address asset)
-        external
+        public
         view
         returns (uint256)
     {
         if (!settings.baseFeeEnable()) return 0;
+        
+        if (useExemption && isExempted[sender])  return 0;
 
-        uint256 fees = settings.baseFeePercentage();
+        
         uint256 totalIncentive;
 
-        if (useExemption && isExempted[sender]) {
-            return 0;
-        }
+        
         if (useAssetIncentive) {
             if (indexedTokenIncentive[asset].isActive) {
                 totalIncentive += indexedTokenIncentive[asset]
@@ -359,7 +359,12 @@ contract FeeController {
         view
         returns (uint256)
     {
+        if (!settings.baseFeeEnable()) return 0;
+        
+        if (useExemption && isExempted[sender])  return 0;
+
           uint256 totalIncentive =   getTotalIncentives(sender , asset);
+          uint256 fees = settings.baseFeePercentage();
         if (totalIncentive >= 100) {
             return 0;
         } else {
