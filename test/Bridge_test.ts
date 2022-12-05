@@ -26,6 +26,16 @@ describe("Bridge", function () {
   let pool: BridgePool;
   let brgToken: Token;
   let assetToken: Token;
+  let assetToken2: Token;
+  let assetToken3: Token;
+  let assetToken4: Token;
+  let assetToken6: Token;
+  let assetToken5: Token;
+  let assetToken7: Token;
+  let assetToken8: Token;
+  let assetToken9: Token;
+  let assetToken10: Token;
+  let assetToken1: Token;
   let feeRemittance: SignerWithAddress;
   let Admin: SignerWithAddress;
   let assetFeeRemittance: SignerWithAddress;
@@ -64,6 +74,7 @@ describe("Bridge", function () {
       user1,
       user2,
       owner,
+
     ] = await ethers.getSigners();
 
     const controllerContract = await ethers.getContractFactory("Controller");
@@ -116,6 +127,46 @@ describe("Bridge", function () {
 
     const TestToken = await ethers.getContractFactory("Token");
     assetToken = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken1 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken2 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken3 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken4 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken5 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken6 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken7 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken8 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken9 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken10 = await TestToken.connect(assetAdmin).deploy(
       "Asset_One",
       "Ass1"
     );
@@ -1286,7 +1337,7 @@ describe("Bridge", function () {
     });
   });
 
-  describe("Migration", () => {
+  describe.only("Migration", () => {
     let newBridge: Bridge;
     beforeEach(async () => {
       await settings
@@ -1300,7 +1351,43 @@ describe("Bridge", function () {
         .approve(bridge.address, settings.railRegistrationFee());
 
       const TestToken = await ethers.getContractFactory("Token");
-      const foreignToken = await TestToken.connect(assetAdmin).deploy(
+      const foreignToken1 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken2 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken3 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken4 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken5 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken6 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken7 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken8 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken9 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken10 = await TestToken.connect(assetAdmin).deploy(
         "Asset_One",
         "Ass1"
       );
@@ -1322,7 +1409,7 @@ describe("Bridge", function () {
       await bridge
         .connect(registrar)
         .addForiegnAsset(
-          foreignToken.address,
+          foreignToken1.address,
           2,
           [parseEther("0.01"), parseEther("100000")],
           ["test", "test"],
@@ -1330,8 +1417,134 @@ describe("Bridge", function () {
           assetManager.address,
           assetFeeRemittance.address,
           1,
-          false,
+          true,
           assetToken.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken2.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken2.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken3.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken3.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken4.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken4.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken5.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken5.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken6.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken6.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken7.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken7.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken8.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken8.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken9.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken9.address
+        );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken10.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken10.address
         );
 
       const Bridge = await ethers.getContractFactory("Bridge");
@@ -1347,11 +1560,13 @@ describe("Bridge", function () {
     });
 
     it("Should Migrate Bridge", async () => {
+      console.log("here")
       await bridge.connect(Admin).initiateMigration(newBridge.address);
       await time.increase(2 * 24 * 60 * 60);
-      await bridge.connect(Admin).migrateForiegn(1, false);
-      await bridge.connect(Admin).migrateNative(2);
-      await bridge.connect(Admin).completeMigration();
+      await bridge.connect(Admin).migrateForiegn(5, true);
+      await bridge.connect(Admin).migrateForiegn(8, true);
+      //await bridge.connect(Admin).migrateNative(1);
+      // await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()
       );
