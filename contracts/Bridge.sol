@@ -497,8 +497,9 @@ contract Bridge is Context, ReentrancyGuard {
         );
         require(
             success &&
-                recievedValue >= nativeAssets[assetAddress].minAmount &&
-                recievedValue <= nativeAssets[assetAddress].maxAmount,
+            recievedValue > 0 &&
+            recievedValue >= nativeAssets[assetAddress].minAmount &&
+            recievedValue <= nativeAssets[assetAddress].maxAmount,
             "I_F"
         );
 
@@ -675,7 +676,7 @@ contract Bridge is Context, ReentrancyGuard {
     ) internal returns (bool, uint256) {
         uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
-            if (msg.value >= amount + gas && msg.value > 0) {
+            if (msg.value >= amount + gas ) {
                 totalGas += gas;
                 if (gas > 0)
                     payoutUser(
@@ -841,7 +842,7 @@ contract Bridge is Context, ReentrancyGuard {
         } else {
             require(fMigrationAt < foriegnAssetsList.length, "completed");
             start = fMigrationAt;
-            
+
             if (limit + fMigrationAt < foriegnAssetsList.length)
                 migrationAmount = limit;
             else migrationAmount = foriegnAssetsList.length - fMigrationAt;
