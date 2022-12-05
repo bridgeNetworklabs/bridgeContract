@@ -283,21 +283,17 @@ contract FeeController {
         emit AssetIncentiveStatusChanged(true);
     }
 
-    function activateIndexedUserIncentive(address user) external Admin {
-        require(!indexedUserIncentive[user].isActive, "already active");
+    function activateIndexedUserIncentive(address user , bool status) external Admin {
+        require(!indexedUserIncentive[user].isActive != status, "already set");
         indexedUserIncentive[user] = indexedUserIncentiveModel(
             defaultUserIncentivePercentage,
-            true
+            status
         );
 
-        emit userExemptStatusChanged(user, true);
+        emit userExemptStatusChanged(user, status);
     }
 
-    function deActivateIndexedUserIncentive(address user) external Admin {
-        require(indexedUserIncentive[user].isActive, "already deactivated");
-        indexedUserIncentive[user].isActive = false;
-        emit userExemptStatusChanged(user, false);
-    }
+    
 
     function determineTokenHolderLevelPercentage(address holder)
         public
@@ -322,8 +318,7 @@ contract FeeController {
             return 0;
         }
     }
-
-    function getBridgeFee(address sender, address asset)
+    function getTotalIncentives(address sender, address asset)
         external
         view
         returns (uint256)
@@ -356,7 +351,15 @@ contract FeeController {
             );
             totalIncentive += holderPecentage;
         }
+        return totalIncentive;
+    }
 
+    function getBridgeFee(address sender, address asset)
+        external
+        view
+        returns (uint256)
+    {
+          uint256 totalIncentive =   getTotalIncentives(sender , asset);
         if (totalIncentive >= 100) {
             return 0;
         } else {
