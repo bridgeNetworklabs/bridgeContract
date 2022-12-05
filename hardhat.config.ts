@@ -102,7 +102,7 @@ const config: HardhatUserConfig = {
     bscTestnet: {
       url: "https://bsc-testnet.public.blastapi.io/",
       chainId: 97,
-      accounts: [process.env.PRIVATE_KEY_ADMIN],
+      accounts: [process.env.PRIVATE_KEY_OWNER],
     },
     // arbizoomTestnet: {
     //   url: "https://nitro-devnet.arbitrum.io/rpc",
