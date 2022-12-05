@@ -204,7 +204,7 @@ describe("FeeController", () => {
     it("Should set an user incentive percent", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(assetUser.address);
+        .activateIndexedUserIncentive(assetUser.address, true);
       const tx = await feeController
         .connect(owner)
         .updateUserExemptionPercentage(assetUser.address, 40);
@@ -213,17 +213,17 @@ describe("FeeController", () => {
           .incentivePercentage
       ).to.be.equal(40);
       expect(tx)
-        .emit(feeController, "AssetIncentiveUpdated")
+        .emit(feeController, "UserIncentiveUpdate")
         .withArgs(assetUser.address, true);
     });
 
     it("Should deactivate user incentive percent", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(assetUser.address);
+        .activateIndexedUserIncentive(assetUser.address, true);
       await feeController
         .connect(admin)
-        .deActivateIndexedUserIncentive(assetUser.address);
+        .activateIndexedUserIncentive(assetUser.address, false);
       await expect(
         feeController
           .connect(owner)
@@ -606,7 +606,7 @@ describe("FeeController", () => {
     it("Should activate user indexed incentive", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, true);
 
       expect(
         (await feeController.indexedUserIncentive(randomAddress.address))
@@ -618,7 +618,7 @@ describe("FeeController", () => {
       await expect(
         feeController
           .connect(randomAddress)
-          .activateIndexedUserIncentive(randomAddress.address)
+          .activateIndexedUserIncentive(randomAddress.address, true)
       ).to.be.revertedWith("caller is not the admin");
     });
   });
@@ -627,11 +627,11 @@ describe("FeeController", () => {
     it("Should unactivate user indexed incentive", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, true);
 
       await feeController
         .connect(admin)
-        .deActivateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, false);
       expect(
         (await feeController.indexedUserIncentive(randomAddress.address))
           .isActive
@@ -642,7 +642,7 @@ describe("FeeController", () => {
       await expect(
         feeController
           .connect(randomAddress)
-          .deActivateIndexedUserIncentive(randomAddress.address)
+          .activateIndexedUserIncentive(randomAddress.address, false)
       ).to.be.revertedWith("caller is not the admin");
     });
   });

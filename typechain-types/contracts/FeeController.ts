@@ -33,15 +33,15 @@ export interface FeeControllerInterface extends utils.Interface {
     "activateAssetIncentive(bool)": FunctionFragment;
     "activateBRDGHoldingIncentive(bool)": FunctionFragment;
     "activateIndexedTokenIncentive(address,bool)": FunctionFragment;
-    "activateIndexedUserIncentive(address)": FunctionFragment;
+    "activateIndexedUserIncentive(address,bool)": FunctionFragment;
     "activateUserIncentive(bool)": FunctionFragment;
     "controller()": FunctionFragment;
-    "deActivateIndexedUserIncentive(address)": FunctionFragment;
     "defaultAssetIncentivePercentage()": FunctionFragment;
     "defaultUserIncentivePercentage()": FunctionFragment;
     "determineTokenHolderLevelPercentage(address)": FunctionFragment;
     "exemptAddress(address,bool)": FunctionFragment;
     "getBridgeFee(address,address)": FunctionFragment;
+    "getTotalIncentives(address,address)": FunctionFragment;
     "indexedTokenIncentive(address)": FunctionFragment;
     "indexedUserIncentive(address)": FunctionFragment;
     "isExempted(address)": FunctionFragment;
@@ -68,12 +68,12 @@ export interface FeeControllerInterface extends utils.Interface {
       | "activateIndexedUserIncentive"
       | "activateUserIncentive"
       | "controller"
-      | "deActivateIndexedUserIncentive"
       | "defaultAssetIncentivePercentage"
       | "defaultUserIncentivePercentage"
       | "determineTokenHolderLevelPercentage"
       | "exemptAddress"
       | "getBridgeFee"
+      | "getTotalIncentives"
       | "indexedTokenIncentive"
       | "indexedUserIncentive"
       | "isExempted"
@@ -109,7 +109,7 @@ export interface FeeControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "activateIndexedUserIncentive",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
     functionFragment: "activateUserIncentive",
@@ -118,10 +118,6 @@ export interface FeeControllerInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "controller",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "deActivateIndexedUserIncentive",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "defaultAssetIncentivePercentage",
@@ -141,6 +137,10 @@ export interface FeeControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getBridgeFee",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTotalIncentives",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -227,10 +227,6 @@ export interface FeeControllerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "deActivateIndexedUserIncentive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "defaultAssetIncentivePercentage",
     data: BytesLike
   ): Result;
@@ -248,6 +244,10 @@ export interface FeeControllerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getBridgeFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTotalIncentives",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -522,6 +522,7 @@ export interface FeeController extends BaseContract {
 
     activateIndexedUserIncentive(
       user: PromiseOrValue<string>,
+      status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -531,11 +532,6 @@ export interface FeeController extends BaseContract {
     ): Promise<ContractTransaction>;
 
     controller(overrides?: CallOverrides): Promise<[string]>;
-
-    deActivateIndexedUserIncentive(
-      user: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     defaultAssetIncentivePercentage(
       overrides?: CallOverrides
@@ -557,6 +553,12 @@ export interface FeeController extends BaseContract {
     ): Promise<ContractTransaction>;
 
     getBridgeFee(
+      sender: PromiseOrValue<string>,
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    getTotalIncentives(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -665,6 +667,7 @@ export interface FeeController extends BaseContract {
 
   activateIndexedUserIncentive(
     user: PromiseOrValue<string>,
+    status: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -674,11 +677,6 @@ export interface FeeController extends BaseContract {
   ): Promise<ContractTransaction>;
 
   controller(overrides?: CallOverrides): Promise<string>;
-
-  deActivateIndexedUserIncentive(
-    user: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   defaultAssetIncentivePercentage(
     overrides?: CallOverrides
@@ -698,6 +696,12 @@ export interface FeeController extends BaseContract {
   ): Promise<ContractTransaction>;
 
   getBridgeFee(
+    sender: PromiseOrValue<string>,
+    asset: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getTotalIncentives(
     sender: PromiseOrValue<string>,
     asset: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -800,6 +804,7 @@ export interface FeeController extends BaseContract {
 
     activateIndexedUserIncentive(
       user: PromiseOrValue<string>,
+      status: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -809,11 +814,6 @@ export interface FeeController extends BaseContract {
     ): Promise<void>;
 
     controller(overrides?: CallOverrides): Promise<string>;
-
-    deActivateIndexedUserIncentive(
-      user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     defaultAssetIncentivePercentage(
       overrides?: CallOverrides
@@ -835,6 +835,12 @@ export interface FeeController extends BaseContract {
     ): Promise<void>;
 
     getBridgeFee(
+      sender: PromiseOrValue<string>,
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTotalIncentives(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1041,6 +1047,7 @@ export interface FeeController extends BaseContract {
 
     activateIndexedUserIncentive(
       user: PromiseOrValue<string>,
+      status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1050,11 +1057,6 @@ export interface FeeController extends BaseContract {
     ): Promise<BigNumber>;
 
     controller(overrides?: CallOverrides): Promise<BigNumber>;
-
-    deActivateIndexedUserIncentive(
-      user: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     defaultAssetIncentivePercentage(
       overrides?: CallOverrides
@@ -1076,6 +1078,12 @@ export interface FeeController extends BaseContract {
     ): Promise<BigNumber>;
 
     getBridgeFee(
+      sender: PromiseOrValue<string>,
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTotalIncentives(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1170,6 +1178,7 @@ export interface FeeController extends BaseContract {
 
     activateIndexedUserIncentive(
       user: PromiseOrValue<string>,
+      status: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1179,11 +1188,6 @@ export interface FeeController extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     controller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    deActivateIndexedUserIncentive(
-      user: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     defaultAssetIncentivePercentage(
       overrides?: CallOverrides
@@ -1205,6 +1209,12 @@ export interface FeeController extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getBridgeFee(
+      sender: PromiseOrValue<string>,
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTotalIncentives(
       sender: PromiseOrValue<string>,
       asset: PromiseOrValue<string>,
       overrides?: CallOverrides
