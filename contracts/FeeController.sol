@@ -9,9 +9,12 @@ contract FeeController {
     IController public controller;
     Isettings public settings;
 
-   
-    enum HoldingLevels {COMMON ,  BETA , ALPHA }
-    mapping (address => bool) public isExempted;
+    enum HoldingLevels {
+        COMMON,
+        BETA,
+        ALPHA
+    }
+    mapping(address => bool) public isExempted;
 
     struct tokenHolderIncentiveModel {
         uint256 incentivePercentage;
@@ -36,10 +39,11 @@ contract FeeController {
     uint256 public defaultUserIncentivePercentage = 10;
     uint256 public defaultAssetIncentivePercentage = 10;
 
-    mapping(HoldingLevels => tokenHolderIncentiveModel) tokenHolderIncentive;
-    mapping(address => indexedTokenIncentiveModel) indexedTokenIncentive;
-    mapping(address => indexedUserIncentiveModel) indexedUserIncentive;
-    
+    mapping(HoldingLevels => tokenHolderIncentiveModel)
+        public tokenHolderIncentive;
+    mapping(address => indexedTokenIncentiveModel) public indexedTokenIncentive;
+    mapping(address => indexedUserIncentiveModel) public indexedUserIncentive;
+
     event BrgHoldingIncentiveStatusChanged(bool status);
     event UserIncentiveStatusChanged(bool status);
     event AssetIncentiveStatusChanged(bool status);
@@ -92,9 +96,18 @@ contract FeeController {
     constructor(IController _controller, Isettings _settings) {
         controller = _controller;
         settings = _settings;
-         tokenHolderIncentive[HoldingLevels.COMMON] = tokenHolderIncentiveModel(3 , 50000 ether);
-         tokenHolderIncentive[HoldingLevels.BETA] = tokenHolderIncentiveModel(7 , 2000000 ether);
-         tokenHolderIncentive[HoldingLevels.ALPHA] = tokenHolderIncentiveModel(15 , 10000000 ether);
+        tokenHolderIncentive[HoldingLevels.COMMON] = tokenHolderIncentiveModel(
+            20,
+            50000 ether
+        );
+        tokenHolderIncentive[HoldingLevels.BETA] = tokenHolderIncentiveModel(
+            30,
+            2000000 ether
+        );
+        tokenHolderIncentive[HoldingLevels.ALPHA] = tokenHolderIncentiveModel(
+            50,
+            10000000 ether
+        );
     }
 
     function activateBRDGHoldingIncentive(bool status) public Admin {
@@ -143,27 +156,30 @@ contract FeeController {
         HoldingLevels tokenHoldingLevel,
         uint256 threshold
     ) external Admin {
-       
         HoldingLevels _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
-       
+
         if (_tokenHoldingLevel == HoldingLevels.ALPHA) {
             require(
-                threshold > tokenHolderIncentive[HoldingLevels.BETA].threshold &&
+                threshold >
+                    tokenHolderIncentive[HoldingLevels.BETA].threshold &&
                     tokenHolderIncentive[HoldingLevels.BETA].threshold >
                     tokenHolderIncentive[HoldingLevels.COMMON].threshold &&
                     tokenHolderIncentive[HoldingLevels.COMMON].threshold > 0
             );
         } else if (_tokenHoldingLevel == HoldingLevels.BETA) {
             require(
-                tokenHolderIncentive[HoldingLevels.ALPHA].threshold > threshold &&
-                    threshold > tokenHolderIncentive[HoldingLevels.COMMON].threshold &&
+                tokenHolderIncentive[HoldingLevels.ALPHA].threshold >
+                    threshold &&
+                    threshold >
+                    tokenHolderIncentive[HoldingLevels.COMMON].threshold &&
                     tokenHolderIncentive[HoldingLevels.COMMON].threshold > 0
             );
         } else if (_tokenHoldingLevel == HoldingLevels.COMMON) {
             require(
                 tokenHolderIncentive[HoldingLevels.ALPHA].threshold >
                     tokenHolderIncentive[HoldingLevels.BETA].threshold &&
-                    tokenHolderIncentive[HoldingLevels.BETA].threshold > threshold &&
+                    tokenHolderIncentive[HoldingLevels.BETA].threshold >
+                    threshold &&
                     threshold > 0
             );
         }
@@ -236,29 +252,40 @@ contract FeeController {
         HoldingLevels tokenHoldingLevel,
         uint256 percentage
     ) external Admin {
-         
         HoldingLevels _tokenHoldingLevel = getTokenHolding(tokenHoldingLevel);
         uint256 previousPercentage = tokenHolderIncentive[_tokenHoldingLevel]
             .incentivePercentage;
         if (_tokenHoldingLevel == HoldingLevels.ALPHA) {
             require(
-                percentage > tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage &&
-                    tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage >
-                    tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage &&
-                    tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage > 0
+                percentage >
+                    tokenHolderIncentive[HoldingLevels.BETA]
+                        .incentivePercentage &&
+                    tokenHolderIncentive[HoldingLevels.BETA]
+                        .incentivePercentage >
+                    tokenHolderIncentive[HoldingLevels.COMMON]
+                        .incentivePercentage &&
+                    tokenHolderIncentive[HoldingLevels.COMMON]
+                        .incentivePercentage >
+                    0
             );
         } else if (_tokenHoldingLevel == HoldingLevels.BETA) {
             require(
-                tokenHolderIncentive[HoldingLevels.ALPHA].incentivePercentage > percentage &&
+                tokenHolderIncentive[HoldingLevels.ALPHA].incentivePercentage >
+                    percentage &&
                     percentage >
-                    tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage &&
-                    tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage > 0
+                    tokenHolderIncentive[HoldingLevels.COMMON]
+                        .incentivePercentage &&
+                    tokenHolderIncentive[HoldingLevels.COMMON]
+                        .incentivePercentage >
+                    0
             );
         } else if (_tokenHoldingLevel == HoldingLevels.COMMON) {
             require(
                 tokenHolderIncentive[HoldingLevels.ALPHA].incentivePercentage >
-                    tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage &&
-                    tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage >
+                    tokenHolderIncentive[HoldingLevels.BETA]
+                        .incentivePercentage &&
+                    tokenHolderIncentive[HoldingLevels.BETA]
+                        .incentivePercentage >
                     percentage &&
                     percentage > 0
             );
@@ -283,8 +310,11 @@ contract FeeController {
         emit AssetIncentiveStatusChanged(true);
     }
 
-    function activateIndexedUserIncentive(address user , bool status) external Admin {
-        require(!indexedUserIncentive[user].isActive != status, "already set");
+    function activateIndexedUserIncentive(address user, bool status)
+        external
+        Admin
+    {
+        require(indexedUserIncentive[user].isActive != status, "already set");
         indexedUserIncentive[user] = indexedUserIncentiveModel(
             defaultUserIncentivePercentage,
             status
@@ -293,8 +323,6 @@ contract FeeController {
         emit userExemptStatusChanged(user, status);
     }
 
-    
-
     function determineTokenHolderLevelPercentage(address holder)
         public
         view
@@ -302,35 +330,41 @@ contract FeeController {
     {
         uint256 holdingAmount = IERC20(settings.brgToken()).balanceOf(holder);
 
-        if (holdingAmount >= tokenHolderIncentive[HoldingLevels.ALPHA].threshold) {
-            return tokenHolderIncentive[HoldingLevels.ALPHA].incentivePercentage;
+        if (
+            holdingAmount >= tokenHolderIncentive[HoldingLevels.ALPHA].threshold
+        ) {
+            return
+                tokenHolderIncentive[HoldingLevels.ALPHA].incentivePercentage;
         } else if (
-            holdingAmount < tokenHolderIncentive[HoldingLevels.ALPHA].threshold &&
+            holdingAmount <
+            tokenHolderIncentive[HoldingLevels.ALPHA].threshold &&
             holdingAmount >= tokenHolderIncentive[HoldingLevels.BETA].threshold
         ) {
-             return tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage;
+            return tokenHolderIncentive[HoldingLevels.BETA].incentivePercentage;
         } else if (
-            holdingAmount < tokenHolderIncentive[HoldingLevels.BETA].threshold &&
-            holdingAmount >= tokenHolderIncentive[HoldingLevels.COMMON].threshold
+            holdingAmount <
+            tokenHolderIncentive[HoldingLevels.BETA].threshold &&
+            holdingAmount >=
+            tokenHolderIncentive[HoldingLevels.COMMON].threshold
         ) {
-             return tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage;
+            return
+                tokenHolderIncentive[HoldingLevels.COMMON].incentivePercentage;
         } else {
             return 0;
         }
     }
+
     function getTotalIncentives(address sender, address asset)
         public
         view
         returns (uint256)
     {
         if (!settings.baseFeeEnable()) return 0;
-        
-        if (useExemption && isExempted[sender])  return 0;
 
-        
+        if (useExemption && isExempted[sender]) return 0;
+
         uint256 totalIncentive;
 
-        
         if (useAssetIncentive) {
             if (indexedTokenIncentive[asset].isActive) {
                 totalIncentive += indexedTokenIncentive[asset]
@@ -360,11 +394,11 @@ contract FeeController {
         returns (uint256)
     {
         if (!settings.baseFeeEnable()) return 0;
-        
-        if (useExemption && isExempted[sender])  return 0;
 
-          uint256 totalIncentive =   getTotalIncentives(sender , asset);
-          uint256 fees = settings.baseFeePercentage();
+        if (useExemption && isExempted[sender]) return 0;
+
+        uint256 totalIncentive = getTotalIncentives(sender, asset);
+        uint256 fees = settings.baseFeePercentage();
         if (totalIncentive >= 100) {
             return 0;
         } else {

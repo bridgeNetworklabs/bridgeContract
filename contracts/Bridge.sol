@@ -262,18 +262,18 @@ contract Bridge is Context, ReentrancyGuard {
         } else {
             ownedRail = true;
             if (settings.onlyOwnableRail()) {
-               if(assetAddress == address(0)){
+                if (assetAddress == address(0)) {
                     require(
                         settings.approvedToAdd(assetAddress, msg.sender),
-                    "U_A"
-                );
-               }else{
+                        "U_A"
+                    );
+                } else {
                     require(
-                       _msgSender() == IERCOwnable(assetAddress).owner() ||  settings.approvedToAdd(assetAddress, msg.sender),
-                    "U_A"
-                );
-                  
-               }
+                        _msgSender() == IERCOwnable(assetAddress).owner() ||
+                            settings.approvedToAdd(assetAddress, msg.sender),
+                        "U_A"
+                    );
+                }
             }
             IERC20 token = IERC20(settings.brgToken());
             token.safeTransferFrom(

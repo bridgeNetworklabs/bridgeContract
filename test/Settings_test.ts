@@ -56,9 +56,7 @@ describe("Settings", () => {
       expect(await settings.minValidationPercentage()).to.be.equal(51);
     });
     it("maximum fee threshold is 300000 ", async () => {
-      expect(await settings.maxFeeThreshold()).to.be.equal(
-        "1000"
-      );
+      expect(await settings.maxFeeThreshold()).to.be.equal("1000");
     });
     it("validation percentage should be 51%", async () => {
       expect(await settings.ValidationPercentage()).to.be.equal(51);

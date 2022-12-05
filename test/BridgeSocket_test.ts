@@ -44,7 +44,7 @@ describe("BridgeSocket", () => {
       randomAddress,
       lossLess,
       assetOwner,
-      feeRemittance2
+      feeRemittance2,
     ] = await ethers.getSigners();
     const BridgeToken = await ethers.getContractFactory("Token");
     brdg = await BridgeToken.connect(owner).deploy("Bridge NetWork", "brdg");

@@ -1,3 +1,4 @@
+import { Bridge } from "./../typechain-types/contracts/Bridge";
 import { getIncentiveIdentifier } from "./utils/utils";
 import { ethers } from "hardhat";
 import type {
@@ -25,6 +26,12 @@ describe("FeeController", () => {
   const COMMON = getIncentiveIdentifier("COMMON");
   const ALPHA = getIncentiveIdentifier("ALPHA");
   const BETA = getIncentiveIdentifier("BETA");
+
+  enum HoldingLevels {
+    COMMON,
+    BETA,
+    ALPHA,
+  }
 
   beforeEach(async () => {
     [feeRemittance, owner, admin, assetUser, randomAddress, assetUser2] =
@@ -194,9 +201,10 @@ describe("FeeController", () => {
   });
 
   describe("user incentivization", () => {
-
     it("Should set an user incentive percent", async () => {
-      await feeController.connect(admin).activateIndexedUserIncentive(assetUser.address)
+      await feeController
+        .connect(admin)
+        .activateIndexedUserIncentive(assetUser.address, true);
       const tx = await feeController
         .connect(owner)
         .updateUserExemptionPercentage(assetUser.address, 40);
@@ -205,24 +213,26 @@ describe("FeeController", () => {
           .incentivePercentage
       ).to.be.equal(40);
       expect(tx)
-        .emit(feeController, "AssetIncentiveUpdated")
+        .emit(feeController, "UserIncentiveUpdate")
         .withArgs(assetUser.address, true);
     });
 
-
     it("Should deactivate user incentive percent", async () => {
-      await feeController.connect(admin).activateIndexedUserIncentive(assetUser.address)
-      await feeController.connect(admin).deActivateIndexedUserIncentive(assetUser.address)
-      await expect(feeController
-        .connect(owner)
-        .updateUserExemptionPercentage(assetUser.address, 40)).to.be.revertedWith("FeeController: user exemption not active")
+      await feeController
+        .connect(admin)
+        .activateIndexedUserIncentive(assetUser.address, true);
+      await feeController
+        .connect(admin)
+        .activateIndexedUserIncentive(assetUser.address, false);
+      await expect(
+        feeController
+          .connect(owner)
+          .updateUserExemptionPercentage(assetUser.address, 40)
+      ).to.be.revertedWith("FeeController: user exemption not active");
       expect(
-        (await feeController.indexedUserIncentive(assetUser.address))
-          .isActive
+        (await feeController.indexedUserIncentive(assetUser.address)).isActive
       ).to.be.equal(false);
     });
-
-
 
     it("Should revert if any address apart from owner tries to set user incentive percent", async () => {
       await expect(
@@ -237,22 +247,28 @@ describe("FeeController", () => {
     it("Should update the COMMON threshold", async () => {
       await feeController
         .connect(owner)
-        .updateBRDGHoldingIncentiveThreshold(COMMON, parseEther("100000"));
+        .updateBRDGHoldingIncentiveThreshold(
+          HoldingLevels.COMMON,
+          parseEther("100000")
+        );
       expect(
-        (await feeController.tokenHolderIncentive(COMMON)).threshold
+        (await feeController.tokenHolderIncentive(HoldingLevels.COMMON))
+          .threshold
       ).to.be.equal(parseEther("100000"));
     });
 
     it("Should revert if COMMON Threshold is more than ALPHA and BETA Threshold", async () => {
-      const BETA_THRESHOLD = (await feeController.tokenHolderIncentive(BETA))
-        .threshold;
-      const ALPHA_THRESHOLD = (await feeController.tokenHolderIncentive(ALPHA))
-        .threshold;
+      const BETA_THRESHOLD = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).threshold;
+      const ALPHA_THRESHOLD = (
+        await feeController.tokenHolderIncentive(HoldingLevels.ALPHA)
+      ).threshold;
       await expect(
         feeController
           .connect(owner)
           .updateBRDGHoldingIncentiveThreshold(
-            COMMON,
+            HoldingLevels.COMMON,
             BETA_THRESHOLD.add(parseEther("1"))
           )
       ).to.be.reverted;
@@ -260,7 +276,7 @@ describe("FeeController", () => {
         feeController
           .connect(owner)
           .updateBRDGHoldingIncentiveThreshold(
-            COMMON,
+            HoldingLevels.COMMON,
             ALPHA_THRESHOLD.add(parseEther("1"))
           )
       ).to.be.reverted;
@@ -269,82 +285,116 @@ describe("FeeController", () => {
     it("Should update the BETA Threshold", async () => {
       await feeController
         .connect(owner)
-        .updateBRDGHoldingIncentiveThreshold(BETA, parseEther("3000000"));
+        .updateBRDGHoldingIncentiveThreshold(
+          HoldingLevels.BETA,
+          parseEther("3000000")
+        );
       expect(
-        (await feeController.tokenHolderIncentive(BETA)).threshold
+        (await feeController.tokenHolderIncentive(HoldingLevels.BETA)).threshold
       ).to.be.equal(parseEther("3000000"));
     });
 
     it("Should revert if the BETA Threshold is less than or equal to the COMMON threshold", async () => {
       const COMMON_THRESHOLD = (
-        await feeController.tokenHolderIncentive(COMMON)
+        await feeController.tokenHolderIncentive(HoldingLevels.COMMON)
       ).threshold;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(BETA, COMMON_THRESHOLD)
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.BETA,
+            COMMON_THRESHOLD
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(BETA, COMMON_THRESHOLD.sub(1))
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.BETA,
+            COMMON_THRESHOLD.sub(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should revert if the BETA Threshold is more than or equal to the ALPHA threshold", async () => {
-      const ALPHA_THRESHOLD = (await feeController.tokenHolderIncentive(ALPHA))
-        .threshold;
+      const ALPHA_THRESHOLD = (
+        await feeController.tokenHolderIncentive(HoldingLevels.ALPHA)
+      ).threshold;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(BETA, ALPHA_THRESHOLD)
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.BETA,
+            ALPHA_THRESHOLD
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(BETA, ALPHA_THRESHOLD.add(1))
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.BETA,
+            ALPHA_THRESHOLD.add(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should update the ALPHA Threshold", async () => {
-      const BETA_THRESHOLD = (await feeController.tokenHolderIncentive(BETA))
-        .threshold;
+      const BETA_THRESHOLD = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).threshold;
       await feeController
         .connect(owner)
-        .updateBRDGHoldingIncentiveThreshold(ALPHA, BETA_THRESHOLD.add(1));
+        .updateBRDGHoldingIncentiveThreshold(
+          HoldingLevels.ALPHA,
+          BETA_THRESHOLD.add(1)
+        );
       expect(
-        (await feeController.tokenHolderIncentive(ALPHA)).threshold
+        (await feeController.tokenHolderIncentive(HoldingLevels.ALPHA))
+          .threshold
       ).to.be.equal(BETA_THRESHOLD.add(1));
     });
 
     it("Should revert if the ALPHA Threshold is less than or equal to the BETA threshold", async () => {
-      const BETA_THRESHOLD = (await feeController.tokenHolderIncentive(BETA))
-        .threshold;
+      const BETA_THRESHOLD = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).threshold;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(ALPHA, BETA_THRESHOLD)
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.ALPHA,
+            BETA_THRESHOLD
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(ALPHA, BETA_THRESHOLD.sub(1))
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.ALPHA,
+            BETA_THRESHOLD.sub(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should revert if the ALPHA Threshold is less than or equal to the COMMON threshold", async () => {
       const COMMON_THRESHOLD = (
-        await feeController.tokenHolderIncentive(COMMON)
+        await feeController.tokenHolderIncentive(HoldingLevels.COMMON)
       ).threshold;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(ALPHA, COMMON_THRESHOLD)
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.ALPHA,
+            COMMON_THRESHOLD
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateBRDGHoldingIncentiveThreshold(ALPHA, COMMON_THRESHOLD.sub(1))
+          .updateBRDGHoldingIncentiveThreshold(
+            HoldingLevels.ALPHA,
+            COMMON_THRESHOLD.sub(1)
+          )
       ).to.be.reverted;
     });
   });
@@ -353,130 +403,182 @@ describe("FeeController", () => {
     it("Should update the COMMON incentive percentage", async () => {
       await feeController
         .connect(owner)
-        .updateTokenHoldingIncentivePercentage(COMMON, 4);
+        .updateTokenHoldingIncentivePercentage(HoldingLevels.COMMON, 4);
       expect(
-        (await feeController.tokenHolderIncentive(COMMON)).incentivePercentage
+        (await feeController.tokenHolderIncentive(HoldingLevels.COMMON))
+          .incentivePercentage
       ).to.be.equal(4);
     });
 
     it("Should revert if COMMON incentive percentage is more than ALPHA and BETA incentive percentagr", async () => {
-      const BETA_INCENTIVE = (await feeController.tokenHolderIncentive(BETA))
-        .incentivePercentage;
-      const ALPHA_INCENTIVE = (await feeController.tokenHolderIncentive(ALPHA))
-        .incentivePercentage;
+      const BETA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).incentivePercentage;
+      const ALPHA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.ALPHA)
+      ).incentivePercentage;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(COMMON, BETA_INCENTIVE.add(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.COMMON,
+            BETA_INCENTIVE.add(1)
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(COMMON, ALPHA_INCENTIVE.add(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.COMMON,
+            ALPHA_INCENTIVE.add(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should update the BETA incentive percentage", async () => {
       await feeController
         .connect(owner)
-        .updateTokenHoldingIncentivePercentage(BETA, 8);
+        .updateTokenHoldingIncentivePercentage(HoldingLevels.BETA, 40);
       expect(
-        (await feeController.tokenHolderIncentive(BETA)).incentivePercentage
-      ).to.be.equal(8);
+        (await feeController.tokenHolderIncentive(HoldingLevels.BETA))
+          .incentivePercentage
+      ).to.be.equal(40);
     });
 
     it("Should revert if the BETA incentive percentage is less than or equal to the COMMON incentive percentage", async () => {
       const COMMON_INCENTIVE = (
-        await feeController.tokenHolderIncentive(COMMON)
+        await feeController.tokenHolderIncentive(HoldingLevels.COMMON)
       ).incentivePercentage;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(BETA, COMMON_INCENTIVE)
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.BETA,
+            COMMON_INCENTIVE
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(BETA, COMMON_INCENTIVE.sub(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.BETA,
+            COMMON_INCENTIVE.sub(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should revert if the BETA incentive percentage is more than or equal to the ALPHA incentive percentage", async () => {
-      const ALPHA_INCENTIVE = (await feeController.tokenHolderIncentive(ALPHA))
-        .incentivePercentage;
+      const ALPHA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.ALPHA)
+      ).incentivePercentage;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(BETA, ALPHA_INCENTIVE)
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.BETA,
+            ALPHA_INCENTIVE
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(BETA, ALPHA_INCENTIVE.add(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.BETA,
+            ALPHA_INCENTIVE.add(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should update the ALPHA incentive percentage", async () => {
-      const BETA_INCENTIVE = (await feeController.tokenHolderIncentive(BETA))
-        .incentivePercentage;
+      const BETA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).incentivePercentage;
       await feeController
         .connect(owner)
-        .updateTokenHoldingIncentivePercentage(ALPHA, BETA_INCENTIVE.add(1));
+        .updateTokenHoldingIncentivePercentage(
+          HoldingLevels.ALPHA,
+          BETA_INCENTIVE.add(1)
+        );
       expect(
-        (await feeController.tokenHolderIncentive(ALPHA)).incentivePercentage
+        (await feeController.tokenHolderIncentive(HoldingLevels.ALPHA))
+          .incentivePercentage
       ).to.be.equal(BETA_INCENTIVE.add(1));
     });
 
     it("Should revert if the ALPHA incentive percentage is less than or equal to the BETA incentive percentage", async () => {
-      const BETA_INCENTIVE = (await feeController.tokenHolderIncentive(BETA))
-        .incentivePercentage;
+      const BETA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).incentivePercentage;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(ALPHA, BETA_INCENTIVE)
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.ALPHA,
+            BETA_INCENTIVE
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(ALPHA, BETA_INCENTIVE.sub(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.ALPHA,
+            BETA_INCENTIVE.sub(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should revert if the ALPHA incentive percentage is less than or equal to the COMMON incentive percentage", async () => {
       const COMMON_INCENTIVE = (
-        await feeController.tokenHolderIncentive(COMMON)
+        await feeController.tokenHolderIncentive(HoldingLevels.COMMON)
       ).incentivePercentage;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(ALPHA, COMMON_INCENTIVE)
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.ALPHA,
+            COMMON_INCENTIVE
+          )
       ).to.be.reverted;
       await expect(
         feeController
           .connect(owner)
-          .updateTokenHoldingIncentivePercentage(ALPHA, COMMON_INCENTIVE.sub(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.ALPHA,
+            COMMON_INCENTIVE.sub(1)
+          )
       ).to.be.reverted;
     });
 
     it("Should revert if any address apart from owner and admin tries to update incentive percentage for assets", async () => {
-      const BETA_INCENTIVE = (await feeController.tokenHolderIncentive(BETA))
-        .incentivePercentage;
-      const ALPHA_INCENTIVE = (await feeController.tokenHolderIncentive(ALPHA))
-        .incentivePercentage;
+      const BETA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.BETA)
+      ).incentivePercentage;
+      const ALPHA_INCENTIVE = (
+        await feeController.tokenHolderIncentive(HoldingLevels.ALPHA)
+      ).incentivePercentage;
       await expect(
         feeController
           .connect(randomAddress)
-          .updateTokenHoldingIncentivePercentage(ALPHA, BETA_INCENTIVE.add(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.ALPHA,
+            BETA_INCENTIVE.add(1)
+          )
       ).to.be.revertedWith("caller is not the admin");
       await expect(
         feeController
           .connect(randomAddress)
-          .updateTokenHoldingIncentivePercentage(BETA, ALPHA_INCENTIVE.sub(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.BETA,
+            ALPHA_INCENTIVE.sub(1)
+          )
       ).to.be.revertedWith("caller is not the admin");
       await expect(
         feeController
           .connect(randomAddress)
-          .updateTokenHoldingIncentivePercentage(COMMON, BETA_INCENTIVE.sub(1))
+          .updateTokenHoldingIncentivePercentage(
+            HoldingLevels.COMMON,
+            BETA_INCENTIVE.sub(1)
+          )
       ).to.be.revertedWith("caller is not the admin");
     });
   });
@@ -504,7 +606,7 @@ describe("FeeController", () => {
     it("Should activate user indexed incentive", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, true);
 
       expect(
         (await feeController.indexedUserIncentive(randomAddress.address))
@@ -516,7 +618,7 @@ describe("FeeController", () => {
       await expect(
         feeController
           .connect(randomAddress)
-          .activateIndexedUserIncentive(randomAddress.address)
+          .activateIndexedUserIncentive(randomAddress.address, true)
       ).to.be.revertedWith("caller is not the admin");
     });
   });
@@ -525,11 +627,11 @@ describe("FeeController", () => {
     it("Should unactivate user indexed incentive", async () => {
       await feeController
         .connect(admin)
-        .activateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, true);
 
       await feeController
         .connect(admin)
-        .deActivateIndexedUserIncentive(randomAddress.address);
+        .activateIndexedUserIncentive(randomAddress.address, false);
       expect(
         (await feeController.indexedUserIncentive(randomAddress.address))
           .isActive
@@ -540,7 +642,7 @@ describe("FeeController", () => {
       await expect(
         feeController
           .connect(randomAddress)
-          .deActivateIndexedUserIncentive(randomAddress.address)
+          .activateIndexedUserIncentive(randomAddress.address, false)
       ).to.be.revertedWith("caller is not the admin");
     });
   });
@@ -570,25 +672,38 @@ describe("FeeController", () => {
     });
 
     it("Should get an incentive if asset holding incentive is active and there is an incentive percentage", async () => {
-      await feeController.connect(admin).activateAssetIncentive(true)
-      await feeController.connect(admin).activateIndexedTokenIncentive(asset1.address, true)
-      await settings.connect(owner).enableBaseFee()
-      await feeController.connect(admin).updateIndexedTokenIncentivePercentage(asset1.address, 10)
+      await feeController.connect(admin).activateAssetIncentive(true);
+      await feeController
+        .connect(admin)
+        .activateIndexedTokenIncentive(asset1.address, true);
+      await settings.connect(owner).enableBaseFee();
+      await feeController
+        .connect(admin)
+        .updateIndexedTokenIncentivePercentage(asset1.address, 10);
       expect(
         await feeController.getBridgeFee(assetUser.address, asset1.address)
       ).to.be.equal(9);
-
     });
-
 
     it("Should get an incentive depending on brdg holding threshold and if bridge holding is active", async () => {
-      await feeController.connect(admin).activateBRDGHoldingIncentive(true)
-      await brdgToken.transfer(assetUser.address, parseEther("50000"))
+      await feeController.connect(admin).activateBRDGHoldingIncentive(true);
+      await settings.connect(owner).enableBaseFee();
+      await brdgToken.transfer(assetUser.address, parseEther("50000"));
+      await brdgToken.transfer(assetUser2.address, parseEther("10000000"));
+      expect(
+        await feeController.getBridgeFee(assetUser2.address, asset1.address)
+      ).to.be.equal(5);
       expect(
         await feeController.getBridgeFee(assetUser.address, asset1.address)
-      ).to.be.equal(0);
+      ).to.be.equal(8);
     });
 
-    it("Should return the exact fee if there are no incentive", async () => { });
+    it("Should return the exact fee if there are no incentive", async () => {
+      await feeController.connect(admin).activateBRDGHoldingIncentive(true);
+      await settings.connect(owner).enableBaseFee();
+      expect(
+        await feeController.getBridgeFee(assetUser.address, asset1.address)
+      ).to.be.equal(10);
+    });
   });
 });

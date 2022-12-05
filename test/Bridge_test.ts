@@ -441,6 +441,7 @@ describe("Bridge", function () {
           .send(2, assetToken.address, "100000000000000000000", Admin.address)
       ).to.revertedWith("I_F");
     });
+
     it("should  be able to Bridge coin", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [0], true);
       await brgToken
@@ -483,7 +484,11 @@ describe("Bridge", function () {
     it("should  be able Bridge assetToken", async function () {
       await settings
         .connect(Admin)
-        .setNetworkSupportedChains([2, 10], [parseEther("0.01"), parseEther("0.01")], true);
+        .setNetworkSupportedChains(
+          [2, 10],
+          [parseEther("0.01"), parseEther("0.01")],
+          true
+        );
       await brgToken
         .connect(Admin)
         .transfer(assetManager.address, settings.railRegistrationFee());
@@ -516,9 +521,7 @@ describe("Bridge", function () {
       await assetToken
         .connect(user1)
         .approve(bridge.address, ethers.constants.MaxUint256);
-      let val = await settings.networkGas(
-        2
-      );
+      let val = await settings.networkGas(2);
       let transactionID = await registry.getID(
         bridge.chainId(),
         2,
@@ -585,9 +588,7 @@ describe("Bridge", function () {
       await token
         .connect(user1)
         .approve(bridge.address, ethers.utils.parseUnits("1", 6));
-      let val = await settings.networkGas(
-        2
-      );
+      let val = await settings.networkGas(2);
       let transactionID = await registry.getID(
         bridge.chainId(),
         2,
@@ -611,6 +612,7 @@ describe("Bridge", function () {
 
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
+
     it("should be able validate DirectSwap assetToken With any decimals", async function () {
       await settings
         .connect(Admin)
@@ -652,7 +654,7 @@ describe("Bridge", function () {
         .addForiegnAsset(
           "0x55d398326f99059fF775485246999027B3197955",
           2,
-          ['1000000', '1000000'],
+          ["1000000", "1000000"],
           ["w", "w"],
           true,
           assetManager.address,
@@ -664,16 +666,19 @@ describe("Bridge", function () {
       // let fees = await ethers.utils.parseEther(val)
       await bridge.connect(Admin).activeNativeAsset(assetToken2.address, true);
       await assetToken2.connect(Admin).approve(bridge.address, "1000000000");
-      let val = await settings.networkGas(
-        2
-      );
-
+      let val = await settings.networkGas(2);
 
       await bridge
         .connect(Admin)
-        .send(2, assetToken2.address, parseUnits("1000", 6), assetManager.address, {
-          value: val,
-        })
+        .send(
+          2,
+          assetToken2.address,
+          parseUnits("1000", 6),
+          assetManager.address,
+          {
+            value: val,
+          }
+        );
 
       let mintID = await registry.getID(
         2,
@@ -730,16 +735,18 @@ describe("Bridge", function () {
       let balance = await assetToken2.balanceOf(assetManager.address);
       expect(balance).to.equal(parseUnits("100", 6));
     });
+
     it("should allow  Admin Pause Bridge", async function () {
       expect(await bridge.connect(Admin).pauseBrigde()).to.not.throw;
     });
-    it("should not allow none  Admin Pause Bridge", async function () {
+
+    it("should not allow none Admin Pause Bridge", async function () {
       await expect(bridge.connect(assetManager).pauseBrigde()).to.revertedWith(
         "U_A"
       );
     });
 
-    it("should be able to register  claim transaction", async function () {
+    it("should be able to register claim transaction", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [10], true);
       await brgToken
         .connect(Admin)
@@ -784,6 +791,7 @@ describe("Bridge", function () {
           )
       ).to.not.throw;
     });
+
     it("should not be able to validate transaction transaction with value overFlow between Chains", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [10], true);
       await brgToken
@@ -849,6 +857,7 @@ describe("Bridge", function () {
           .validateTransaction(claimID, signatures, false)
       ).to.revertedWith("Amount_limit_Err");
     });
+
     it("should not be able to validate with less validators ", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [10], true);
       await brgToken
@@ -880,9 +889,7 @@ describe("Bridge", function () {
       await assetToken
         .connect(assetManager)
         .approve(bridge.address, "100000000000000000000");
-      let val = await settings.networkGas(
-        2
-      );
+      let val = await settings.networkGas(2);
       await assetToken
         .connect(assetAdmin)
         .transfer(assetManager.address, "100000000000000000000");
@@ -944,7 +951,8 @@ describe("Bridge", function () {
           .validateTransaction(claimID, signatures, false)
       ).to.revertedWith("insuficient_signers");
     });
-    it("should  be able to validate transaction transaction ", async function () {
+
+    it("should  be able to validate transaction  ", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [10], true);
       await brgToken
         .connect(Admin)
@@ -976,9 +984,7 @@ describe("Bridge", function () {
       await assetToken2
         .connect(assetManager)
         .approve(bridge.address, "1000000000");
-      let val = await settings.networkGas(
-        2
-      );
+      let val = await settings.networkGas(2);
 
       await bridge
         .connect(assetManager)
@@ -1017,19 +1023,19 @@ describe("Bridge", function () {
         transaction[4]
       );
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
 
       await expect(
@@ -1038,7 +1044,8 @@ describe("Bridge", function () {
           .validateTransaction(claimID, signatures, false)
       ).to.not.throw;
     });
-    it("should  be able to validate transaction transaction and send correctValue ", async function () {
+
+    it("should  be able to validate transaction  and send correctValue ", async function () {
       await settings.connect(Admin).setNetworkSupportedChains([2], [10], true);
       await brgToken
         .connect(Admin)
@@ -1070,9 +1077,7 @@ describe("Bridge", function () {
       await assetToken2
         .connect(assetManager)
         .approve(bridge.address, "1000000000");
-      let val = await settings.networkGas(
-        2
-      );
+      let val = await settings.networkGas(2);
 
       await bridge
         .connect(assetManager)
@@ -1111,19 +1116,19 @@ describe("Bridge", function () {
         transaction[4]
       );
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
 
       await registry
@@ -1133,6 +1138,7 @@ describe("Bridge", function () {
       let balance = await assetToken2.balanceOf(Admin.address);
       expect(balance).to.equal("1000000000");
     });
+
     it("should be able to register foriegn asset", async function () {
       await settings
         .connect(Admin)
@@ -1154,6 +1160,7 @@ describe("Bridge", function () {
           )
       ).to.not.throw;
     });
+
     it("should be able to mint Transaction", async function () {
       await settings
         .connect(Admin)
@@ -1173,7 +1180,7 @@ describe("Bridge", function () {
           false,
           zeroAddress
         );
-      await bridge.wrappedForiegnPair(zeroAddress, 2)
+      await bridge.wrappedForiegnPair(zeroAddress, 2);
       let mintID = await registry.getID(
         2,
         bridge.chainId(),
@@ -1195,6 +1202,7 @@ describe("Bridge", function () {
           )
       ).to.not.throw;
     });
+
     it("should be able to validate mint Transaction", async function () {
       await settings
         .connect(Admin)
@@ -1248,19 +1256,19 @@ describe("Bridge", function () {
       );
 
       signatures[0] = await validator1.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[1] = await validator2.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[2] = await validator3.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[3] = await validator4.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
       signatures[4] = await validator5.signMessage(
-        await ethers.utils.arrayify(message)
+        ethers.utils.arrayify(message)
       );
 
       await registry
@@ -1310,7 +1318,7 @@ describe("Bridge", function () {
           assetManager.address,
           2
         );
-        
+
       await bridge
         .connect(registrar)
         .addForiegnAsset(
@@ -1325,8 +1333,6 @@ describe("Bridge", function () {
           false,
           assetToken.address
         );
-
-        
 
       const Bridge = await ethers.getContractFactory("Bridge");
       newBridge = await Bridge.deploy(
