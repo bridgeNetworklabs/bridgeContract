@@ -808,8 +808,7 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 migrationAmount;
         if (directSwap) {
             require(fDirectSwapMigrationAt < directForiegnCount, "completed");
-            if (fDirectSwapMigrationAt == 0) start = fDirectSwapMigrationAt;
-            else start = fDirectSwapMigrationAt + 1;
+            start = fDirectSwapMigrationAt;
 
             if (limit + fDirectSwapMigrationAt < directForiegnCount)
                 migrationAmount = limit;
@@ -837,8 +836,7 @@ contract Bridge is Context, ReentrancyGuard {
             }
         } else {
             require(fMigrationAt < foriegnAssetsList.length, "completed");
-            if (fMigrationAt == 0) start = fMigrationAt;
-            else start = fMigrationAt + 1;
+            start = fMigrationAt;
 
             if (limit + fMigrationAt < foriegnAssetsList.length)
                 migrationAmount = limit;
@@ -882,7 +880,8 @@ contract Bridge is Context, ReentrancyGuard {
         else start = nMigrationAt + 1;
         if (limit + nativeAssetsList.length < nMigrationAt)
             migrationAmount = limit;
-        else migrationAmount = nativeAssetsList.length - fDirectSwapMigrationAt;
+        else migrationAmount = nativeAssetsList.length - nMigrationAt;
+
         for (uint256 i; i < migrationAmount; i++) {
             _migrateNative(nativeAssetsList[start + i]);
         }

@@ -507,7 +507,7 @@ describe("Bridge", function () {
           "10000000000000000000000",
           [2],
           ["0xbf07d7C2613188E3b403D9fbdca7872D0ff1e5aF"],
-          true,
+          false,
           assetFeeRemittance.address,
           assetManager.address,
           2
@@ -529,6 +529,8 @@ describe("Bridge", function () {
         .send(2, zeroAddress, "100000000000000000000", Admin.address, {
           value: "100000000000000000000",
         });
+
+      console.log(await ethers.provider.getBalance(bridge.address))
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
 
@@ -1392,10 +1394,12 @@ describe("Bridge", function () {
         "Ass1"
       );
 
+
+
       await bridge
-        .connect(assetAdmin)
+        .connect(Admin)
         .registerRail(
-          assetToken.address,
+          zeroAddress,
           parseEther("0.01"),
           parseEther("100000"),
           [2],
@@ -1405,6 +1409,16 @@ describe("Bridge", function () {
           assetManager.address,
           2
         );
+
+      await bridge.connect(Admin).activeNativeAsset(zeroAddress, true);
+      // await assetToken.connect(Admin).approve(bridge.address, "1000000000000000000000")
+      await bridge
+        .connect(Admin)
+        .send(2, zeroAddress, parseEther("1"), Admin.address, {
+          value: parseEther("1.01")
+        });
+
+      console.log(await ethers.provider.getBalance(bridge.address))
 
       await bridge
         .connect(registrar)
@@ -1560,13 +1574,13 @@ describe("Bridge", function () {
     });
 
     it("Should Migrate Bridge", async () => {
-      console.log("here")
+
       await bridge.connect(Admin).initiateMigration(newBridge.address);
       await time.increase(2 * 24 * 60 * 60);
       await bridge.connect(Admin).migrateForiegn(5, true);
       await bridge.connect(Admin).migrateForiegn(8, true);
-      //await bridge.connect(Admin).migrateNative(1);
-      // await bridge.connect(Admin).completeMigration();
+      await bridge.connect(Admin).migrateNative(1);
+      await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()
       );
