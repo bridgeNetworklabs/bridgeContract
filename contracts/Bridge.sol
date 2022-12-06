@@ -361,7 +361,7 @@ contract Bridge is Context, ReentrancyGuard {
                             isDirectSwap[assetAddress][
                                 supportedChains[index]
                             ] = true;
-                            bridgePool.createPool(assetAddress, maxAmount);
+                            
                         }
                     } else {
                         if (directSwap) {
