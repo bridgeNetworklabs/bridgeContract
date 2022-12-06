@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -163,7 +164,6 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         (bool success, uint256 _amount, uint256 gas) = preccessTransaction(
             assetAddress,
             chainID,
-            msg.sender,
             amount
         );
         require(success && _amount > 0, "Insuficient funds");
@@ -220,7 +220,6 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     function preccessTransaction(
         address assetAddress,
         uint256 chainID,
-        address sender,
         uint256 amount
     ) internal returns (bool, uint256, uint256) {
         uint256 gas = getTransactionGas(chainID);
