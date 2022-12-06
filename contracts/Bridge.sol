@@ -61,7 +61,7 @@ contract Bridge is Context, ReentrancyGuard {
     address public feeController;
     bool activeMigration;
     uint256 migrationInitiationTime;
-    uint256 constant migrationDelay = 2 days;
+    uint256 constant migrationDelay = 1 hours;
     address newBridge;
     address migrator;
 
@@ -497,9 +497,9 @@ contract Bridge is Context, ReentrancyGuard {
         );
         require(
             success &&
-            recievedValue > 0 &&
-            recievedValue >= nativeAssets[assetAddress].minAmount &&
-            recievedValue <= nativeAssets[assetAddress].maxAmount,
+                recievedValue > 0 &&
+                recievedValue >= nativeAssets[assetAddress].minAmount &&
+                recievedValue <= nativeAssets[assetAddress].maxAmount,
             "I_F"
         );
 
@@ -675,7 +675,7 @@ contract Bridge is Context, ReentrancyGuard {
     ) internal returns (bool, uint256) {
         uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
-            if (msg.value >= amount + gas ) {
+            if (msg.value >= amount + gas) {
                 totalGas += gas;
                 if (gas > 0)
                     payoutUser(payable(settings.gasBank()), address(0), gas);
@@ -877,8 +877,7 @@ contract Bridge is Context, ReentrancyGuard {
         );
         uint256 migrationAmount;
         uint256 start;
-        if (nMigrationAt == 0) start = nMigrationAt;
-        else start = nMigrationAt + 1;
+        start = nMigrationAt;
         if (limit + nativeAssetsList.length < nMigrationAt)
             migrationAmount = limit;
         else migrationAmount = nativeAssetsList.length - nMigrationAt;
