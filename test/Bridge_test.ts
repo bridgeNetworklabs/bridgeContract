@@ -1606,7 +1606,7 @@ describe("Bridge", function () {
       //   });
 
 
-      console.log(await ethers.provider.getBalance(bridge.address));
+      //console.log(await ethers.provider.getBalance(bridge.address));
 
 
 
@@ -1724,9 +1724,10 @@ describe("Bridge", function () {
     it("Should Migrate Bridge", async () => {
       await bridge.connect(Admin).initiateMigration(newBridge.address);
       await time.increase(2 * 24 * 60 * 60);
-      // await bridge.connect(Admin).migrateForiegn(5, true);
-      // await bridge.connect(Admin).migrateForiegn(8, true);
-      await bridge.connect(Admin).migrateNative(1);
+      await bridge.connect(Admin).migrateForiegn(5, true);
+      await bridge.connect(Admin).migrateForiegn(5, false);
+      await bridge.connect(Admin).migrateNative(2);
+      await bridge.connect(Admin).migrateNative(2);
       //await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()

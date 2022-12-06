@@ -23,7 +23,7 @@ contract BridgePool is Context, ReentrancyGuard {
     mapping(address => pool) public pools;
     address[] public poolAddresses;
     uint256 public poolCount;
-    uint256 public bridgeUpdateDelay = 1 days;
+    uint256 public bridgeUpdateDelay = 1 hours;
 
     event PoolToppedUp(address indexed poolAddress, uint256 amount);
     event AssetSentOut(
@@ -216,11 +216,11 @@ contract BridgePool is Context, ReentrancyGuard {
         emit AssetWithdrawn(poolAddress, _msgSender(), amountRecieved);
     }
 
-    function sendOut(address poolAddress, address receiver, uint256 amount)
-        public
-        onlyBridge
-        poolInitialized
-    {
+    function sendOut(
+        address poolAddress,
+        address receiver,
+        uint256 amount
+    ) public onlyBridge poolInitialized {
         require(receiver != address(0), "Z_A_E");
         require(pools[poolAddress].isSet, "invalid Pool");
         uint256 balance;

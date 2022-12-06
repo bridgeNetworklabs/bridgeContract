@@ -4,8 +4,20 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+import type {
+  Controller,
+  Deployer,
+  Settings,
+  FeeController,
+  Registry,
+  Bridge,
+  BridgeSocket,
+  Token,
+  BridgePool,
+} from "../typechain-types";
 
 async function main() {
+
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -14,6 +26,15 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
+  let controller: Controller;
+  let deployer: Deployer;
+  let settings: Settings;
+  let feeController: FeeController;
+  let registry: Registry;
+  let bridge: Bridge;
+  let socket: BridgeSocket;
+  let pool: BridgePool;
+  let brgToken: Token;
   const validator1 = "0x774D40e94296De89CB0e097fabc9359fd29fF3a8"; //
   const validator2 = "0x038d7262b22bf58a19C07a2c431B0558252D524C"; //
   const validator3 = "0xbf07d7C2613188E3b403D9fbdca7872D0ff1e5aF"; //
@@ -31,40 +52,41 @@ async function main() {
   const feeAccount = "0x96168Aa9d041EE3eae824bAd6f5189D95B23B21E";
 
   const controllerContract = await hre.ethers.getContractFactory("Controller");
-  const controller = await controllerContract.deploy();
+  controller = await controllerContract.deploy();
   // await controller.deployed();
   console.log("controller : ", controller.address);
   const settingsContract = await hre.ethers.getContractFactory("Settings");
-  const settings = await settingsContract.deploy(
+  settings = await settingsContract.deploy(
     controller.address,
-    feeAccount
+    feeAccount,
+    "0x5D40A6e82D92C2b4Ad2a46c909108FE465Bdc2bb"
   );
   // await settings.deployed();
   console.log("settings : ", settings.address);
   const deployerContract = await hre.ethers.getContractFactory("Deployer");
-  const deployer = await deployerContract.deploy(controller.address);
+  deployer = await deployerContract.deploy(controller.address);
   // await deployer.deployed();
   console.log("deployer : ", deployer.address);
   const feeControllerContract = await hre.ethers.getContractFactory(
     "FeeController"
   );
-  const feeController = await feeControllerContract.deploy(
+  feeController = await feeControllerContract.deploy(
     controller.address,
     settings.address
   );
   // await feeController.deployed();
   console.log("feeController : ", feeController.address);
   const registryContract = await hre.ethers.getContractFactory("Registry");
-  const registry = await registryContract.deploy();
+  registry = await registryContract.deploy();
   // await registry.deployed();
   console.log("registry : ", registry.address);
 
   const BridgePool = await hre.ethers.getContractFactory("BridgePool");
-  const pool = await BridgePool.deploy(controller.address);
+  pool = await BridgePool.deploy(controller.address);
   console.log("pool : ", pool.address);
 
   const bridgeContract = await hre.ethers.getContractFactory("Bridge");
-  const bridge = await bridgeContract.deploy(
+  bridge = await bridgeContract.deploy(
     controller.address,
     settings.address,
     registry.address,
@@ -80,7 +102,7 @@ async function main() {
   await registry.transferOwnership(bridge.address);
   console.log("transfering ownership");
 
-  await deployer.udpadateBridge(bridge.address);
+  await deployer.updateBridge(bridge.address);
 
   await pool.initializePool(bridge.address);
 

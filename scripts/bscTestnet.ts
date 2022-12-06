@@ -61,18 +61,19 @@ async function bscTestnet() {
     // pool = await bridgePool.deploy(controller.address);
 
     const Bridge = await ethers.getContractFactory("Bridge");
-    let newbridge = await Bridge.deploy(
-        "0x6B6703aA57Fe5b24Cc72D48a6E530CD4C95E11Ea",
-        "0x93F87CD1686E0E3F8DB8991967231884C7EaDfF5",
-        "0xdcF96310297a59b1842373aFd35bb4DE7Edf906a",
-        "0x1A3cD8B05244Ae5547EA20b9D9a0DE38e04DB33D",
-        "0x53E3108920355EBdD3D98C87657f15bd493eA609",
-        "0x8B94B041dD2BAa132Cf000d64e4328929Ebc7526",
-        "0x067b4B507edFA9874B700D42CeAbA4848711626D"
+    const newbridge = await Bridge.deploy(
+        "0x25eBFAb1fd954505F0f1c0C29363e88C409c1Da8",
+        "0xBc0f4798F3E88C8E1f73E79350c2b53df5F15BE0",
+        "0x26deF1bbfe8862D9B1a7dbe4F38c83874B4caE4f",
+        "0x61B7A873276cdf55a2Db504B5FdCdBE747b5Bb0a",
+        "0x5Ff27F131A0668192C0DC38532104DEc5D307546",
+        "0x59524400a9D8Af74F36e19048C63357D72B2B4B7",
+        "0xEB81ABD4109ed4030d5E68A9525C138C1e9dA637"
     );
 
-    // const BridgeToken = await ethers.getContractFactory("Token");
-    // brgToken = await BridgeToken.deploy("Bridge Token", "Brdg");
+
+    // // const BridgeToken = await ethers.getContractFactory("Token");
+    // // brgToken = await BridgeToken.deploy("Bridge Token", "Brdg");
 
     // console.log(
     //     "Bridge:",
@@ -97,7 +98,7 @@ async function bscTestnet() {
     // );
 
     // await registry.transferOwnership(bridge.address);
-    // await settings.setbrgToken(brgToken.address);
+    // await settings.setbrgToken("0xfB6862204AcE103AE8752A20Aafa3e1245f26bBE");
     // await deployer.updateBridge(bridge.address);
     // await pool.initializePool(bridge.address);
 
@@ -151,15 +152,28 @@ async function bscTestnet() {
     //     2
     // );
 
-    const bridge = await ethers.getContractAt("Bridge", "0x067b4B507edFA9874B700D42CeAbA4848711626D")
-    const settings = await ethers.getContractAt("Settings", "0x93F87CD1686E0E3F8DB8991967231884C7EaDfF5")
+    const bridge = await ethers.getContractAt("Bridge", "0xEB81ABD4109ed4030d5E68A9525C138C1e9dA637")
+    const settings = await ethers.getContractAt("Settings", "0xBc0f4798F3E88C8E1f73E79350c2b53df5F15BE0")
     const DAi = await ethers.getContractAt("Token", "0x8a9424745056Eb399FD19a0EC26A14316684e274")
     const USDT = await ethers.getContractAt("Token", "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684")
-    const controller = await ethers.getContractAt("Controller", "0x6B6703aA57Fe5b24Cc72D48a6E530CD4C95E11Ea")
+    const controller = await ethers.getContractAt("Controller", "0x25eBFAb1fd954505F0f1c0C29363e88C409c1Da8")
     const val = await settings.networkGas(80001)
-    await DAi.approve("0x067b4B507edFA9874B700D42CeAbA4848711626D", parseEther("100000"))
-    await USDT.approve("0x067b4B507edFA9874B700D42CeAbA4848711626D", parseEther("100000"))
+    await DAi.approve("0xEB81ABD4109ed4030d5E68A9525C138C1e9dA637", parseEther("100000"))
+    await USDT.approve("0xEB81ABD4109ed4030d5E68A9525C138C1e9dA637", parseEther("100000"))
 
+    await bridge.initiateMigration(newbridge.address)
+
+    // await bridge.registerRail(
+    //     zeroAddress,
+    //     parseEther("0.01"),
+    //     parseEther("100000"),
+    //     [322],
+    //     [zeroAddress],
+    //     true,
+    //     zeroAddress,
+    //     zeroAddress,
+    //     2
+    // );
     // await bridge.send(
     //     80001,
     //     zeroAddress,
@@ -167,9 +181,14 @@ async function bscTestnet() {
     //     "0xf82a0B7118439f82B0f9D381F0A4dFbB40dfF7fD",
     //     { value: val.add(parseEther("0.02")) }
     // )
-    await bridge.initiateMigration(newbridge.address)
 
-    //await settings.setbrgToken("0xfB6862204AcE103AE8752A20Aafa3e1245f26bBE")
+    // await bridge.send(
+    //     322,
+    //     zeroAddress,
+    //     parseEther("0.02"),
+    //     "0xf82a0B7118439f82B0f9D381F0A4dFbB40dfF7fD",
+    //     { value: val.add(parseEther("0.02")) }
+    // )
 
 
     // await bridge.send(
@@ -180,8 +199,25 @@ async function bscTestnet() {
     //     { value: val }
     // )
 
+    // await bridge.send(
+    //     80001,
+    //     "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684",
+    //     parseEther("10"),
+    //     "0xf82a0B7118439f82B0f9D381F0A4dFbB40dfF7fD",
+    //     { value: val }
+    // )
+
+    // await bridge.send(
+    //     80001,
+    //     "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+    //     parseEther("10"),
+    //     "0xf82a0B7118439f82B0f9D381F0A4dFbB40dfF7fD",
+    //     { value: val }
+    // )
+
     // await bridge.activeNativeAsset(zeroAddress, true)
-    //await bridge.activeNativeAsset("0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684", true)
+    // await bridge.activeNativeAsset("0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684", true)
+    // await bridge.activeNativeAsset("0x8a9424745056Eb399FD19a0EC26A14316684e274", true)
     // await controller.addAdmin("0x5D40A6e82D92C2b4Ad2a46c909108FE465Bdc2bb", true)
 
     // await bridge.addForiegnAsset(
