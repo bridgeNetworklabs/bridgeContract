@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-chai-matchers";
 import "solidity-coverage"
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config()
@@ -20,7 +21,7 @@ const config: HardhatUserConfig = {
         version: "0.4.17",
         settings: {
           optimizer: {
-            enabled: false,
+            enabled: true,
             runs: 200
           }
         }
