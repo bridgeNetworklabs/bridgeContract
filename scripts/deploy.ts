@@ -14,22 +14,22 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const validator1 = "0x774D40e94296De89CB0e097fabc9359fd29fF3a8"; //
-  const validator2 = "0x038d7262b22bf58a19C07a2c431B0558252D524C"; //
-  const validator3 = "0xbf07d7C2613188E3b403D9fbdca7872D0ff1e5aF"; //
-  const validator4 = "0x4CC53774D9102CB724a84ED9263E51f71AA3e1F0"; //
-  const validator5 = "0x4B2759e3DbFa0a1292aba505cF21147158447654"; //
+  const validator1 = ""; //
+  const validator2 = ""; //
+  const validator3 = ""; //
+  const validator4 = ""; //
+  const validator5 = ""; //
 
-  const oracle1 = "0x45a48dCb9607A2F2210e68ABe04A4D9fd49AAb47"; //
-  const oracle2 = "0x662e184103eEEadcdbcf6BfEA6F3611225d60C09"; //
+  const oracle1 = ""; //
+  const oracle2 = ""; //
 
-  const oracle3 = "0xE10D2d514116BECD1cBabF86a83ca932351334b6"; //1654515c088e6db2617794a63c355ee627a8058d14b63119640357806af76ef8
-  const oracle4 = "0x71c686F8699D8df2C23DCFd6735647B522547c38"; //9c0ba90bbb4c6fa081b08660b7134bd55fa8d76321071215a567779d9fee2660
-  const oracle5 = "0x269A4Ba2Ce7075ACf2271515Ded99DdD2139A0F5"; //d8b741917e0d3a8785824d97201fe1e593245db0b25547aea1b395c6375538cf
+  const oracle3 = ""; //
+  const oracle4 = ""; //
+  const oracle5 = ""; //
 
-  const registrar = "0x015E79eea7e8326FCe138B875183970771414e77"; //
-  const feeAccount = "0x96168Aa9d041EE3eae824bAd6f5189D95B23B21E";
-  const gasBank = "0x96168Aa9d041EE3eae824bAd6f5189D95B23B21E";
+  const registrar = ""; //
+  const feeAccount = "";
+  const gasBank = "";
 
   const controllerContract = await hre.ethers.getContractFactory("Controller");
   const controller = await controllerContract.deploy();
