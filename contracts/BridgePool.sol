@@ -23,7 +23,7 @@ contract BridgePool is Context, ReentrancyGuard {
     mapping(address => pool) public pools;
     address[] public poolAddresses;
     uint256 public poolCount;
-    uint256 public bridgeUpdateDelay = 1 hours;
+    uint256 public bridgeUpdateDelay = 1 days;
 
     event PoolToppedUp(address indexed poolAddress, uint256 amount);
     event AssetSentOut(

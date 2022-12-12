@@ -61,7 +61,7 @@ contract Bridge is Context, ReentrancyGuard {
     address public feeController;
     bool activeMigration;
     uint256 migrationInitiationTime;
-    uint256 constant migrationDelay = 1 hours;
+    uint256 constant migrationDelay = 2 days;
     address newBridge;
     address migrator;
 
@@ -361,7 +361,6 @@ contract Bridge is Context, ReentrancyGuard {
                             isDirectSwap[assetAddress][
                                 supportedChains[index]
                             ] = true;
-                            
                         }
                     } else {
                         if (directSwap) {
