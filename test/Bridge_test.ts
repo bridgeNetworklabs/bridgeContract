@@ -680,7 +680,7 @@ describe("Bridge", function () {
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
 
-    it("should be able validate DirectSwap assetToken With any decimals", async function () {
+    it.only("should be able validate DirectSwap assetToken With any decimals", async function () {
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], [parseEther("0.01")], true);
@@ -1353,7 +1353,7 @@ describe("Bridge", function () {
     });
   });
 
-  describe.only("Migration", () => {
+  describe("Migration", () => {
     let newBridge: Bridge;
     beforeEach(async () => {
       await settings
