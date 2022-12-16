@@ -542,11 +542,12 @@ contract Bridge is Context, ReentrancyGuard {
         );
     }
 
-    function burn(
-        address assetAddress,
-        uint256 amount,
-        address receiver
-    ) external payable nonReentrant returns (bytes32 transactionID) {
+    function burn(address assetAddress, uint256 amount, address receiver)
+        external
+        payable
+        nonReentrant
+        returns (bytes32 transactionID)
+    {
         notPaused();
         uint256 chainTo = foriegnAssetChainID[assetAddress];
         require(foriegnAssets[assetAddress].isSet, "I_A");
@@ -706,11 +707,10 @@ contract Bridge is Context, ReentrancyGuard {
     }
 
     // internal fxn for deducting and remitting fees after a sale
-    function deductFees(
-        address assetAddress,
-        uint256 amount,
-        bool native
-    ) private returns (uint256) {
+    function deductFees(address assetAddress, uint256 amount, bool native)
+        private
+        returns (uint256)
+    {
         asset storage currentasset;
         if (native) currentasset = nativeAssets[assetAddress];
         else currentasset = foriegnAssets[assetAddress];
@@ -1050,15 +1050,7 @@ contract Bridge is Context, ReentrancyGuard {
         return assetSupportedChainIds[assetAddress];
     }
 
-    function getAssetCount()
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getAssetCount() external view returns (uint256, uint256, uint256) {
         return (
             nativeAssetsList.length,
             foriegnAssetsList.length,

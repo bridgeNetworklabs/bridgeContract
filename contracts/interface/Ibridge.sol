@@ -6,12 +6,12 @@ interface Ibridge {
         address tokenAddress;
         uint256 minAmount;
         uint256 maxAmount;
-        uint256 feeBalance;
+        uint256 ownerFeeBalance;
+        uint256 networkFeeBalance;
         uint256 collectedFees;
         bool ownedRail;
         address manager;
         address feeRemitance;
-        uint256 balance;
         bool isSet;
     }
 

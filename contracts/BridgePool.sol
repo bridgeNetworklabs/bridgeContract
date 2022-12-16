@@ -216,11 +216,11 @@ contract BridgePool is Context, ReentrancyGuard {
         emit AssetWithdrawn(poolAddress, _msgSender(), amountRecieved);
     }
 
-    function sendOut(
-        address poolAddress,
-        address receiver,
-        uint256 amount
-    ) public onlyBridge poolInitialized {
+    function sendOut(address poolAddress, address receiver, uint256 amount)
+        public
+        onlyBridge
+        poolInitialized
+    {
         require(receiver != address(0), "Z_A_E");
         require(pools[poolAddress].isSet, "invalid Pool");
         uint256 balance;

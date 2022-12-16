@@ -160,7 +160,12 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "feeBalance",
+            name: "ownerFeeBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "networkFeeBalance",
             type: "uint256",
           },
           {
@@ -182,11 +187,6 @@ const _abi = [
             internalType: "address",
             name: "feeRemitance",
             type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
           },
           {
             internalType: "bool",
@@ -315,7 +315,12 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "feeBalance",
+            name: "ownerFeeBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "networkFeeBalance",
             type: "uint256",
           },
           {
@@ -337,11 +342,6 @@ const _abi = [
             internalType: "address",
             name: "feeRemitance",
             type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
           },
           {
             internalType: "bool",

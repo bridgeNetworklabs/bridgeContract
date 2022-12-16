@@ -39,7 +39,11 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address indexed sender
     );
 
-    constructor(Isettings _settings, Ibridge _bridge, address _feeRemittance) {
+    constructor(
+        Isettings _settings,
+        Ibridge _bridge,
+        address _feeRemittance
+    ) {
         require(
             _feeRemittance != address(0) &&
                 address(_settings) != address(0) &&
@@ -66,7 +70,6 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
     function validAsset(address assetAddress) public view returns (bool) {
         Ibridge.asset memory currentAsset;
         currentAsset = bridge.nativeAssets(assetAddress);
-
         if (currentAsset.isSet) {
             return true;
         }
@@ -221,7 +224,14 @@ contract BridgeSocket is Context, ReentrancyGuard, Ownable {
         address assetAddress,
         uint256 chainID,
         uint256 amount
-    ) internal returns (bool, uint256, uint256) {
+    )
+        internal
+        returns (
+            bool,
+            uint256,
+            uint256
+        )
+    {
         uint256 gas = getTransactionGas(chainID);
         if (assetAddress == address(0)) {
             if (msg.value >= amount + gas && msg.value > 0) {

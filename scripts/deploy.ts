@@ -17,7 +17,6 @@ import type {
 } from "../typechain-types";
 
 async function main() {
-
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -125,7 +124,10 @@ async function main() {
   console.log("setting chains ");
   await settings.setMinValidationPercentage(80);
   await settings.setNetworkSupportedChains(
-    [43288, 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161, 1666600000, 42170, 2000, 1338],
+    [
+      43288, 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161, 1666600000, 42170,
+      2000, 1338,
+    ],
     [
       0,
       "51000000000000000",
@@ -141,15 +143,13 @@ async function main() {
       "29000000000000000",
       "29000000000000000",
       "22000000000000000",
-      "22000000000000000"
+      "22000000000000000",
     ],
     true
   );
 
-
   // [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
   // [ 1, 0.7 , 1.2 , 1 , 0.5 , 0.3 , 0.8 , 0.3 , 0.8 , 15 , 0.8 , 0.4 ,0.4 , 0.3 , 0.3 ]
-
 
   //  43288 [0,"51000000000000000","88000000000000000","73000000000000000","36000000000000000","22000000000000000", "58000000000000000", "22000000000000000", "58000000000000000", "1100000000000000000", "58000000000000000", "29000000000000000","29000000000000000","22000000000000000", "22000000000000000"]
   //   66   [56000000000000000 , 0 , 67000000000000000 ,]
@@ -158,8 +158,6 @@ async function main() {
   // 43114
   // We recommend this pattern to be able to use async/await everywhere
   // and properly handle errors.
-
-
 }
 main().catch((error) => {
   console.error(error);

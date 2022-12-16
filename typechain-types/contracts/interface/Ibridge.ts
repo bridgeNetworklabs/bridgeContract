@@ -29,12 +29,12 @@ export declare namespace Ibridge {
     tokenAddress: PromiseOrValue<string>;
     minAmount: PromiseOrValue<BigNumberish>;
     maxAmount: PromiseOrValue<BigNumberish>;
-    feeBalance: PromiseOrValue<BigNumberish>;
+    ownerFeeBalance: PromiseOrValue<BigNumberish>;
+    networkFeeBalance: PromiseOrValue<BigNumberish>;
     collectedFees: PromiseOrValue<BigNumberish>;
     ownedRail: PromiseOrValue<boolean>;
     manager: PromiseOrValue<string>;
     feeRemitance: PromiseOrValue<string>;
-    balance: PromiseOrValue<BigNumberish>;
     isSet: PromiseOrValue<boolean>;
   };
 
@@ -44,21 +44,21 @@ export declare namespace Ibridge {
     BigNumber,
     BigNumber,
     BigNumber,
+    BigNumber,
     boolean,
     string,
     string,
-    BigNumber,
     boolean
   ] & {
     tokenAddress: string;
     minAmount: BigNumber;
     maxAmount: BigNumber;
-    feeBalance: BigNumber;
+    ownerFeeBalance: BigNumber;
+    networkFeeBalance: BigNumber;
     collectedFees: BigNumber;
     ownedRail: boolean;
     manager: string;
     feeRemitance: string;
-    balance: BigNumber;
     isSet: boolean;
   };
 }

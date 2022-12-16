@@ -483,7 +483,6 @@ describe("Bridge", function () {
           2
         );
 
-
       await bridge.connect(Admin).activeNativeAsset(assetToken.address, true);
 
       await expect(
@@ -1353,7 +1352,7 @@ describe("Bridge", function () {
     });
   });
 
-  describe("Migration", () => {
+  describe.only("Migration", () => {
     let newBridge: Bridge;
     beforeEach(async () => {
       await settings
@@ -1559,9 +1558,12 @@ describe("Bridge", function () {
           zeroAddress
         );
 
-
-      await assetToken.connect(assetAdmin).approve(bridge.address, ethers.constants.MaxUint256)
-      await assetToken2.connect(assetAdmin).approve(bridge.address, ethers.constants.MaxUint256)
+      await assetToken
+        .connect(assetAdmin)
+        .approve(bridge.address, ethers.constants.MaxUint256);
+      await assetToken2
+        .connect(assetAdmin)
+        .approve(bridge.address, ethers.constants.MaxUint256);
       //await assetToken10.connect(assetAdmin).approve(bridge.address, ethers.constants.MaxUint256)
 
       await bridge.connect(Admin).activeNativeAsset(zeroAddress, true);
@@ -1596,7 +1598,7 @@ describe("Bridge", function () {
       await bridge
         .connect(assetAdmin)
         .send(2, assetToken2.address, parseEther("1"), Admin.address, {
-          value: parseEther("1.01"),
+          value: parseEther("0.01"),
         });
 
       // await bridge
@@ -1605,10 +1607,7 @@ describe("Bridge", function () {
       //     value: parseEther("1.01"),
       //   });
 
-
       //console.log(await ethers.provider.getBalance(bridge.address));
-
-
 
       // await bridge
       //   .connect(registrar)
@@ -1728,10 +1727,83 @@ describe("Bridge", function () {
       await bridge.connect(Admin).migrateForiegn(5, false);
       await bridge.connect(Admin).migrateNative(2);
       await bridge.connect(Admin).migrateNative(2);
-      //await bridge.connect(Admin).completeMigration();
+      await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()
       );
+    });
+
+    it("should  be able Bridge assetToken", async function () {
+      await bridge.connect(Admin).initiateMigration(newBridge.address);
+      await time.increase(2 * 24 * 60 * 60);
+      await bridge.connect(Admin).migrateForiegn(5, true);
+      await bridge.connect(Admin).migrateForiegn(5, false);
+      await bridge.connect(Admin).migrateNative(2);
+      await bridge.connect(Admin).migrateNative(2);
+      await bridge.connect(Admin).completeMigration();
+      await pool.connect(Admin).innitiateBridgeUpdate(newBridge.address)
+      await time.increase(2 * 24 * 60 * 60);
+      await pool.connect(Admin).activateNewBridge()
+
+      let transactionID = await registry.getID(
+        newBridge.chainId(),
+        2,
+        assetToken2.address,
+        ethers.utils.parseEther("0.01"),
+        user2.address,
+        registry.getUserNonce(user1.address)
+      );
+
+      let transactionID2 = await registry.getID(
+        newBridge.chainId(),
+        2,
+        assetToken.address,
+        ethers.utils.parseEther("0.01"),
+        user2.address,
+        registry.getUserNonce(user1.address)
+      );
+
+      await assetToken2
+        .connect(assetAdmin)
+        .approve(newBridge.address, ethers.constants.MaxUint256);
+      await assetToken
+        .connect(assetAdmin)
+        .approve(newBridge.address, ethers.constants.MaxUint256);
+
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(
+          2,
+          assetToken2.address,
+          ethers.utils.parseEther("0.01"),
+          user2.address,
+          {
+            value: parseEther("0.01")
+          }
+        );
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(
+          2,
+          assetToken.address,
+          ethers.utils.parseEther("0.01"),
+          user2.address,
+          {
+            value: parseEther("0.01")
+          }
+        );
+
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(10, zeroAddress, parseEther("1"), Admin.address, {
+          value: parseEther("1.01"),
+        });
+
+      expect(await registry.isSendTransaction(transactionID)).to.be.true;
+      expect(await registry.isSendTransaction(transactionID2)).to.be.true;
     });
 
     it("Should not be able to migrate without initialization", async () => {
