@@ -5,14 +5,15 @@ import "./interface/Icontroller.sol";
 
 contract Settings {
     IController public controller;
-    mapping(uint256 => uint256) public networkFee;
+    mapping(uint256 => uint256) public networkGas;
 
     address payable public feeRemitance;
+    address payable public gasBank;
     uint256 public railRegistrationFee = 5000 * 10**18;
     uint256 public railOwnerFeeShare = 20;
     uint256 public minWithdrawableFee = 1 * 10**17;
     uint256 public constant minValidationPercentage = 51;
-    uint256 public maxFeeThreshold = 300000 * 10**18;
+    uint256 public maxFeeThreshold = 1000; // this varaiable is only
     uint256 public ValidationPercentage = minValidationPercentage;
     bool public onlyOwnableRail = true;
     bool public updatableAssetState = true;
@@ -39,9 +40,10 @@ contract Settings {
         address indexed prevValue,
         address indexed newValue
     );
+    event GasBankUpdated(address indexed prevValue, address indexed newValue);
     event RailRegistrationFeeUpdated(uint256 prevValue, uint256 newValue);
     event RailOwnerFeeShareUpdated(uint256 prevValue, uint256 newValue);
-    event NetworkFeeUpdated(
+    event NetworkGasUpdated(
         uint256 chainId,
         uint256 prevValue,
         uint256 newValue
@@ -52,9 +54,14 @@ contract Settings {
     event OnlyOwnableRailStateEnabled(bool status);
     event BaseFeeStatusChanged(bool baseFeeEnable);
 
-    constructor(IController _controller, address payable _feeRemitance) {
+    constructor(
+        IController _controller,
+        address payable _feeRemitance,
+        address payable _gasBank
+    ) {
         controller = _controller;
         feeRemitance = _feeRemitance;
+        gasBank = _gasBank;
     }
 
     function setApprovedToAdd(address user, address token, bool status)
@@ -124,14 +131,15 @@ contract Settings {
             require(chainLenght == feeLenght, "invalid");
 
             for (uint256 index; index < chainLenght; index++) {
-                require(fees[index] < maxFeeThreshold, "fee threshold Error");
                 if (
                     !isNetworkSupportedChain[chains[index]] &&
                     chains[index] != id
                 ) {
                     networkSupportedChains.push(chains[index]);
                     isNetworkSupportedChain[chains[index]] = true;
-                    networkFee[chains[index]] = fees[index];
+                    networkGas[chains[index]] = fees[index];
+                } else if (isNetworkSupportedChain[chains[index]]) {
+                    networkGas[chains[index]] = fees[index];
                 }
             }
         } else {
@@ -151,7 +159,7 @@ contract Settings {
                             networkSupportedChains.pop();
                         }
                     }
-                    networkFee[chains[index]] = 0;
+                    networkGas[chains[index]] = 0;
                     isNetworkSupportedChain[chains[index]] = false;
                 }
             }
@@ -159,13 +167,12 @@ contract Settings {
         emit NetworkSupportedChainsUpdated(chains, addchain);
     }
 
-    function updateNetworkFee(uint256 chainId, uint256 fee) external {
+    function updateNetworkGas(uint256 chainId, uint256 fee) external {
         onlyAdmin();
-        require(fee > 0 && fee < maxFeeThreshold, "fee threshold Error");
-        require(fee != networkFee[chainId], "sameVal");
+        require(fee != networkGas[chainId], "sameVal");
         require(isNetworkSupportedChain[chainId], "not Supported");
-        emit NetworkFeeUpdated(chainId, networkFee[chainId], fee);
-        networkFee[chainId] = fee;
+        emit NetworkGasUpdated(chainId, networkGas[chainId], fee);
+        networkGas[chainId] = fee;
     }
 
     function setRailOwnerFeeShare(uint256 share) external {
@@ -203,6 +210,14 @@ contract Settings {
         require(account != feeRemitance, "err");
         emit FeeRemitanceAddressUpdated(feeRemitance, account);
         feeRemitance = account;
+    }
+
+    function setGasBank(address payable _gasBank) external {
+        require(msg.sender == controller.owner(), "U_A");
+        require(_gasBank != address(0), "zero_A");
+        require(_gasBank != gasBank, "err");
+        emit GasBankUpdated(_gasBank, gasBank);
+        gasBank = _gasBank;
     }
 
     function onlyAdmin() internal view {

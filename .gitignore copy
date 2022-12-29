@@ -4,6 +4,3 @@ cache
 artifacts
 
 secret.json
-
-.env
-

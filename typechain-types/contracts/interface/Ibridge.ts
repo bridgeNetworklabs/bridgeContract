@@ -29,12 +29,12 @@ export declare namespace Ibridge {
     tokenAddress: PromiseOrValue<string>;
     minAmount: PromiseOrValue<BigNumberish>;
     maxAmount: PromiseOrValue<BigNumberish>;
-    feeBalance: PromiseOrValue<BigNumberish>;
+    ownerFeeBalance: PromiseOrValue<BigNumberish>;
+    networkFeeBalance: PromiseOrValue<BigNumberish>;
     collectedFees: PromiseOrValue<BigNumberish>;
     ownedRail: PromiseOrValue<boolean>;
     manager: PromiseOrValue<string>;
     feeRemitance: PromiseOrValue<string>;
-    balance: PromiseOrValue<BigNumberish>;
     isSet: PromiseOrValue<boolean>;
   };
 
@@ -44,21 +44,21 @@ export declare namespace Ibridge {
     BigNumber,
     BigNumber,
     BigNumber,
+    BigNumber,
     boolean,
     string,
     string,
-    BigNumber,
     boolean
   ] & {
     tokenAddress: string;
     minAmount: BigNumber;
     maxAmount: BigNumber;
-    feeBalance: BigNumber;
+    ownerFeeBalance: BigNumber;
+    networkFeeBalance: BigNumber;
     collectedFees: BigNumber;
     ownedRail: boolean;
     manager: string;
     feeRemitance: string;
-    balance: BigNumber;
     isSet: boolean;
   };
 }
@@ -66,7 +66,7 @@ export declare namespace Ibridge {
 export interface IbridgeInterface extends utils.Interface {
   functions: {
     "assetLimits(address,bool)": FunctionFragment;
-    "burn(address,uint256,address)": FunctionFragment;
+    "burn(uint256,address,uint256,address)": FunctionFragment;
     "chainId()": FunctionFragment;
     "claim(bytes32)": FunctionFragment;
     "controller()": FunctionFragment;
@@ -112,6 +112,7 @@ export interface IbridgeInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "burn",
     values: [
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>
@@ -262,6 +263,7 @@ export interface Ibridge extends BaseContract {
     ): Promise<[BigNumber, BigNumber]>;
 
     burn(
+      chainID: PromiseOrValue<BigNumberish>,
       assetAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
       receiver: PromiseOrValue<string>,
@@ -344,6 +346,7 @@ export interface Ibridge extends BaseContract {
   ): Promise<[BigNumber, BigNumber]>;
 
   burn(
+    chainID: PromiseOrValue<BigNumberish>,
     assetAddress: PromiseOrValue<string>,
     amount: PromiseOrValue<BigNumberish>,
     receiver: PromiseOrValue<string>,
@@ -426,6 +429,7 @@ export interface Ibridge extends BaseContract {
     ): Promise<[BigNumber, BigNumber]>;
 
     burn(
+      chainID: PromiseOrValue<BigNumberish>,
       assetAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
       receiver: PromiseOrValue<string>,
@@ -511,6 +515,7 @@ export interface Ibridge extends BaseContract {
     ): Promise<BigNumber>;
 
     burn(
+      chainID: PromiseOrValue<BigNumberish>,
       assetAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
       receiver: PromiseOrValue<string>,
@@ -592,6 +597,7 @@ export interface Ibridge extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     burn(
+      chainID: PromiseOrValue<BigNumberish>,
       assetAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
       receiver: PromiseOrValue<string>,

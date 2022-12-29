@@ -1,24 +1,162 @@
-import { ethers } from "hardhat";
+// We require the Hardhat Runtime Environment explicitly here. This is optional
+// but useful for running the script in a standalone fashion through `node <script>`.
+//
+// When running the script with `npx hardhat run <script>` you'll find the Hardhat
+// Runtime Environment's members available in the global scope.
+const hre = require("hardhat");
+import type {
+  Controller,
+  Deployer,
+  Settings,
+  FeeController,
+  Registry,
+  Bridge,
+  BridgeSocket,
+  Token,
+  BridgePool,
+} from "../typechain-types";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  // Hardhat always runs the compile task when running scripts with its command
+  // line interface.
+  //
+  // If this script is run directly using `node` you may want to call compile
+  // manually to make sure everything is compiled
+  // await hre.run('compile');
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  // We get the contract to deploy
+  const validator1 = "0x054Da54bF06096230ffEd1d1BeBcB14414C80dEA"; //
+  const validator2 = "0x0839289991b5c037b05E86D4E1F285eCBB540712"; //
+  const validator3 = "0x80a921f61E9cE2865ba3f00eC0cc2e8fd38714F1"; //
+  const validator4 = "0xB48d1eF553950DB754752F7f7dEd888509D630DD"; //
+  const validator5 = "0x564474d1208DDa0BA4c1a52642A0507087f257B5"; //
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const oracle1 = "0xbe289F890F4373d54042475B0E20a5A404211FA4"; //
+  const oracle2 = "0x8285C1E8E8dFB911359632D7fc16938497573929"; //
 
-  await lock.deployed();
+  const oracle3 = "0x9fb359d2b8585B3828Ed4977A156e5D50C5Dc83C"; //
+  const oracle4 = "0x610943714C67EFd70E907a1ecC4eb0647D7C80d9"; //
+  const oracle5 = "0x40Fd26C9a299A6Eb00829773012dfb8F0Fc7FBf2"; //
 
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  const registrar = "0xd5164e5565e178ed750E0EF3F07Cfd8FA0Fe1fE3"; //
+  const feeAccount = "0x8c65dDCBFE090e88d17ADF5533DA52eef45310F1";
+  const gasBank = "0x02ddDB3D6a3C1896fA3451FEDe1b1B4Daa5FD9f1";
+
+  const controllerContract = await hre.ethers.getContractFactory("Controller");
+  const controller = await controllerContract.attach("0xF9062a513DbDc8819A941cF5Bc4B7674c2Fb1eD4");
+  // const controller = await controllerContract.deploy();
+  // await controller.deployed();
+  console.log("controller : ", controller.address);
+  const settingsContract = await hre.ethers.getContractFactory("Settings");
+  const settings = await settingsContract.attach("0xe1Cc3393dBF6646Ad2D41c8d09DE05130953591A");
+  //   const settings = await settingsContract.deploy(
+  //   controller.address,
+  //   feeAccount,
+  //   gasBank
+  // );
+  // await settings.deployed();
+  console.log("settings : ", settings.address);
+  const deployerContract = await hre.ethers.getContractFactory("Deployer");
+  const deployer = await deployerContract.attach("0x6BaA7bAEF208954bC4859B36238E4CAA985252A8");
+  // const deployer = await deployerContract.deploy(controller.address);
+  // await deployer.deployed();
+  console.log("deployer : ", deployer.address);
+  const feeControllerContract = await hre.ethers.getContractFactory(
+    "FeeController"
   );
-}
+  
+  const feeController = await feeControllerContract.attach("0x355DeD867d21210e88f5B40be7239c4f1E47CC1c");
+  //   const feeController = await feeControllerContract.deploy(
+  //   controller.address,
+  //   settings.address
+  // );
+  // await feeController.deployed();
+  console.log("feeController : ", feeController.address);
+  const registryContract = await hre.ethers.getContractFactory("Registry");
+  // const registry = await registryContract.attach("0x7143056327aCA43af6881196FA95F4902Cc0064d");
+  const registry = await registryContract.deploy();
+  // await registry.deployed();
+  console.log("registry : ", registry.address);
+
+  const BridgePool = await hre.ethers.getContractFactory("BridgePool");
+  const pool = await BridgePool.attach("0x5339834438B780566155e2608aBCB85f4c931b38");
+  // const pool = await BridgePool.deploy(controller.address);
+  console.log("pool : ", pool.address);
+  // await pool.deployed();
+  const bridgeContract = await hre.ethers.getContractFactory("Bridge");
+  // const bridge = await bridgeContract.attach("0x80495751f4E5e2f2c05b04A6FdAEeed0a87E43aD");
+    const bridge = await bridgeContract.deploy(
+    controller.address,
+    settings.address,
+    registry.address,
+    deployer.address,
+    feeController.address,
+    pool.address,
+    "0x80495751f4E5e2f2c05b04A6FdAEeed0a87E43aD"
+  );
+  // const bridge = await bridgeContract.deploy( "0x87bD0823901B3A4108E62EC35D86B461dD3ab516" , "0x212FFBcb4211763f1370515d17bA8B756026A611", "0x0218eE37d75434289F3FE4E2C9D4bce1daCB1aF7" , "0x8551122099e2A5A3A7A015a1Db1Ad45703a26EFf" ,"0x08f4C1d2191464d8b2FCc466e2cF621cAF560604" ,"0x0000000000000000000000000000000000000000");
+  // await bridge.deployed();
+  console.log("bridge : ", bridge.address);
+
+  await registry.transferOwnership(bridge.address);
+  console.log("transfering ownership");
+
+  // await deployer.updateBridge(bridge.address);
+
+  // await pool.initializePool(bridge.address);
+
+  // await controller.addRegistrar(registrar, true);
+  // console.log("adding oracles");
+  // await controller.addOracle(oracle1, true);
+  // await controller.addOracle(oracle2, true);
+  // await controller.addOracle(oracle3, true);
+  // await controller.addOracle(oracle4, true);
+  // await controller.addOracle(oracle5, true);
+  // console.log("adding validators");
+
+  // await controller.addValidator(validator1, true);
+  // await controller.addValidator(validator2, true);
+  // await controller.addValidator(validator3, true);
+  // await controller.addValidator(validator4, true);
+  // await controller.addValidator(validator5, true);
+
+  // console.log("setting chains ");
+  // await settings.setMinValidationPercentage(80);
+  // await settings.setNetworkSupportedChains(
+  //   [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
+  //   ["1130310000000000000","791220000000000000","1356380000000000000","1130310000000000000","565160000000000000","339090000000000000","0","339090000000000000","904250000000000000","16954710000000000000","904250000000000000","452130000000000000","452130000000000000","339090000000000000","339090000000000000"]
+  //   ,
+  //   true
+  // );
+
+  // [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
+  // [ 1, 0.7 , 1.2 , 1 , 0.5 , 0.3 , 0.8 , 0.3 , 0.8 , 15 , 0.8 , 0.4 ,0.4 , 0.3 , 0.3 ]
+
+// [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
+// [ 1, 0.7 , 1.2 , 1 , 0.5 , 0.3 , 0.8 , 0.3 , 0.8 , 15 , 0.8 , 0.4 ,0.4 , 0.3 , 0.3 ]
+
+
+//  43288 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa [0,"51000000000000000","88000000000000000","73000000000000000","36000000000000000","22000000000000000", "58000000000000000", "22000000000000000", "58000000000000000", "1100000000000000000", "58000000000000000", "29000000000000000","29000000000000000","22000000000000000", "22000000000000000"]
+//   66 0x9C183Dc8400bE4DD0b849Fb718965BfB7A23c647  ["58110000000000000","0","69730000000000000","58110000000000000","29050000000000000","17430000000000000","46480000000000000","17430000000000000","46480000000000000","871590000000000000","46480000000000000","23240000000000000","23240000000000000","17430000000000000","17430000000000000"]
+// 288 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa  ["810000000000000","570000000000000","0","810000000000000","410000000000000","240000000000000","650000000000000","240000000000000","650000000000000","12210000000000000","650000000000000","330000000000000","330000000000000","240000000000000","240000000000000"]
+// 56 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["3530000000000000","2470000000000000","4230000000000000","0","1760000000000000","1060000000000000","2820000000000000","1060000000000000","2820000000000000","52880000000000000","2820000000000000","1410000000000000","1410000000000000","1060000000000000","1060000000000000"]
+// 43114 0xE64CC202DC81FAe58A1F0DCaF94895F70bC1101c ["76390000000000000","53480000000000000","91670000000000000","76390000000000000","0","22920000000000000","61120000000000000","22920000000000000","61120000000000000","1145910000000000000","61120000000000000","30560000000000000","30560000000000000","22920000000000000","22920000000000000"]
+// 250 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["4308730000000000000","3016110000000000000","5170470000000000000","4308730000000000000","2154360000000000000",0,"3446980000000000000","1292620000000000000","3446980000000000000","64630940000000000000","3446980000000000000","1723490000000000000","1723490000000000000","1292620000000000000","1292620000000000000"]
+// 137 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["1130310000000000000","791220000000000000","1356380000000000000","1130310000000000000","565160000000000000","339090000000000000","0","339090000000000000","904250000000000000","16954710000000000000","904250000000000000","452130000000000000","452130000000000000","339090000000000000","339090000000000000"]
+// 321 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["154080000000000000","107860000000000000","184900000000000000","154080000000000000","77040000000000000","46220000000000000","123270000000000000","0","123270000000000000","2311250000000000000","123270000000000000","61630000000000000","61630000000000000","46220000000000000","46220000000000000"]
+// 10 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["810000000000000","570000000000000","980000000000000","810000000000000","410000000000000","240000000000000","650000000000000","240000000000000","0","12210000000000000","650000000000000","330000000000000","330000000000000","240000000000000","240000000000000"]
+// 1 0x65fd74168d93B42Aa5b864997a66c2888690324f ["810000000000000","570000000000000","980000000000000","810000000000000","410000000000000","240000000000000","650000000000000","240000000000000","650000000000000","0","650000000000000","330000000000000","330000000000000","240000000000000","240000000000000"]
+// 42161 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["810000000000000","570000000000000","980000000000000","810000000000000","410000000000000","240000000000000","650000000000000","240000000000000","650000000000000","12210000000000000","0","330000000000000","330000000000000","240000000000000","240000000000000"]
+// 1666600000 0xD73d1C94C5558Ae62ed18e8800e1CbC1573aB2ba ["71166880000000000000","49816820000000000000","85400260000000000000","71166880000000000000","35583440000000000000","21350060000000000000","56933500000000000000","21350060000000000000","56933500000000000000","1067503210000000000000","56933500000000000000","0","28466750000000000000","21350060000000000000","21350060000000000000"]
+// 42170 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["810000000000000","570000000000000","980000000000000","810000000000000","410000000000000","240000000000000","650000000000000","240000000000000","650000000000000","12210000000000000","650000000000000,"330000000000000","0","240000000000000","240000000000000"]
+// 2000 0x4252C68995ED8F1E3b7b28c349B8861CC1DeeaFa ["10450960000000000000","7315670000000000000","12541150000000000000",10450960000000000000,"5225480000000000000","3135290000000000000","8360770000000000000","3135290000000000000","8360770000000000000","156764380000000000000","8360770000000000000","4180380000000000000","4180380000000000000","0","3135290000000000000"]
+// 1338 0x603448D3B51B5c67F237241EeC5D76AE2a7CAd72 ["1000000000000000000000","700000000000000000000","1200000000000000000000","1000000000000000000000","500000000000000000000","300000000000000000000","800000000000000000000","300000000000000000000","800000000000000000000","15000000000000000000000","800000000000000000000","400000000000000000000","400000000000000000000","300000000000000000000","0"]
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
+
+
+}
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

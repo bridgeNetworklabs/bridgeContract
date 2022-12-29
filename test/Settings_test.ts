@@ -25,7 +25,8 @@ describe("Settings", () => {
     const SettingsContract = await ethers.getContractFactory("Settings");
     settings = await SettingsContract.deploy(
       controller.address,
-      feeRemittance.address
+      feeRemittance.address,
+      owner.address
     );
 
     const TokenContract = await ethers.getContractFactory("Token");
@@ -55,9 +56,7 @@ describe("Settings", () => {
       expect(await settings.minValidationPercentage()).to.be.equal(51);
     });
     it("maximum fee threshold is 300000 ", async () => {
-      expect(await settings.maxFeeThreshold()).to.be.equal(
-        parseEther("300000")
-      );
+      expect(await settings.maxFeeThreshold()).to.be.equal("1000");
     });
     it("validation percentage should be 51%", async () => {
       expect(await settings.ValidationPercentage()).to.be.equal(51);
@@ -184,9 +183,9 @@ describe("Settings", () => {
       expect(supoortedChain.includes("1")).to.be.true;
       expect(supoortedChain.includes("2")).to.be.true;
       expect(supoortedChain.includes("9")).to.be.true;
-      expect(await settings.networkFee(1)).to.be.equal(parseEther("0.01"));
-      expect(await settings.networkFee(2)).to.be.equal(parseEther("0.02"));
-      expect(await settings.networkFee(9)).to.be.equal(parseEther("0.09"));
+      expect(await settings.networkGas(1)).to.be.equal(parseEther("0.01"));
+      expect(await settings.networkGas(2)).to.be.equal(parseEther("0.02"));
+      expect(await settings.networkGas(9)).to.be.equal(parseEther("0.09"));
     });
 
     it("Should revert if of length of chainId and fees does not match ", async () => {
@@ -210,29 +209,29 @@ describe("Settings", () => {
           )
       ).to.be.revertedWith("invalid");
     });
-    it("Should revert if fee is more than maximum fee threshold", async () => {
-      await expect(
-        settings
-          .connect(owner)
-          .setNetworkSupportedChains(
-            [1, 2, 9],
-            [parseEther("0.01"), parseEther("0.02"), parseEther("3000000")],
-            true
-          )
-      ).to.be.revertedWith("fee threshold Error");
-    });
+    // it("Should revert if fee is more than maximum fee threshold", async () => {
+    //   await expect(
+    //     settings
+    //       .connect(owner)
+    //       .setNetworkSupportedChains(
+    //         [1, 2, 9],
+    //         [parseEther("0.01"), parseEther("0.02"), parseEther("3000000")],
+    //         true
+    //       )
+    //   ).to.be.revertedWith("fee threshold Error");
+    // });
     it("Should update network fee", async () => {
-      await settings.connect(admin).updateNetworkFee(9, parseEther("0.05"));
-      expect(await settings.networkFee(9)).to.be.equal(parseEther("0.05"));
+      await settings.connect(admin).updateNetworkGas(9, parseEther("0.05"));
+      expect(await settings.networkGas(9)).to.be.equal(parseEther("0.05"));
     });
     it("Should revert if update fee for a non supported chain", async () => {
       await expect(
-        settings.connect(admin).updateNetworkFee(5, parseEther("0.05"))
+        settings.connect(admin).updateNetworkGas(5, parseEther("0.05"))
       ).to.be.revertedWith("not Supported");
     });
     it("Should revert if random address update fee", async () => {
       await expect(
-        settings.connect(randomAddress).updateNetworkFee(2, parseEther("0.05"))
+        settings.connect(randomAddress).updateNetworkGas(2, parseEther("0.05"))
       ).to.be.revertedWith("U_A");
     });
     it("Should set rail Owner rail fee", async () => {
@@ -258,11 +257,5 @@ describe("Settings", () => {
       await settings.connect(admin).setrailRegistrationFee(30);
       expect(await settings.railRegistrationFee()).to.equal(30);
     });
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
-    // it("", async () => {});
   });
 });

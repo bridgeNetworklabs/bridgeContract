@@ -33,12 +33,12 @@ export declare namespace Ibridge {
     tokenAddress: PromiseOrValue<string>;
     minAmount: PromiseOrValue<BigNumberish>;
     maxAmount: PromiseOrValue<BigNumberish>;
-    feeBalance: PromiseOrValue<BigNumberish>;
+    ownerFeeBalance: PromiseOrValue<BigNumberish>;
+    networkFeeBalance: PromiseOrValue<BigNumberish>;
     collectedFees: PromiseOrValue<BigNumberish>;
     ownedRail: PromiseOrValue<boolean>;
     manager: PromiseOrValue<string>;
     feeRemitance: PromiseOrValue<string>;
-    balance: PromiseOrValue<BigNumberish>;
     isSet: PromiseOrValue<boolean>;
   };
 
@@ -48,21 +48,21 @@ export declare namespace Ibridge {
     BigNumber,
     BigNumber,
     BigNumber,
+    BigNumber,
     boolean,
     string,
     string,
-    BigNumber,
     boolean
   ] & {
     tokenAddress: string;
     minAmount: BigNumber;
     maxAmount: BigNumber;
-    feeBalance: BigNumber;
+    ownerFeeBalance: BigNumber;
+    networkFeeBalance: BigNumber;
     collectedFees: BigNumber;
     ownedRail: boolean;
     manager: string;
     feeRemitance: string;
-    balance: BigNumber;
     isSet: boolean;
   };
 }
@@ -71,7 +71,6 @@ export interface BridgeSocketInterface extends utils.Interface {
   functions: {
     "bridge()": FunctionFragment;
     "bridgeAsset(address,uint256,uint256,address)": FunctionFragment;
-    "feeController()": FunctionFragment;
     "feePercentage()": FunctionFragment;
     "feeRemitance()": FunctionFragment;
     "getAsset(address)": FunctionFragment;
@@ -81,10 +80,12 @@ export interface BridgeSocketInterface extends utils.Interface {
     "getNativeAssetCount()": FunctionFragment;
     "getSupportedChainIDs()": FunctionFragment;
     "getTransactionFee(uint256)": FunctionFragment;
-    "getTransactionGas(address,address,uint256)": FunctionFragment;
+    "getTransactionGas(uint256)": FunctionFragment;
+    "innitialized()": FunctionFragment;
     "isForiegnAsset(address)": FunctionFragment;
     "isNativeAsset(address)": FunctionFragment;
     "isSupportedChain(uint256)": FunctionFragment;
+    "maxFeePercentage()": FunctionFragment;
     "owner()": FunctionFragment;
     "pauseSocket()": FunctionFragment;
     "paused()": FunctionFragment;
@@ -93,7 +94,7 @@ export interface BridgeSocketInterface extends utils.Interface {
     "transferOwnership(address)": FunctionFragment;
     "updateFee(uint256)": FunctionFragment;
     "updateFeeRemitance(address)": FunctionFragment;
-    "updateSocket(address,address,address)": FunctionFragment;
+    "updateSocket(address,address)": FunctionFragment;
     "validAsset(address)": FunctionFragment;
   };
 
@@ -101,7 +102,6 @@ export interface BridgeSocketInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "bridge"
       | "bridgeAsset"
-      | "feeController"
       | "feePercentage"
       | "feeRemitance"
       | "getAsset"
@@ -112,9 +112,11 @@ export interface BridgeSocketInterface extends utils.Interface {
       | "getSupportedChainIDs"
       | "getTransactionFee"
       | "getTransactionGas"
+      | "innitialized"
       | "isForiegnAsset"
       | "isNativeAsset"
       | "isSupportedChain"
+      | "maxFeePercentage"
       | "owner"
       | "pauseSocket"
       | "paused"
@@ -136,10 +138,6 @@ export interface BridgeSocketInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "feeController",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "feePercentage",
@@ -179,11 +177,11 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getTransactionGas",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "innitialized",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isForiegnAsset",
@@ -196,6 +194,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "isSupportedChain",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "maxFeePercentage",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -222,11 +224,7 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "updateSocket",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>
-    ]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "validAsset",
@@ -236,10 +234,6 @@ export interface BridgeSocketInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "bridge", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "bridgeAsset",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "feeController",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -280,6 +274,10 @@ export interface BridgeSocketInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "innitialized",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "isForiegnAsset",
     data: BytesLike
   ): Result;
@@ -289,6 +287,10 @@ export interface BridgeSocketInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "isSupportedChain",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "maxFeePercentage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -322,7 +324,7 @@ export interface BridgeSocketInterface extends utils.Interface {
     "SendTransaction(bytes32,uint256,address,uint256,address,address)": EventFragment;
     "feeRemitanceUpdated(address,address)": EventFragment;
     "feeUpdated(uint256,uint256)": EventFragment;
-    "socketUpdated(address,address,address)": EventFragment;
+    "socketUpdated(address,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
@@ -383,12 +385,11 @@ export type feeUpdatedEvent = TypedEvent<
 export type feeUpdatedEventFilter = TypedEventFilter<feeUpdatedEvent>;
 
 export interface socketUpdatedEventObject {
-  currentFeeController: string;
   currentSettings: string;
   currentBridge: string;
 }
 export type socketUpdatedEvent = TypedEvent<
-  [string, string, string],
+  [string, string],
   socketUpdatedEventObject
 >;
 
@@ -431,8 +432,6 @@ export interface BridgeSocket extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    feeController(overrides?: CallOverrides): Promise<[string]>;
-
     feePercentage(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     feeRemitance(overrides?: CallOverrides): Promise<[string]>;
@@ -447,11 +446,17 @@ export interface BridgeSocket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
-    getDirectswapAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getDirectswapAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { direct: BigNumber }>;
 
-    getForiegnAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getForiegnAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { foriegn: BigNumber }>;
 
-    getNativeAssetCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getNativeAssetCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { native: BigNumber }>;
 
     getSupportedChainIDs(overrides?: CallOverrides): Promise<[BigNumber[]]>;
 
@@ -461,11 +466,11 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<[BigNumber]>;
 
     getTransactionGas(
-      sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
       chainTo: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    innitialized(overrides?: CallOverrides): Promise<[boolean]>;
 
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
@@ -481,6 +486,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -512,7 +519,6 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<ContractTransaction>;
 
     updateSocket(
-      _feecontroller: PromiseOrValue<string>,
       _settings: PromiseOrValue<string>,
       _bridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -533,8 +539,6 @@ export interface BridgeSocket extends BaseContract {
     reciever: PromiseOrValue<string>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  feeController(overrides?: CallOverrides): Promise<string>;
 
   feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -564,11 +568,11 @@ export interface BridgeSocket extends BaseContract {
   ): Promise<BigNumber>;
 
   getTransactionGas(
-    sender: PromiseOrValue<string>,
-    asset: PromiseOrValue<string>,
     chainTo: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  innitialized(overrides?: CallOverrides): Promise<boolean>;
 
   isForiegnAsset(
     assetAddress: PromiseOrValue<string>,
@@ -584,6 +588,8 @@ export interface BridgeSocket extends BaseContract {
     chainID: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -615,7 +621,6 @@ export interface BridgeSocket extends BaseContract {
   ): Promise<ContractTransaction>;
 
   updateSocket(
-    _feecontroller: PromiseOrValue<string>,
     _settings: PromiseOrValue<string>,
     _bridge: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -636,8 +641,6 @@ export interface BridgeSocket extends BaseContract {
       reciever: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    feeController(overrides?: CallOverrides): Promise<string>;
 
     feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -667,11 +670,11 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<BigNumber>;
 
     getTransactionGas(
-      sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
       chainTo: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    innitialized(overrides?: CallOverrides): Promise<boolean>;
 
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
@@ -687,6 +690,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -714,7 +719,6 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<void>;
 
     updateSocket(
-      _feecontroller: PromiseOrValue<string>,
       _settings: PromiseOrValue<string>,
       _bridge: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -768,13 +772,11 @@ export interface BridgeSocket extends BaseContract {
     ): feeUpdatedEventFilter;
     feeUpdated(prevFee?: null, currentFee?: null): feeUpdatedEventFilter;
 
-    "socketUpdated(address,address,address)"(
-      currentFeeController?: null,
+    "socketUpdated(address,address)"(
       currentSettings?: null,
       currentBridge?: null
     ): socketUpdatedEventFilter;
     socketUpdated(
-      currentFeeController?: null,
       currentSettings?: null,
       currentBridge?: null
     ): socketUpdatedEventFilter;
@@ -790,8 +792,6 @@ export interface BridgeSocket extends BaseContract {
       reciever: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
-
-    feeController(overrides?: CallOverrides): Promise<BigNumber>;
 
     feePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -821,11 +821,11 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<BigNumber>;
 
     getTransactionGas(
-      sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
       chainTo: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    innitialized(overrides?: CallOverrides): Promise<BigNumber>;
 
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
@@ -841,6 +841,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -872,7 +874,6 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<BigNumber>;
 
     updateSocket(
-      _feecontroller: PromiseOrValue<string>,
       _settings: PromiseOrValue<string>,
       _bridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -894,8 +895,6 @@ export interface BridgeSocket extends BaseContract {
       reciever: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
-
-    feeController(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     feePercentage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -933,11 +932,11 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getTransactionGas(
-      sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
       chainTo: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    innitialized(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isForiegnAsset(
       assetAddress: PromiseOrValue<string>,
@@ -953,6 +952,8 @@ export interface BridgeSocket extends BaseContract {
       chainID: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    maxFeePercentage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -984,7 +985,6 @@ export interface BridgeSocket extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     updateSocket(
-      _feecontroller: PromiseOrValue<string>,
       _settings: PromiseOrValue<string>,
       _bridge: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }

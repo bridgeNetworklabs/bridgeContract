@@ -5,7 +5,7 @@ interface IbridgeMigrator {
     function isDirectSwap(address assetAddress, uint256 chainID)
         external
         returns (bool);
-
+   function registry() external view returns (address);
     function registerNativeMigration(
         address assetAddress,
         uint256[2] memory limits,

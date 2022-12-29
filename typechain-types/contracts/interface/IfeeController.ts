@@ -4,7 +4,6 @@
 import type {
   BaseContract,
   BigNumber,
-  BigNumberish,
   BytesLike,
   CallOverrides,
   PopulatedTransaction,
@@ -23,18 +22,14 @@ import type {
 
 export interface IfeeControllerInterface extends utils.Interface {
   functions: {
-    "getBridgeFee(address,address,uint256)": FunctionFragment;
+    "getBridgeFee(address,address)": FunctionFragment;
   };
 
   getFunction(nameOrSignatureOrTopic: "getBridgeFee"): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "getBridgeFee",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
 
   decodeFunctionResult(
@@ -74,24 +69,21 @@ export interface IfeeController extends BaseContract {
   functions: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
 
   getBridgeFee(
     sender: PromiseOrValue<string>,
-    asset: PromiseOrValue<string>,
-    chainTo: PromiseOrValue<BigNumberish>,
+    assetAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   callStatic: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -101,8 +93,7 @@ export interface IfeeController extends BaseContract {
   estimateGas: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -110,8 +101,7 @@ export interface IfeeController extends BaseContract {
   populateTransaction: {
     getBridgeFee(
       sender: PromiseOrValue<string>,
-      asset: PromiseOrValue<string>,
-      chainTo: PromiseOrValue<BigNumberish>,
+      assetAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

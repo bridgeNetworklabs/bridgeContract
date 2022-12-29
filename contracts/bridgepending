@@ -50,11 +50,11 @@ contract Bridge is Context, ReentrancyGuard {
     mapping(address => asset) public foriegnAssets;
     mapping(uint256 => directForiegnAsset) public directForiegnAssets;
     mapping(address => mapping(uint256 => address)) public wrappedForiegnPair;
-    mapping(address => address) foriegnPair;
-    mapping(address => mapping(uint256 => bool)) hasWrappedForiegnPair;
+    mapping(address => address) public foriegnPair;
+    mapping(address => mapping(uint256 => bool)) public hasWrappedForiegnPair;
     mapping(address => mapping(uint256 => bool)) public isDirectSwap;
 
-    uint256 totalGas;
+    uint256 public totalGas;
     uint256 public chainId; // current chain id
     //    uint256 public immutable chainId; // current chain id
     address public deployer;
@@ -352,6 +352,11 @@ contract Bridge is Context, ReentrancyGuard {
                         supportedChains[index]
                     );
                     if (migration) {
+                        address _registry = IbridgeMigrator(migrator).registry();
+                        if(_registry != address(registry)){
+                                uint256 getBridgedAssetValue  = IRegistery(_registry).assetChainBalance(assetAddress ,supportedChains[index]);
+                                registry.migrateAssetChainBalance(assetAddress, supportedChains[index] ,getBridgedAssetValue );
+                            }
                         if (
                             IbridgeMigrator(migrator).isDirectSwap(
                                 assetAddress,
@@ -361,6 +366,7 @@ contract Bridge is Context, ReentrancyGuard {
                             isDirectSwap[assetAddress][
                                 supportedChains[index]
                             ] = true;
+                            
                         }
                     } else {
                         if (directSwap) {
@@ -496,9 +502,9 @@ contract Bridge is Context, ReentrancyGuard {
         );
         require(
             success &&
-                recievedValue > 0 &&
-                recievedValue >= nativeAssets[assetAddress].minAmount &&
-                recievedValue <= nativeAssets[assetAddress].maxAmount,
+            recievedValue > 0 &&
+            recievedValue >= nativeAssets[assetAddress].minAmount &&
+            recievedValue <= nativeAssets[assetAddress].maxAmount,
             "I_F"
         );
 
@@ -510,7 +516,7 @@ contract Bridge is Context, ReentrancyGuard {
                     recievedValue
                 );
             } else {
-                IERC20(assetAddress).safeApprove(
+                IERC20(assetAddress).approve(
                     address(bridgePool),
                     recievedValue
                 );
@@ -542,11 +548,12 @@ contract Bridge is Context, ReentrancyGuard {
         );
     }
 
-    function burn(
-        address assetAddress,
-        uint256 amount,
-        address receiver
-    ) external payable nonReentrant returns (bytes32 transactionID) {
+    function burn(address assetAddress, uint256 amount, address receiver)
+        external
+        payable
+        nonReentrant
+        returns (bytes32 transactionID)
+    {
         notPaused();
         uint256 chainTo = foriegnAssetChainID[assetAddress];
         require(foriegnAssets[assetAddress].isSet, "I_A");
@@ -662,7 +669,7 @@ contract Bridge is Context, ReentrancyGuard {
             recipient.transfer(amount);
         } else {
             IERC20 currentPaymentMethod = IERC20(_paymentMethod);
-            currentPaymentMethod.safeTransfer(recipient, amount);
+            require(currentPaymentMethod.transfer(recipient, amount), "I_F");
         }
     }
 
@@ -674,10 +681,14 @@ contract Bridge is Context, ReentrancyGuard {
     ) internal returns (bool, uint256) {
         uint256 gas = settings.networkGas(chainID);
         if (assetAddress == address(0)) {
-            if (msg.value >= amount + gas) {
+            if (msg.value >= amount + gas ) {
                 totalGas += gas;
                 if (gas > 0)
-                    payoutUser(payable(settings.gasBank()), address(0), gas);
+                    payoutUser(
+                        payable(settings.gasBank()),
+                        address(0),
+                        gas
+                    );
                 return (true, msg.value - gas);
             } else {
                 return (false, 0);
@@ -706,11 +717,10 @@ contract Bridge is Context, ReentrancyGuard {
     }
 
     // internal fxn for deducting and remitting fees after a sale
-    function deductFees(
-        address assetAddress,
-        uint256 amount,
-        bool native
-    ) private returns (uint256) {
+    function deductFees(address assetAddress, uint256 amount, bool native)
+        private
+        returns (uint256)
+    {
         asset storage currentasset;
         if (native) currentasset = nativeAssets[assetAddress];
         else currentasset = foriegnAssets[assetAddress];
@@ -807,7 +817,7 @@ contract Bridge is Context, ReentrancyGuard {
         uint256 start;
         uint256 migrationAmount;
         if (directSwap) {
-            require(fDirectSwapMigrationAt < directForiegnCount, "completed");
+            require(fDirectSwapMigrationAt < directForiegnCount, "Completed");
             start = fDirectSwapMigrationAt;
 
             if (limit + fDirectSwapMigrationAt < directForiegnCount)
@@ -819,7 +829,7 @@ contract Bridge is Context, ReentrancyGuard {
                     storage directSwapAsset = directForiegnAssets[start + i];
                 if (directSwapAsset.isSet) {
                     IbridgeMigrator(newBridge).registerForiegnMigration(
-                        directSwapAsset.nativeAddress,
+                        directSwapAsset.foriegnAddress,
                         directSwapAsset.chainID,
                         0,
                         0,
@@ -828,7 +838,7 @@ contract Bridge is Context, ReentrancyGuard {
                         address(0),
                         0,
                         true,
-                        directSwapAsset.foriegnAddress
+                        directSwapAsset.nativeAddress
                     );
                     fDirectSwapMigrationAt = fDirectSwapMigrationAt + 1;
                     // emit MigratedAsset(directSwapAsset.foriegnAddress , false);
@@ -876,7 +886,8 @@ contract Bridge is Context, ReentrancyGuard {
         );
         uint256 migrationAmount;
         uint256 start;
-        start = nMigrationAt;
+        if (nMigrationAt == 0) start = nMigrationAt;
+        else start = nMigrationAt + 1;
         if (limit + nativeAssetsList.length < nMigrationAt)
             migrationAmount = limit;
         else migrationAmount = nativeAssetsList.length - nMigrationAt;
@@ -970,6 +981,7 @@ contract Bridge is Context, ReentrancyGuard {
         if (active) {
             isActiveNativeAsset[assetAddress] = true;
         }
+        
         //  emit RegisterredNativeMigration(assetAddress);
     }
 
@@ -994,10 +1006,10 @@ contract Bridge is Context, ReentrancyGuard {
         );
 
         if (directSwap) {
-            isDirectSwap[foriegnAddress][chainID] = true;
+            isDirectSwap[wrappedAddress][chainID] = true;
             directForiegnAssets[directForiegnCount] = directForiegnAsset(
-                foriegnAddress,
                 wrappedAddress,
+                foriegnAddress,
                 chainID,
                 true
             );
@@ -1050,15 +1062,7 @@ contract Bridge is Context, ReentrancyGuard {
         return assetSupportedChainIds[assetAddress];
     }
 
-    function getAssetCount()
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getAssetCount() external view returns (uint256, uint256, uint256) {
         return (
             nativeAssetsList.length,
             foriegnAssetsList.length,

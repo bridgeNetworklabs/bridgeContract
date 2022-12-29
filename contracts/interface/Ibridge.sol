@@ -2,16 +2,16 @@
 pragma solidity 0.8.2;
 
 interface Ibridge {
-    struct asset {
+  struct asset {
         address tokenAddress;
         uint256 minAmount;
         uint256 maxAmount;
-        uint256 feeBalance;
+        uint256 ownerFeeBalance;
+        uint256 networkFeeBalance;
         uint256 collectedFees;
         bool ownedRail;
         address manager;
         address feeRemitance;
-        uint256 balance;
         bool isSet;
     }
 
@@ -73,8 +73,10 @@ interface Ibridge {
         address receiver
     ) external payable returns (bytes32);
 
-    function burn(address assetAddress, uint256 amount, address receiver)
-        external
-        payable
-        returns (bytes32);
+    function burn(
+        uint256 chainID,
+        address assetAddress,
+        uint256 amount,
+        address receiver
+    ) external payable returns (bytes32);
 }

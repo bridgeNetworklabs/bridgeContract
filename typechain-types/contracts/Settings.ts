@@ -37,19 +37,21 @@ export interface SettingsInterface extends utils.Interface {
     "controller()": FunctionFragment;
     "enableBaseFee()": FunctionFragment;
     "feeRemitance()": FunctionFragment;
+    "gasBank()": FunctionFragment;
     "getNetworkSupportedChains()": FunctionFragment;
     "isNetworkSupportedChain(uint256)": FunctionFragment;
     "maxFeeThreshold()": FunctionFragment;
     "minValidationPercentage()": FunctionFragment;
     "minValidations()": FunctionFragment;
     "minWithdrawableFee()": FunctionFragment;
-    "networkFee(uint256)": FunctionFragment;
+    "networkGas(uint256)": FunctionFragment;
     "networkSupportedChains(uint256)": FunctionFragment;
     "onlyOwnableRail()": FunctionFragment;
     "railOwnerFeeShare()": FunctionFragment;
     "railRegistrationFee()": FunctionFragment;
     "setApprovedToAdd(address,address,bool)": FunctionFragment;
     "setFeeRemitanceAddress(address)": FunctionFragment;
+    "setGasBank(address)": FunctionFragment;
     "setMinValidationPercentage(uint256)": FunctionFragment;
     "setNetworkSupportedChains(uint256[],uint256[],bool)": FunctionFragment;
     "setOnlyOwnableRailState(bool)": FunctionFragment;
@@ -60,7 +62,7 @@ export interface SettingsInterface extends utils.Interface {
     "setminWithdrawableFee(uint256)": FunctionFragment;
     "setrailRegistrationFee(uint256)": FunctionFragment;
     "updatableAssetState()": FunctionFragment;
-    "updateNetworkFee(uint256,uint256)": FunctionFragment;
+    "updateNetworkGas(uint256,uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -73,19 +75,21 @@ export interface SettingsInterface extends utils.Interface {
       | "controller"
       | "enableBaseFee"
       | "feeRemitance"
+      | "gasBank"
       | "getNetworkSupportedChains"
       | "isNetworkSupportedChain"
       | "maxFeeThreshold"
       | "minValidationPercentage"
       | "minValidations"
       | "minWithdrawableFee"
-      | "networkFee"
+      | "networkGas"
       | "networkSupportedChains"
       | "onlyOwnableRail"
       | "railOwnerFeeShare"
       | "railRegistrationFee"
       | "setApprovedToAdd"
       | "setFeeRemitanceAddress"
+      | "setGasBank"
       | "setMinValidationPercentage"
       | "setNetworkSupportedChains"
       | "setOnlyOwnableRailState"
@@ -96,7 +100,7 @@ export interface SettingsInterface extends utils.Interface {
       | "setminWithdrawableFee"
       | "setrailRegistrationFee"
       | "updatableAssetState"
-      | "updateNetworkFee"
+      | "updateNetworkGas"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -128,6 +132,7 @@ export interface SettingsInterface extends utils.Interface {
     functionFragment: "feeRemitance",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "gasBank", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getNetworkSupportedChains",
     values?: undefined
@@ -153,7 +158,7 @@ export interface SettingsInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "networkFee",
+    functionFragment: "networkGas",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -182,6 +187,10 @@ export interface SettingsInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setFeeRemitanceAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setGasBank",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -229,7 +238,7 @@ export interface SettingsInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "updateNetworkFee",
+    functionFragment: "updateNetworkGas",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
 
@@ -259,6 +268,7 @@ export interface SettingsInterface extends utils.Interface {
     functionFragment: "feeRemitance",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "gasBank", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getNetworkSupportedChains",
     data: BytesLike
@@ -283,7 +293,7 @@ export interface SettingsInterface extends utils.Interface {
     functionFragment: "minWithdrawableFee",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "networkFee", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "networkGas", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "networkSupportedChains",
     data: BytesLike
@@ -308,6 +318,7 @@ export interface SettingsInterface extends utils.Interface {
     functionFragment: "setFeeRemitanceAddress",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setGasBank", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMinValidationPercentage",
     data: BytesLike
@@ -349,7 +360,7 @@ export interface SettingsInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateNetworkFee",
+    functionFragment: "updateNetworkGas",
     data: BytesLike
   ): Result;
 
@@ -359,8 +370,9 @@ export interface SettingsInterface extends utils.Interface {
     "BaseFeeStatusChanged(bool)": EventFragment;
     "BrdgTokenUpdated(address,address)": EventFragment;
     "FeeRemitanceAddressUpdated(address,address)": EventFragment;
+    "GasBankUpdated(address,address)": EventFragment;
     "MinValidationPercentageUpdated(uint256,uint256)": EventFragment;
-    "NetworkFeeUpdated(uint256,uint256,uint256)": EventFragment;
+    "NetworkGasUpdated(uint256,uint256,uint256)": EventFragment;
     "NetworkSupportedChainsUpdated(uint256[],bool)": EventFragment;
     "OnlyOwnableRailStateEnabled(bool)": EventFragment;
     "RailOwnerFeeShareUpdated(uint256,uint256)": EventFragment;
@@ -374,10 +386,11 @@ export interface SettingsInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "BaseFeeStatusChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BrdgTokenUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FeeRemitanceAddressUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GasBankUpdated"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "MinValidationPercentageUpdated"
   ): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NetworkFeeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NetworkGasUpdated"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "NetworkSupportedChainsUpdated"
   ): EventFragment;
@@ -449,6 +462,17 @@ export type FeeRemitanceAddressUpdatedEvent = TypedEvent<
 export type FeeRemitanceAddressUpdatedEventFilter =
   TypedEventFilter<FeeRemitanceAddressUpdatedEvent>;
 
+export interface GasBankUpdatedEventObject {
+  prevValue: string;
+  newValue: string;
+}
+export type GasBankUpdatedEvent = TypedEvent<
+  [string, string],
+  GasBankUpdatedEventObject
+>;
+
+export type GasBankUpdatedEventFilter = TypedEventFilter<GasBankUpdatedEvent>;
+
 export interface MinValidationPercentageUpdatedEventObject {
   prevMinValidationPercentage: BigNumber;
   newMinValidationPercentage: BigNumber;
@@ -461,18 +485,18 @@ export type MinValidationPercentageUpdatedEvent = TypedEvent<
 export type MinValidationPercentageUpdatedEventFilter =
   TypedEventFilter<MinValidationPercentageUpdatedEvent>;
 
-export interface NetworkFeeUpdatedEventObject {
+export interface NetworkGasUpdatedEventObject {
   chainId: BigNumber;
   prevValue: BigNumber;
   newValue: BigNumber;
 }
-export type NetworkFeeUpdatedEvent = TypedEvent<
+export type NetworkGasUpdatedEvent = TypedEvent<
   [BigNumber, BigNumber, BigNumber],
-  NetworkFeeUpdatedEventObject
+  NetworkGasUpdatedEventObject
 >;
 
-export type NetworkFeeUpdatedEventFilter =
-  TypedEventFilter<NetworkFeeUpdatedEvent>;
+export type NetworkGasUpdatedEventFilter =
+  TypedEventFilter<NetworkGasUpdatedEvent>;
 
 export interface NetworkSupportedChainsUpdatedEventObject {
   chains: BigNumber[];
@@ -593,6 +617,8 @@ export interface Settings extends BaseContract {
 
     feeRemitance(overrides?: CallOverrides): Promise<[string]>;
 
+    gasBank(overrides?: CallOverrides): Promise<[string]>;
+
     getNetworkSupportedChains(
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
@@ -612,7 +638,7 @@ export interface Settings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    networkFee(
+    networkGas(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
@@ -637,6 +663,11 @@ export interface Settings extends BaseContract {
 
     setFeeRemitanceAddress(
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -689,7 +720,7 @@ export interface Settings extends BaseContract {
 
     updatableAssetState(overrides?: CallOverrides): Promise<[boolean]>;
 
-    updateNetworkFee(
+    updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -718,6 +749,8 @@ export interface Settings extends BaseContract {
 
   feeRemitance(overrides?: CallOverrides): Promise<string>;
 
+  gasBank(overrides?: CallOverrides): Promise<string>;
+
   getNetworkSupportedChains(overrides?: CallOverrides): Promise<BigNumber[]>;
 
   isNetworkSupportedChain(
@@ -733,7 +766,7 @@ export interface Settings extends BaseContract {
 
   minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  networkFee(
+  networkGas(
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -758,6 +791,11 @@ export interface Settings extends BaseContract {
 
   setFeeRemitanceAddress(
     account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setGasBank(
+    _gasBank: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -810,7 +848,7 @@ export interface Settings extends BaseContract {
 
   updatableAssetState(overrides?: CallOverrides): Promise<boolean>;
 
-  updateNetworkFee(
+  updateNetworkGas(
     chainId: PromiseOrValue<BigNumberish>,
     fee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -837,6 +875,8 @@ export interface Settings extends BaseContract {
 
     feeRemitance(overrides?: CallOverrides): Promise<string>;
 
+    gasBank(overrides?: CallOverrides): Promise<string>;
+
     getNetworkSupportedChains(overrides?: CallOverrides): Promise<BigNumber[]>;
 
     isNetworkSupportedChain(
@@ -852,7 +892,7 @@ export interface Settings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    networkFee(
+    networkGas(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -877,6 +917,11 @@ export interface Settings extends BaseContract {
 
     setFeeRemitanceAddress(
       account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -929,7 +974,7 @@ export interface Settings extends BaseContract {
 
     updatableAssetState(overrides?: CallOverrides): Promise<boolean>;
 
-    updateNetworkFee(
+    updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -980,6 +1025,15 @@ export interface Settings extends BaseContract {
       newValue?: PromiseOrValue<string> | null
     ): FeeRemitanceAddressUpdatedEventFilter;
 
+    "GasBankUpdated(address,address)"(
+      prevValue?: PromiseOrValue<string> | null,
+      newValue?: PromiseOrValue<string> | null
+    ): GasBankUpdatedEventFilter;
+    GasBankUpdated(
+      prevValue?: PromiseOrValue<string> | null,
+      newValue?: PromiseOrValue<string> | null
+    ): GasBankUpdatedEventFilter;
+
     "MinValidationPercentageUpdated(uint256,uint256)"(
       prevMinValidationPercentage?: null,
       newMinValidationPercentage?: null
@@ -989,16 +1043,16 @@ export interface Settings extends BaseContract {
       newMinValidationPercentage?: null
     ): MinValidationPercentageUpdatedEventFilter;
 
-    "NetworkFeeUpdated(uint256,uint256,uint256)"(
+    "NetworkGasUpdated(uint256,uint256,uint256)"(
       chainId?: null,
       prevValue?: null,
       newValue?: null
-    ): NetworkFeeUpdatedEventFilter;
-    NetworkFeeUpdated(
+    ): NetworkGasUpdatedEventFilter;
+    NetworkGasUpdated(
       chainId?: null,
       prevValue?: null,
       newValue?: null
-    ): NetworkFeeUpdatedEventFilter;
+    ): NetworkGasUpdatedEventFilter;
 
     "NetworkSupportedChainsUpdated(uint256[],bool)"(
       chains?: null,
@@ -1074,6 +1128,8 @@ export interface Settings extends BaseContract {
 
     feeRemitance(overrides?: CallOverrides): Promise<BigNumber>;
 
+    gasBank(overrides?: CallOverrides): Promise<BigNumber>;
+
     getNetworkSupportedChains(overrides?: CallOverrides): Promise<BigNumber>;
 
     isNetworkSupportedChain(
@@ -1089,7 +1145,7 @@ export interface Settings extends BaseContract {
 
     minWithdrawableFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    networkFee(
+    networkGas(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1114,6 +1170,11 @@ export interface Settings extends BaseContract {
 
     setFeeRemitanceAddress(
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1166,7 +1227,7 @@ export interface Settings extends BaseContract {
 
     updatableAssetState(overrides?: CallOverrides): Promise<BigNumber>;
 
-    updateNetworkFee(
+    updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1198,6 +1259,8 @@ export interface Settings extends BaseContract {
 
     feeRemitance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    gasBank(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getNetworkSupportedChains(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1219,7 +1282,7 @@ export interface Settings extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    networkFee(
+    networkGas(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1246,6 +1309,11 @@ export interface Settings extends BaseContract {
 
     setFeeRemitanceAddress(
       account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGasBank(
+      _gasBank: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1300,7 +1368,7 @@ export interface Settings extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    updateNetworkFee(
+    updateNetworkGas(
       chainId: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }

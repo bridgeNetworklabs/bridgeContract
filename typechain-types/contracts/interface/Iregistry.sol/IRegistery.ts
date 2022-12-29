@@ -64,6 +64,7 @@ export interface IRegisteryInterface extends utils.Interface {
     "isMintTransaction(bytes32)": FunctionFragment;
     "isSendTransaction(bytes32)": FunctionFragment;
     "isburnTransactio(bytes32)": FunctionFragment;
+    "migrateAssetChainBalance(address,uint256,uint256)": FunctionFragment;
     "mintTransactions(bytes32)": FunctionFragment;
     "registerTransaction(uint256,address,uint256,address,uint8)": FunctionFragment;
     "sendTransactions(bytes32)": FunctionFragment;
@@ -85,6 +86,7 @@ export interface IRegisteryInterface extends utils.Interface {
       | "isMintTransaction"
       | "isSendTransaction"
       | "isburnTransactio"
+      | "migrateAssetChainBalance"
       | "mintTransactions"
       | "registerTransaction"
       | "sendTransactions"
@@ -139,6 +141,14 @@ export interface IRegisteryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "isburnTransactio",
     values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "migrateAssetChainBalance",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "mintTransactions",
@@ -213,6 +223,10 @@ export interface IRegisteryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "isburnTransactio",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "migrateAssetChainBalance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -327,6 +341,13 @@ export interface IRegistery extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    migrateAssetChainBalance(
+      asset: PromiseOrValue<string>,
+      chainID: PromiseOrValue<BigNumberish>,
+      balance: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     mintTransactions(
       transactionID: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -415,6 +436,13 @@ export interface IRegistery extends BaseContract {
 
   isburnTransactio(
     transactionID: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  migrateAssetChainBalance(
+    asset: PromiseOrValue<string>,
+    chainID: PromiseOrValue<BigNumberish>,
+    balance: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -508,6 +536,13 @@ export interface IRegistery extends BaseContract {
       transactionID: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    migrateAssetChainBalance(
+      asset: PromiseOrValue<string>,
+      chainID: PromiseOrValue<BigNumberish>,
+      balance: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     mintTransactions(
       transactionID: PromiseOrValue<BytesLike>,
@@ -605,6 +640,13 @@ export interface IRegistery extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    migrateAssetChainBalance(
+      asset: PromiseOrValue<string>,
+      chainID: PromiseOrValue<BigNumberish>,
+      balance: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     mintTransactions(
       transactionID: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -694,6 +736,13 @@ export interface IRegistery extends BaseContract {
 
     isburnTransactio(
       transactionID: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    migrateAssetChainBalance(
+      asset: PromiseOrValue<string>,
+      chainID: PromiseOrValue<BigNumberish>,
+      balance: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
