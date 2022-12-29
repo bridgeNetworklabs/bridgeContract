@@ -26,6 +26,16 @@ describe("Bridge", function () {
   let pool: BridgePool;
   let brgToken: Token;
   let assetToken: Token;
+  let assetToken2: Token;
+  let assetToken3: Token;
+  let assetToken4: Token;
+  let assetToken6: Token;
+  let assetToken5: Token;
+  let assetToken7: Token;
+  let assetToken8: Token;
+  let assetToken9: Token;
+  let assetToken10: Token;
+  let assetToken1: Token;
   let feeRemittance: SignerWithAddress;
   let Admin: SignerWithAddress;
   let assetFeeRemittance: SignerWithAddress;
@@ -116,6 +126,46 @@ describe("Bridge", function () {
 
     const TestToken = await ethers.getContractFactory("Token");
     assetToken = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken1 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken2 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken3 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken4 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken5 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken6 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken7 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken8 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken9 = await TestToken.connect(assetAdmin).deploy(
+      "Asset_One",
+      "Ass1"
+    );
+    assetToken10 = await TestToken.connect(assetAdmin).deploy(
       "Asset_One",
       "Ass1"
     );
@@ -456,7 +506,7 @@ describe("Bridge", function () {
           "10000000000000000000000",
           [2],
           ["0xbf07d7C2613188E3b403D9fbdca7872D0ff1e5aF"],
-          true,
+          false,
           assetFeeRemittance.address,
           assetManager.address,
           2
@@ -478,6 +528,8 @@ describe("Bridge", function () {
         .send(2, zeroAddress, "100000000000000000000", Admin.address, {
           value: "100000000000000000000",
         });
+
+      console.log(await ethers.provider.getBalance(bridge.address));
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
 
@@ -491,10 +543,10 @@ describe("Bridge", function () {
         );
       await brgToken
         .connect(Admin)
-        .transfer(assetManager.address, settings.railRegistrationFee());
+        .transfer(assetManager.address, parseEther("100000"));
       await brgToken
         .connect(assetManager)
-        .approve(bridge.address, settings.railRegistrationFee());
+        .approve(bridge.address, ethers.constants.MaxUint256);
       await settings
         .connect(Admin)
         .setApprovedToAdd(assetManager.address, assetToken.address, true);
@@ -509,6 +561,20 @@ describe("Bridge", function () {
           [2],
           [zeroAddress],
           false,
+          assetFeeRemittance.address,
+          assetManager.address,
+          0
+        );
+
+      await bridge
+        .connect(assetManager)
+        .registerRail(
+          assetToken.address,
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
+          [10],
+          [zeroAddress],
+          true,
           assetFeeRemittance.address,
           assetManager.address,
           0
@@ -613,7 +679,7 @@ describe("Bridge", function () {
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
     });
 
-    it("should be able validate DirectSwap assetToken With any decimals", async function () {
+    it.only("should be able validate DirectSwap assetToken With any decimals", async function () {
       await settings
         .connect(Admin)
         .setNetworkSupportedChains([2], [parseEther("0.01")], true);
@@ -1286,43 +1352,172 @@ describe("Bridge", function () {
     });
   });
 
-  describe("Migration", () => {
+  describe.only("Migration", () => {
     let newBridge: Bridge;
     beforeEach(async () => {
       await settings
         .connect(Admin)
-        .setNetworkSupportedChains([2], [parseEther("0.01")], true);
+        .setNetworkSupportedChains(
+          [2, 10],
+          [parseEther("0.01"), parseEther("0.01")],
+          true
+        );
       await brgToken
         .connect(Admin)
-        .transfer(assetAdmin.address, settings.railRegistrationFee());
+        .transfer(assetManager.address, parseEther("100000"));
       await brgToken
-        .connect(assetAdmin)
-        .approve(bridge.address, settings.railRegistrationFee());
+        .connect(assetManager)
+        .approve(bridge.address, ethers.constants.MaxUint256);
+      await settings
+        .connect(Admin)
+        .setApprovedToAdd(assetManager.address, assetToken.address, true);
 
       const TestToken = await ethers.getContractFactory("Token");
-      const foreignToken = await TestToken.connect(assetAdmin).deploy(
+      const foreignToken1 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken2 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken3 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken4 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken5 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken6 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken7 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken8 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken9 = await TestToken.connect(assetAdmin).deploy(
+        "Asset_One",
+        "Ass1"
+      );
+      const foreignToken10 = await TestToken.connect(assetAdmin).deploy(
         "Asset_One",
         "Ass1"
       );
 
       await bridge
-        .connect(assetAdmin)
+        .connect(Admin)
         .registerRail(
           assetToken.address,
-          parseEther("0.01"),
-          parseEther("100000"),
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
           [2],
           [zeroAddress],
           false,
           assetFeeRemittance.address,
           assetManager.address,
-          2
+          0
+        );
+
+      await bridge
+        .connect(Admin)
+        .registerRail(
+          assetToken.address,
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
+          [10],
+          [zeroAddress],
+          true,
+          assetFeeRemittance.address,
+          assetManager.address,
+          0
+        );
+
+      await bridge
+        .connect(Admin)
+        .registerRail(
+          zeroAddress,
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
+          [2],
+          [zeroAddress],
+          true,
+          assetFeeRemittance.address,
+          assetManager.address,
+          0
+        );
+
+      await bridge
+        .connect(Admin)
+        .registerRail(
+          zeroAddress,
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
+          [10],
+          [zeroAddress],
+          false,
+          assetFeeRemittance.address,
+          assetManager.address,
+          0
+        );
+
+      await bridge
+        .connect(Admin)
+        .registerRail(
+          assetToken2.address,
+          ethers.utils.parseEther("0.00001"),
+          ethers.utils.parseEther("1000"),
+          [10, 2],
+          [foreignToken10.address, foreignToken2.address],
+          true,
+          assetFeeRemittance.address,
+          assetManager.address,
+          0
         );
 
       await bridge
         .connect(registrar)
         .addForiegnAsset(
-          foreignToken.address,
+          foreignToken2.address,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken2.address
+        );
+
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken10.address,
+          10,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          assetToken2.address
+        );
+
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken3.address,
           2,
           [parseEther("0.01"), parseEther("100000")],
           ["test", "test"],
@@ -1331,8 +1526,80 @@ describe("Bridge", function () {
           assetFeeRemittance.address,
           1,
           false,
-          assetToken.address
+          zeroAddress
         );
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          foreignToken4.address,
+          10,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          zeroAddress
+        );
+
+      await bridge
+        .connect(registrar)
+        .addForiegnAsset(
+          zeroAddress,
+          2,
+          [parseEther("0.01"), parseEther("100000")],
+          ["test", "test"],
+          true,
+          assetManager.address,
+          assetFeeRemittance.address,
+          1,
+          true,
+          zeroAddress
+        );
+
+      await assetToken
+        .connect(assetAdmin)
+        .approve(bridge.address, ethers.constants.MaxUint256);
+      await assetToken2
+        .connect(assetAdmin)
+        .approve(bridge.address, ethers.constants.MaxUint256);
+      //await assetToken10.connect(assetAdmin).approve(bridge.address, ethers.constants.MaxUint256)
+
+      await bridge.connect(Admin).activeNativeAsset(zeroAddress, true);
+      await bridge.connect(Admin).activeNativeAsset(assetToken.address, true);
+      await bridge.connect(Admin).activeNativeAsset(assetToken2.address, true);
+      //wait bridge.connect(Admin).activeNativeAsset(assetToken10.address, true);
+      // await assetToken.connect(Admin).approve(bridge.address, "1000000000000000000000")
+      await bridge
+        .connect(assetAdmin)
+        .send(2, assetToken.address, parseEther("1"), Admin.address, {
+          value: parseEther("0.01"),
+        });
+
+      await bridge
+        .connect(assetAdmin)
+        .send(10, assetToken.address, parseEther("1"), Admin.address, {
+          value: parseEther("0.01"),
+        });
+
+      await bridge
+        .connect(assetAdmin)
+        .send(10, zeroAddress, parseEther("1"), Admin.address, {
+          value: parseEther("1.01"),
+        });
+
+      await bridge
+        .connect(assetAdmin)
+        .send(2, zeroAddress, parseEther("1"), Admin.address, {
+          value: parseEther("1.01"),
+        });
+
+      await bridge
+        .connect(assetAdmin)
+        .send(2, assetToken2.address, parseEther("1"), Admin.address, {
+          value: parseEther("0.01"),
+        });
 
       const Bridge = await ethers.getContractFactory("Bridge");
       newBridge = await Bridge.deploy(
@@ -1349,12 +1616,87 @@ describe("Bridge", function () {
     it("Should Migrate Bridge", async () => {
       await bridge.connect(Admin).initiateMigration(newBridge.address);
       await time.increase(2 * 24 * 60 * 60);
-      await bridge.connect(Admin).migrateForiegn(1, false);
+      await bridge.connect(Admin).migrateForiegn(5, true);
+      await bridge.connect(Admin).migrateForiegn(5, false);
+      await bridge.connect(Admin).migrateNative(2);
       await bridge.connect(Admin).migrateNative(2);
       await bridge.connect(Admin).completeMigration();
       expect(await bridge.getAssetCount()).to.deep.equal(
         await newBridge.getAssetCount()
       );
+    });
+
+    it("should  be able Bridge assetToken", async function () {
+      await bridge.connect(Admin).initiateMigration(newBridge.address);
+      await time.increase(2 * 24 * 60 * 60);
+      await bridge.connect(Admin).migrateForiegn(5, true);
+      await bridge.connect(Admin).migrateForiegn(5, false);
+      await bridge.connect(Admin).migrateNative(2);
+      await bridge.connect(Admin).migrateNative(2);
+      await bridge.connect(Admin).completeMigration();
+      await pool.connect(Admin).innitiateBridgeUpdate(newBridge.address)
+      await time.increase(2 * 24 * 60 * 60);
+      await pool.connect(Admin).activateNewBridge()
+
+      let transactionID = await registry.getID(
+        newBridge.chainId(),
+        2,
+        assetToken2.address,
+        ethers.utils.parseEther("0.01"),
+        user2.address,
+        registry.getUserNonce(user1.address)
+      );
+
+      let transactionID2 = await registry.getID(
+        newBridge.chainId(),
+        2,
+        assetToken.address,
+        ethers.utils.parseEther("0.01"),
+        user2.address,
+        registry.getUserNonce(user1.address)
+      );
+
+      await assetToken2
+        .connect(assetAdmin)
+        .approve(newBridge.address, ethers.constants.MaxUint256);
+      await assetToken
+        .connect(assetAdmin)
+        .approve(newBridge.address, ethers.constants.MaxUint256);
+
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(
+          2,
+          assetToken2.address,
+          ethers.utils.parseEther("0.01"),
+          user2.address,
+          {
+            value: parseEther("0.01")
+          }
+        );
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(
+          2,
+          assetToken.address,
+          ethers.utils.parseEther("0.01"),
+          user2.address,
+          {
+            value: parseEther("0.01")
+          }
+        );
+
+
+      await newBridge
+        .connect(assetAdmin)
+        .send(10, zeroAddress, parseEther("1"), Admin.address, {
+          value: parseEther("1.01"),
+        });
+
+      expect(await registry.isSendTransaction(transactionID)).to.be.true;
+      expect(await registry.isSendTransaction(transactionID2)).to.be.true;
     });
 
     it("Should not be able to migrate without initialization", async () => {

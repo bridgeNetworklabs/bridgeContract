@@ -4,6 +4,17 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+import type {
+  Controller,
+  Deployer,
+  Settings,
+  FeeController,
+  Registry,
+  Bridge,
+  BridgeSocket,
+  Token,
+  BridgePool,
+} from "../typechain-types";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -118,6 +129,8 @@ async function main() {
   //   true
   // );
 
+  // [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
+  // [ 1, 0.7 , 1.2 , 1 , 0.5 , 0.3 , 0.8 , 0.3 , 0.8 , 15 , 0.8 , 0.4 ,0.4 , 0.3 , 0.3 ]
 
 // [43288 , 66, 288, 56, 43114, 250, 137, 321, 10, 1, 42161 , 1666600000 , 42170 , 2000 , 1338 ],
 // [ 1, 0.7 , 1.2 , 1 , 0.5 , 0.3 , 0.8 , 0.3 , 0.8 , 15 , 0.8 , 0.4 ,0.4 , 0.3 , 0.3 ]
