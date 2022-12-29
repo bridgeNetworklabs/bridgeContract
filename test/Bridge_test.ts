@@ -1638,23 +1638,6 @@ describe("Bridge", function () {
       await time.increase(2 * 24 * 60 * 60);
       await pool.connect(Admin).activateNewBridge()
 
-      let transactionID = await registry.getID(
-        newBridge.chainId(),
-        2,
-        assetToken2.address,
-        ethers.utils.parseEther("0.01"),
-        user2.address,
-        registry.getUserNonce(user1.address)
-      );
-
-      let transactionID2 = await registry.getID(
-        newBridge.chainId(),
-        2,
-        assetToken.address,
-        ethers.utils.parseEther("0.01"),
-        user2.address,
-        registry.getUserNonce(user1.address)
-      );
 
       await assetToken2
         .connect(assetAdmin)
@@ -1663,6 +1646,14 @@ describe("Bridge", function () {
         .connect(assetAdmin)
         .approve(newBridge.address, ethers.constants.MaxUint256);
 
+      let transactionID = await registry.getID(
+        newBridge.chainId(),
+        2,
+        assetToken2.address,
+        ethers.utils.parseEther("0.01"),
+        user2.address,
+        registry.getUserNonce(assetAdmin.address)
+      );
 
       await newBridge
         .connect(assetAdmin)
@@ -1678,25 +1669,11 @@ describe("Bridge", function () {
 
       await newBridge
         .connect(assetAdmin)
-        .send(
-          2,
-          assetToken.address,
-          ethers.utils.parseEther("0.01"),
-          user2.address,
-          {
-            value: parseEther("0.01")
-          }
-        );
-
-
-      await newBridge
-        .connect(assetAdmin)
         .send(10, zeroAddress, parseEther("1"), Admin.address, {
           value: parseEther("1.01"),
         });
 
       expect(await registry.isSendTransaction(transactionID)).to.be.true;
-      expect(await registry.isSendTransaction(transactionID2)).to.be.true;
     });
 
     it("Should not be able to migrate without initialization", async () => {
