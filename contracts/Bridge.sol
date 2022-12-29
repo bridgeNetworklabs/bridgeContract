@@ -662,7 +662,7 @@ contract Bridge is Context, ReentrancyGuard {
             recipient.transfer(amount);
         } else {
             IERC20 currentPaymentMethod = IERC20(_paymentMethod);
-            require(currentPaymentMethod.safeTransfer(recipient, amount), "I_F");
+            currentPaymentMethod.safeTransfer(recipient, amount);
         }
     }
 
