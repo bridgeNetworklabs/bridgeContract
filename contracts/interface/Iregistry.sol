@@ -24,7 +24,7 @@ interface IRegistery {
     function transactionValidated(bytes32 transactionID)
         external
         returns (bool);
-
+    function migrateAssetChainBalance(address asset, uint256 chainID, uint256 balance) external;
     function assetChainBalance(address asset, uint256 chainid)
         external
         returns (uint256);

@@ -137,7 +137,7 @@ contract BridgePool is Context, ReentrancyGuard {
         require(debtThreshold > 0, "cant be zero");
         WrappedToken wrappedAsset;
         if (poolAddress == address(0)) {
-            wrappedAsset = new WrappedToken("LAVA", "brLAVA", 18);
+            wrappedAsset = new WrappedToken("MATIC", "MATIC", 18);
         } else {
             IERC20Metadata token = IERC20Metadata(poolAddress);
             wrappedAsset = new WrappedToken(

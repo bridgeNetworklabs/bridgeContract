@@ -141,6 +141,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Registry__factory>;
     getContractFactory(
+      name: "Registry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Registry__factory>;
+    getContractFactory(
       name: "Settings",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Settings__factory>;
@@ -360,6 +364,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IwrappedToken>;
+    getContractAt(
+      name: "Registry",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Registry>;
     getContractAt(
       name: "Registry",
       address: string,

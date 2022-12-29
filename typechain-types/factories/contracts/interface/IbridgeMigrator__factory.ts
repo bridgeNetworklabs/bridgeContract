@@ -145,6 +145,19 @@ const _abi = [
     stateMutability: "payable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "registry",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 export class IbridgeMigrator__factory {

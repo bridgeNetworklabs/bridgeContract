@@ -29,6 +29,7 @@ export interface IbridgeMigratorInterface extends utils.Interface {
     "isDirectSwap(address,uint256)": FunctionFragment;
     "registerForiegnMigration(address,uint256,uint256,uint256,bool,address,address,uint256,bool,address)": FunctionFragment;
     "registerNativeMigration(address,uint256[2],uint256,bool,address,address,uint256[3],bool,uint256[])": FunctionFragment;
+    "registry()": FunctionFragment;
   };
 
   getFunction(
@@ -36,6 +37,7 @@ export interface IbridgeMigratorInterface extends utils.Interface {
       | "isDirectSwap"
       | "registerForiegnMigration"
       | "registerNativeMigration"
+      | "registry"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -75,6 +77,7 @@ export interface IbridgeMigratorInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>[]
     ]
   ): string;
+  encodeFunctionData(functionFragment: "registry", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "isDirectSwap",
@@ -88,6 +91,7 @@ export interface IbridgeMigratorInterface extends utils.Interface {
     functionFragment: "registerNativeMigration",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
 
   events: {};
 }
@@ -155,6 +159,8 @@ export interface IbridgeMigrator extends BaseContract {
       supportedChains: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    registry(overrides?: CallOverrides): Promise<[string]>;
   };
 
   isDirectSwap(
@@ -194,6 +200,8 @@ export interface IbridgeMigrator extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  registry(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     isDirectSwap(
       assetAddress: PromiseOrValue<string>,
@@ -231,6 +239,8 @@ export interface IbridgeMigrator extends BaseContract {
       supportedChains: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    registry(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
@@ -272,6 +282,8 @@ export interface IbridgeMigrator extends BaseContract {
       supportedChains: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    registry(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -311,5 +323,7 @@ export interface IbridgeMigrator extends BaseContract {
       supportedChains: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    registry(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

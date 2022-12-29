@@ -1169,7 +1169,7 @@ describe("Bridge", function () {
       await bridge
         .connect(registrar)
         .addForiegnAsset(
-          zeroAddress,
+          "0x55d398326f99059fF775485246999027B3197955",
           2,
           ["100000000000000000000", "10000000000000000000000"],
           ["test", "test"],
@@ -1184,7 +1184,7 @@ describe("Bridge", function () {
       let mintID = await registry.getID(
         2,
         bridge.chainId(),
-        zeroAddress,
+        "0x55d398326f99059fF775485246999027B3197955",
         "100000000000000000000",
         Admin.address,
         0
@@ -1195,7 +1195,7 @@ describe("Bridge", function () {
           .registerMintTransaction(
             mintID,
             2,
-            zeroAddress,
+            "0x55d398326f99059fF775485246999027B3197955",
             "100000000000000000000",
             Admin.address,
             0
@@ -1211,7 +1211,7 @@ describe("Bridge", function () {
       await bridge
         .connect(registrar)
         .addForiegnAsset(
-          zeroAddress,
+          "0x55d398326f99059fF775485246999027B3197955",
           2,
           ["100000000000000000000", "10000000000000000000000"],
           ["test", "test"],
@@ -1226,7 +1226,7 @@ describe("Bridge", function () {
       let mintID = await registry.getID(
         2,
         bridge.chainId(),
-        zeroAddress,
+        "0x55d398326f99059fF775485246999027B3197955",
         "100000000000000000000",
         Admin.address,
         0
@@ -1236,7 +1236,7 @@ describe("Bridge", function () {
         .registerMintTransaction(
           mintID,
           2,
-          zeroAddress,
+          "0x55d398326f99059fF775485246999027B3197955",
           "100000000000000000000",
           Admin.address,
           0
@@ -1275,7 +1275,7 @@ describe("Bridge", function () {
         .connect(validator3)
         .validateTransaction(mintID, signatures, true);
 
-      let wrappedAddress = await bridge.wrappedForiegnPair(zeroAddress, 2);
+      let wrappedAddress = await bridge.wrappedForiegnPair("0x55d398326f99059fF775485246999027B3197955", 2);
       let wrappedToken = await ethers.getContractAt(
         "WrappedToken",
         wrappedAddress,
