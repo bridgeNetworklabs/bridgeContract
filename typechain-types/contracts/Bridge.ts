@@ -46,7 +46,6 @@ export interface BridgeInterface extends utils.Interface {
     "foriegnAssetChainID(address)": FunctionFragment;
     "foriegnAssets(address)": FunctionFragment;
     "foriegnAssetsList(uint256)": FunctionFragment;
-    "foriegnPair(address)": FunctionFragment;
     "getAssetCount()": FunctionFragment;
     "getAssetSupportedChainIds(address)": FunctionFragment;
     "initiateMigration(address)": FunctionFragment;
@@ -91,7 +90,6 @@ export interface BridgeInterface extends utils.Interface {
       | "foriegnAssetChainID"
       | "foriegnAssets"
       | "foriegnAssetsList"
-      | "foriegnPair"
       | "getAssetCount"
       | "getAssetSupportedChainIds"
       | "initiateMigration"
@@ -190,10 +188,6 @@ export interface BridgeInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "foriegnAssetsList",
     values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "foriegnPair",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getAssetCount",
@@ -374,10 +368,6 @@ export interface BridgeInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "foriegnAssetsList",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "foriegnPair",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -807,11 +797,6 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    foriegnPair(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     getAssetCount(
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, BigNumber]>;
@@ -1105,11 +1090,6 @@ export interface Bridge extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  foriegnPair(
-    arg0: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   getAssetCount(
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, BigNumber]>;
@@ -1398,11 +1378,6 @@ export interface Bridge extends BaseContract {
 
     foriegnAssetsList(
       arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    foriegnPair(
-      arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -1807,11 +1782,6 @@ export interface Bridge extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    foriegnPair(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getAssetCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAssetSupportedChainIds(
@@ -2032,11 +2002,6 @@ export interface Bridge extends BaseContract {
 
     foriegnAssetsList(
       arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    foriegnPair(
-      arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
